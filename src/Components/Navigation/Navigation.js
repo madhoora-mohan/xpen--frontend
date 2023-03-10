@@ -8,7 +8,7 @@ import { useGlobalContext } from "../../context/globalContext";
 import axios from "axios";
 
 function Navigation({ active, setActive, openn }) {
-  let realopen = openn;
+  // let realopen = openn;
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("email");
@@ -18,13 +18,13 @@ function Navigation({ active, setActive, openn }) {
 
 
   const [sheetData, setSheetData] = useState(null);
-  const { totalBalance, error, setError, getLimit } = useGlobalContext();
+  const { totalBalance, setError } = useGlobalContext();
 
   const username = localStorage.getItem("username");
   const emailid = localStorage.getItem("email");
   useEffect(() => {
     axios
-      .get(`https://expense-tracker-mern-back-madhoora-mohan.onrender.com/api/v1/get-incomes/${emailid}`)
+      .get(process.env.REACT_APP_BASE_URL + `get-incomes/${emailid}`)
       .then((res) => {
         // console.log(res.data);
 
@@ -33,7 +33,7 @@ function Navigation({ active, setActive, openn }) {
   }, []);
   useEffect(() => {
     axios
-      .get(`https://expense-tracker-mern-back-madhoora-mohan.onrender.com/api/v1/get-expenses/${emailid}`)
+      .get(process.env.REACT_APP_BASE_URL + `get-expenses/${emailid}`)
       .then((res) => {
         // console.log(res.data);
         setSheetData({ ...sheetData.concat(res.data) });

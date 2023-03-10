@@ -20,7 +20,7 @@ const Signup = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const url = "https://expense-tracker-mern-back-madhoora-mohan.onrender.com/api/users";
+      const url = process.env.REACT_APP_USERS_URL;
       const { data: res } = await axios.post(url, data);
       navigate("/login");
       console.log(res.message);
@@ -87,6 +87,10 @@ const Signup = () => {
                 className="input"
               />
               {error && <div className="error_msg">{error}</div>}
+              <p>
+                <b>Note</b>: Password should be 8 characters long, must contain
+                a number, capital letter, small letter and a symbol.
+              </p>
               <button type="submit" className="green_btn">
                 Sign Up
               </button>
@@ -115,7 +119,8 @@ const SignupStyled = styled.div`
     border-radius: 1.5rem;
     border-color: rgb(69, 69, 69);
     box-shadow: 0rem 0.3rem 0.3rem -0.2rem rgb(0 0 0 / 20%),
-      0rem 0.3rem 0.4rem 0rem rgb(0 0 0 / 14%), 0rem 0.1rem 0.8rem 0rem rgb(0 0 0 / 12%);
+      0rem 0.3rem 0.4rem 0rem rgb(0 0 0 / 14%),
+      0rem 0.1rem 0.8rem 0rem rgb(0 0 0 / 12%);
   }
 
   .left {
@@ -146,40 +151,48 @@ const SignupStyled = styled.div`
     background-color: rgb(49, 54, 60);
     border-top-right-radius: 1rem;
     border-bottom-right-radius: 1rem;
-  }
 
-  .form_container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-  }
+    .form_container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      /* height: 10vh; */
 
-  .form_container h1 {
-    font-size: 1.5rem;
-    margin-top: 0;
-  }
+      h1 {
+        font-size: 2rem;
+        margin-top: 0;
+      }
 
-  .input {
-    outline: none;
-    border: none;
-    width: 60%;
-    padding: 0.7rem;
-    border-radius: 1rem;
-    background-color: #edf5f3;
-    margin: 0.3rem 0;
-    font-size: 0.7rem;
-  }
+      .input {
+        outline: none;
+        border: none;
+        width: 60%;
+        padding: 0.7rem;
+        border-radius: 1rem;
+        background-color: #edf5f3;
+        margin: 0.3rem 0;
+        font-size: 0.7rem;
+      }
+      p {
+        color: white;
+        font-size: 0.9rem;
+        margin: 0.5rem;
+        margin-left: 2.5rem;
+        margin-right: 1.5rem;
+      }
 
-  .error_msg {
-    width: 3rem;
-    padding: 0.1rem;
-    margin: 0.5rem 0;
-    font-size: 1rem;
-    background-color: #f34646;
-    color: white;
-    border-radius: 0.5rem;
-    text-align: center;
+      .error_msg {
+        /* width: 3rem; */
+        padding: 0.4rem;
+        margin: 0.5rem 0;
+        font-size: 1rem;
+        background-color: #f34646;
+        color: white;
+        border-radius: 0.5rem;
+        text-align: center;
+      }
+    }
   }
 
   .white_btn,
@@ -189,9 +202,9 @@ const SignupStyled = styled.div`
     padding: 0.5rem 0;
     background-color: white;
     border-radius: 20px;
-    width: 5rem;
+    width: 7rem;
     font-weight: bold;
-    font-size: 0.7rem;
+    font-size: 0.8rem;
     cursor: pointer;
     text-decoration: none;
     transition: 0.9s;
@@ -207,6 +220,122 @@ const SignupStyled = styled.div`
     text-decoration: none;
     font-size: 1rem;
     color: #232260;
+  }
+  @media (max-width: 1024px) {
+    .signup_container {
+      .signup_form_container {
+        .left {
+          h1 {
+            font-size: 1.2rem;
+          }
+        }
+        .right {
+          .form_container {
+            h1 {
+              font-size: 1.5rem;
+            }
+
+            .input {
+              width: 60%;
+              padding: 0.4rem;
+              margin: 0.2rem;
+              font-size: 0.7rem;
+            }
+            p {
+              color: white;
+              font-size: 0.6rem;
+            }
+
+            .error_msg {
+              padding: 0.3rem;
+              margin: 0.5rem 0;
+              font-size: 0.7rem;
+            }
+          }
+        }
+      }
+    }
+  }
+  @media (max-width: 768px) {
+    .signup_container {
+      .signup_form_container {
+        .right {
+          .form_container {
+            h1 {
+              font-size: 1.3rem;
+            }
+
+            .input {
+              width: 60%;
+              padding: 0.4rem;
+              margin: 0.2rem;
+              font-size: 0.7rem;
+            }
+            p {
+              color: white;
+              font-size: 0.6rem;
+            }
+
+            .error_msg {
+              padding: 0.3rem;
+              margin: 0.5rem 0;
+              font-size: 0.7rem;
+            }
+          }
+        }
+      }
+    }
+  }
+  @media (max-width: 425px) {
+    .signup_container {
+      .signup_form_container {
+        width: 70vw;
+        height: 25rem;
+        display: flex;
+        flex-direction: column-reverse;
+        .left {
+          margin: 0rem;
+          border-radius: 1rem;
+          border-top-left-radius: 0rem;
+          border-top-right-radius: 0rem;
+          h1 {
+            font-size: 1rem;
+          }
+          .white_btn {
+            padding: 0.3rem;
+          }
+        }
+        .right {
+          /* height: 80%; */
+          border-radius: 1rem;
+          border-bottom-left-radius: 0rem;
+          border-bottom-right-radius: 0rem;
+          .form_container {
+            h1 {
+              font-size: 1rem;
+            }
+            .input {
+              width: 80%;
+              padding: 0.4rem;
+              margin: 0.2rem;
+              font-size: 0.7rem;
+            }
+            p {
+              color: white;
+              font-size: 0.6rem;
+              margin: 0.5rem;
+              margin-left: 1.2rem;
+            }
+
+            .error_msg {
+              padding: 0.3rem;
+              margin: 0.5rem 0;
+              font-size: 0.7rem;
+            }
+          }
+        }
+      }
+    }
   }
 `;
 

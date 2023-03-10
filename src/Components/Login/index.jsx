@@ -13,7 +13,8 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const url = "https://expense-tracker-mern-back-madhoora-mohan.onrender.com/api/auth";
+      const url = process.env.REACT_APP_AUTH_URL;
+      console.log(url);
       const { data: res } = await axios.post(url, data);
       console.log(res);
       localStorage.setItem("token", res.data);
@@ -94,7 +95,8 @@ const LoginStyled = styled.div`
     border-radius: 1.5rem;
     border-color: rgb(69, 69, 69);
     box-shadow: 0rem 0.3rem 0.3rem -0.2rem rgb(0 0 0 / 20%),
-      0rem 0.3rem 0.4rem 0rem rgb(0 0 0 / 14%), 0rem 0.1rem 0.8rem 0rem rgb(0 0 0 / 12%);
+      0rem 0.3rem 0.4rem 0rem rgb(0 0 0 / 14%),
+      0rem 0.1rem 0.8rem 0rem rgb(0 0 0 / 12%);
   }
 
   .left {
@@ -168,9 +170,9 @@ const LoginStyled = styled.div`
     padding: 0.5rem 0;
     background-color: white;
     border-radius: 20px;
-    width: 5rem;
+    width: 7rem;
     font-weight: bold;
-    font-size: 0.7rem;
+    font-size: 0.8rem;
     cursor: pointer;
     text-decoration: none;
     transition: 0.9s;
@@ -186,6 +188,53 @@ const LoginStyled = styled.div`
     text-decoration: none;
     font-size: 1rem;
     color: #232260;
+  }
+  @media (max-width: 425px) {
+    .login_container {
+      .login_form_container {
+        width: 60vw;
+        height: 16rem;
+        display: flex;
+        flex-direction: column;
+        .left {
+          padding: 0rem;
+          margin: 0rem;
+          border-radius: 1rem;
+          border-bottom-left-radius: 0rem;
+          border-bottom-right-radius: 0rem;
+          .form_container {
+            h1 {
+              font-size: 1rem;
+              margin-bottom: 1rem;
+            }
+            .input {
+              width: 80%;
+              padding: 0.4rem;
+              margin: 0.2rem;
+              font-size: 0.7rem;
+            }
+            .error_msg {
+              padding: 0.3rem;
+              margin: 0.5rem 0;
+              font-size: 0.7rem;
+            }
+          }
+        }
+        .right {
+          margin: 0rem;
+          border-radius: 1rem;
+          border-top-left-radius: 0rem;
+          border-top-right-radius: 0rem;
+          h1 {
+            font-size: 1rem;
+          }
+          .white_btn {
+            padding: 0.3rem;
+          }
+          /* height: 80%; */
+        }
+      }
+    }
   }
 `;
 
