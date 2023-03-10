@@ -125,6 +125,7 @@ const DashboardStyled = styled.div`
       display: flex;
       justify-content: space-between;
       /* gap: 0.5rem; */
+      /* margin: 1rem; */
       margin-top: 2rem;
       color: rgb(255, 255, 255);
       .income {
@@ -196,6 +197,8 @@ const DashboardStyled = styled.div`
     .history-con {
       display: flex;
       flex-direction: column;
+      justify-content: center;
+      margin: 1rem;
       h2 {
         margin: 1rem 0;
         font-size: 1.5rem;
@@ -214,6 +217,7 @@ const DashboardStyled = styled.div`
       }
       .salary-item {
         background: rgb(49, 54, 60);
+        /* width: 80%; */
         border: 0.1rem solid rgb(69, 69, 69);
         border-radius: 0.8rem;
         display: flex;
@@ -299,21 +303,35 @@ const DashboardStyled = styled.div`
         padding-top: 2rem;
       }
     }
+    .no-graph {
+      .amount-con {
+        display: flex;
+        justify-content: space-between;
+        gap: 0.5rem;
+        margin: 1rem;
+      }
+    }
   }
+  /* @media (max-width: 425px) {
+    .top {
+      .stats-con .line {
+        padding-top: 1.5rem;
+      }
+    }
+  } */
   @media (max-width: 425px) {
     .top {
       .stats-con .line {
         padding-top: 1.5rem;
       }
     }
-  }
-  @media (max-width: 425px) {
     .no-graph {
       .amount-con {
         .expense,
         .income,
         .balance {
           padding: 0.5rem;
+          border-radius: 0.8rem;
         }
       }
     }
@@ -327,8 +345,8 @@ const DashboardStyled = styled.div`
         .balance {
           border-radius: 0.8rem;
           h2 {
-            font-size: 1rem;
-            font-weight: 600;
+            font-size: 0.7rem;
+            font-weight: 500;
           }
           p {
             font-size: 1rem;
@@ -341,11 +359,13 @@ const DashboardStyled = styled.div`
   @media (max-width: 320px) {
     .no-graph {
       .amount-con {
+        gap: 0.2rem;
+        margin: 0.6rem;
         .expense,
         .income,
         .balance {
           h2 {
-            font-size: 0.8rem;
+            font-size: 0.6rem;
             font-weight: 600;
           }
           p {

@@ -236,6 +236,30 @@ const LoginStyled = styled.div`
       }
     }
   }
+  @media (max-width: 768px) {
+    .login_container {
+      .login_form_container {
+        .left {
+          .form_container {
+            h1 {
+              font-size: 1rem;
+            }
+            .input {
+              width: 60%;
+              padding: 0.4rem;
+              /* margin: 0.2rem; */
+              font-size: 0.7rem;
+            }
+          }
+        }
+        .right {
+          h1 {
+            font-size: 1rem;
+          }
+        }
+      }
+    }
+  }
 `;
 
 export default Login;

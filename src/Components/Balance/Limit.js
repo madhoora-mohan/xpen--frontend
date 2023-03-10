@@ -153,7 +153,7 @@ const LimitStyled = styled.div`
     display: flex;
     justify-content: center;
     /* text-align: center; */
-    /* align-items: center; */
+    align-items: center;
     .limiter {
       display: flex;
       flex-direction: column;
@@ -234,12 +234,67 @@ const LimitStyled = styled.div`
       }
     }
   }
-  @media (max-width: 1024) {
+  @media (max-width: 1440px) {
+    .center {
+      padding: 0rem;
+      margin: 0rem;
+      .limiter {
+        width: 30%;
+        h3 {
+          font-size: 1.2rem;
+        }
+        h4 {
+          font-size: 1.2rem;
+        }
+        form {
+          input {
+            padding: 0.6rem;
+          }
+        }
+      }
+    }
   }
   @media (max-width: 425px) {
     .center {
       .limiter {
-        width: 60%;
+        width: 60% !important;
+        h3 {
+          font-size: 1rem;
+        }
+        h4 {
+          font-size: 0.8rem;
+        }
+        form {
+          input {
+            font-size: 1rem;
+            padding: 0.4rem;
+          }
+        }
+      }
+    }
+  }
+  @media (max-width: 375px) {
+    .center {
+      .limiter {
+        h3 {
+          font-size: 0.6rem;
+        }
+        h4 {
+          font-size: 0.6rem;
+        }
+        form {
+          input {
+            font-size: 0.6rem;
+            padding: 0.2rem;
+          }
+        }
+      }
+    }
+  }
+  @media (max-width: 768px) {
+    .center {
+      .limiter {
+        width: 40%;
         h3 {
           font-size: 1rem;
         }

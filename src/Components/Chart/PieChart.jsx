@@ -118,6 +118,7 @@ const PieChartStyled = styled.div`
     .piechart {
       padding-top: 0rem;
       padding-bottom: 0rem;
+      border-radius: 2rem;
       .pie {
         /* width: 25rem; */
         /* height: 13rem; */
@@ -129,9 +130,23 @@ const PieChartStyled = styled.div`
       }
     }
   }
+  @media (max-width: 350px) {
+    .piechart {
+      border-radius: 3rem;
+      .pie {
+        /* width: 25rem; */
+        /* height: 11rem; */
+        .cont {
+          p {
+            font-size: 0.8rem;
+          }
+        }
+      }
+    }
+  }
   @media (max-width: 320px) {
     .piechart {
-      
+      border-radius: 4rem;
       .pie {
         /* width: 25rem; */
         height: 14rem;

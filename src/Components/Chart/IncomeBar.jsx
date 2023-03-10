@@ -98,31 +98,53 @@ const PieChartStyled = styled.div`
   }
   @media (max-width: 425px) {
     .piechart {
-      /* width: 25rem; */
-      /* margin-left: 6.5rem; */
       .pie {
-        /* width: 25rem; */
         height: 13rem;
+        margin-left: 1rem;
       }
     }
   }
+
   @media (max-width: 375px) {
     .piechart {
-      /* width: 25rem; */
+      border-radius: 2rem;
       .pie {
-        /* width: 25rem; */
+        /* height: 13rem; */
+      }
+    }
+  }
+  @media (max-width: 365px) {
+    .piechart {
+      border-radius: 2.5rem;
+      .pie {
+        /* height: 13rem; */
+        /* margin-left: 0.9rem; */
+      }
+    }
+  }
+  @media (max-width: 350px) {
+    .piechart {
+      border-radius: 3rem;
+      .pie {
         height: 12rem;
-
       }
     }
   }
-  @media (max-width: 375px) {
+  @media (max-width: 340px) {
     .piechart {
-      /* border-radius: 20%;
-      border: 1.5px solid black; */
+      border-radius: 3rem;
       .pie {
-        height: 11rem;
-
+        height: 11.5rem;
+        margin-left: 0.5rem;
+      }
+    }
+  }
+  @media (max-width: 320px) {
+    .piechart {
+      border-radius: 3.5rem;
+      .pie {
+        height: 11.5rem;
+        margin-left: 0.5rem;
       }
     }
   }

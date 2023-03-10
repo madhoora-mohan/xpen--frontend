@@ -86,14 +86,24 @@ const ChartStyled = styled.div`
   }
   @media (max-width: 425px) {
     /* width: 25rem; */
-    height: 13rem ;
+    height: 13rem;
   }
   @media (max-width: 375px) {
-    /* width: 20rem; */
-    height: 12rem ;
+    /* width: 25rem; */
+    height: 13rem;
+    border-radius: 2rem;
+    /* height: 15rem; */
+    .line {
+      font-weight: bold;
+    }
+  }
+  @media (max-width: 350px) {
+    height: 12rem;
+    border-radius: 3.2rem;
   }
   @media (max-width: 320px) {
-    height: 11rem ;
+    height: 11.4rem;
+    border-radius: 3.8rem;
   }
 `;
 
