@@ -60,40 +60,42 @@ function Limit() {
     <LimitStyled>
       <InnerLayout>
         <div className="top">
-          <h3>Set Limit</h3></div>
-          <h3 className="total-income">
-            Savings: <span>₹{totalBalance()}</span>
-          </h3>
+          <h3>Set Limit</h3>
+        </div>
+        <h3 className="total-income">
+          Savings: <span>₹{totalBalance()}</span>
+        </h3>
       </InnerLayout>
       <div className="center">
-      <div className="limiter">
-        <h3>Set Minimum Limit</h3>
-        <h4>Current Limit: {limits}</h4>
-        {error && <p className="error_msg">{error}</p>}
+        <div className="limiter">
+          <h3>Set Minimum Limit</h3>
+          <h4>Current Limit: {limits}</h4>
+          {error && <p className="error_msg">{error}</p>}
 
-        <form onSubmit={handleSubmit}>
-          <input
-            type="number"
-            value={limit}
-            name={"limit"}
-            placeholder="Limit"
-            onChange={handleInput("limit")}
-            // onChange={(e) => {
-            //   setInputState(e.target.value);
-            // }}
-          />
-          <div className="submit-btn">
-            <Button
-              name={"Set limit"}
-              icon={plus}
-              bPad={".6rem 1.6rem"}
-              bRad={"1.5rem"}
-              bg={"var(--color-accent"}
-              color={"#fff"}
+          <form onSubmit={handleSubmit}>
+            <input
+              type="number"
+              value={limit}
+              name={"limit"}
+              placeholder="Limit"
+              onChange={handleInput("limit")}
+              // onChange={(e) => {
+              //   setInputState(e.target.value);
+              // }}
             />
-          </div>
-        </form>
-      </div></div>
+            <div className="submit-btn">
+              <Button
+                name={"Set limit"}
+                icon={plus}
+                bPad={".6rem 1.6rem"}
+                bRad={"1.5rem"}
+                bg={"var(--color-accent"}
+                color={"#fff"}
+              />
+            </div>
+          </form>
+        </div>
+      </div>
     </LimitStyled>
   );
 }
@@ -120,15 +122,16 @@ const LimitStyled = styled.div`
     border-radius: 0.8rem;
     text-align: center;
   }
-  .top{
-  h3 {
-    padding-left: 1rem;
-    padding-bottom: 0.5rem;
-    font-size: 1.4rem;
-    font-weight: 600;
-    display: flex;
-    justify-content: center;
-  }}
+  .top {
+    h3 {
+      padding-left: 1rem;
+      padding-bottom: 0.5rem;
+      font-size: 1.4rem;
+      font-weight: 600;
+      display: flex;
+      justify-content: center;
+    }
+  }
   .total-income {
     display: flex;
     justify-content: center;
@@ -146,76 +149,77 @@ const LimitStyled = styled.div`
       font-weight: 600;
     }
   }
-  .center{
+  .center {
     display: flex;
     justify-content: center;
     /* text-align: center; */
     /* align-items: center; */
-  .limiter {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    width: 50%;    
-    /* height: fit-content; */
-    background: rgb(49, 54, 60);
-    border: 0.1rem solid rgb(69, 69, 69);
-    // box-shadow: 0px 1px 15px rgba(0, 0, 0, 0.06);
-    border-radius: 1rem;
-    padding: 0.5rem;
-    margin: 1rem 0;
-    gap: 1rem;
-    h3 {
-      padding-bottom: 1rem;
-      font-weight: 600;
-      font-size: 1.3rem;
-    }
-    h4 {
-      font-weight: 600;
-      font-size: 1rem;
-    }
-    form {
+    .limiter {
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      margin: 1rem 0;
-      font-size: 2rem;
-      gap: 1.5rem;
-    }
-
-    input {
-      width: 80%;
+      width: 50%;
+      /* height: fit-content; */
+      background: rgb(49, 54, 60);
+      border: 0.1rem solid rgb(69, 69, 69);
+      // box-shadow: 0px 1px 15px rgba(0, 0, 0, 0.06);
       border-radius: 1rem;
-      border: 0.1rem solid rgb(88, 88, 88);
-      font-size: 1.2rem;
-      color: rgba(255, 255, 255, 0.6);
-      background: rgb(69, 69, 69);
       padding: 0.5rem;
-
-      &::placeholder {
-        color: rgb(91, 94, 97);
+      margin: 1rem 0;
+      gap: 1rem;
+      h3 {
+        padding-bottom: 1rem;
+        font-weight: 600;
+        font-size: 1.3rem;
       }
-    }
-    .submit-btn {
-      button {
+      h4 {
+        font-weight: 600;
+        font-size: 1rem;
+      }
+      form {
+        display: flex;
+        flex-direction: column;
         justify-content: center;
-        font-size: 0.8rem;
-        &:hover {
-          background: var(--color-green) !important;
+        align-items: center;
+        margin: 1rem 0;
+        font-size: 2rem;
+        gap: 1.5rem;
+      }
+
+      input {
+        width: 80%;
+        border-radius: 1rem;
+        border: 0.1rem solid rgb(88, 88, 88);
+        font-size: 1.2rem;
+        color: rgba(255, 255, 255, 0.6);
+        background: rgb(69, 69, 69);
+        padding: 0.5rem;
+
+        &::placeholder {
+          color: rgb(91, 94, 97);
+        }
+      }
+      .submit-btn {
+        button {
+          justify-content: center;
+          font-size: 0.8rem;
+          &:hover {
+            background: var(--color-green) !important;
+          }
         }
       }
     }
-  }}
+  }
   @media (max-width: 920px) {
     width: 100vw;
-    .top{
+    .top {
       width: 100vw;
       display: flex;
       flex-direction: column;
       align-items: center;
       padding-bottom: 1.5rem;
-      h3{
+      h3 {
         background-color: black;
         padding: 1rem;
         padding-top: 1.3rem;
@@ -230,23 +234,26 @@ const LimitStyled = styled.div`
       }
     }
   }
+  @media (max-width: 1024) {
+  }
   @media (max-width: 425px) {
-    .center{
-    .limiter{
-      width: 60%;
-      h3{
-        font-size: 1rem;
-      }
-      h4{
-        font-size: 0.8rem;
-      }
-      form{
-        input{
+    .center {
+      .limiter {
+        width: 60%;
+        h3 {
           font-size: 1rem;
-          padding: 0.4rem;
+        }
+        h4 {
+          font-size: 0.8rem;
+        }
+        form {
+          input {
+            font-size: 1rem;
+            padding: 0.4rem;
+          }
         }
       }
-    }}
+    }
   }
 `;
 

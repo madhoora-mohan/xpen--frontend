@@ -141,7 +141,7 @@ const IncomeItemStyled = styled.div`
     align-items: center;
     justify-content: center;
     i {
-      font-size: 2rem;
+      font-size: 1.5rem;
     }
   }
 
@@ -187,32 +187,38 @@ const IncomeItemStyled = styled.div`
     }
   }
   @media (max-width: 425px) {
-  gap: 0.7rem;
-  .icon {
-    width: 7%;
-    i {
-      font-size: 1.5rem;}}
+    gap: 0.7rem;
+    .icon {
+      width: 7%;
+      i {
+        font-size: 1.5rem;
+      }
+    }
     .content {
       gap: 0.5rem;
-    h5 {
-      font-size: 0.9rem;
-      padding-left: 1rem;}
-    .inner-content {
-      justify-content: space-between;
-      align-items: center;
-      .text {
-        display: flex;
+      h5 {
+        font-size: 0.9rem;
+        padding-left: 1rem;
+      }
+      .inner-content {
+        justify-content: space-between;
         align-items: center;
-        gap: 0.5rem;
-        p {
-          font-size: 0.7rem;
+        .text {
           display: flex;
           align-items: center;
-          gap: 0.5rem;}}
-        .btn-con{
+          gap: 0.5rem;
+          p {
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+          }
+        }
+        .btn-con {
           width: 8%;
         }
-        }}
+      }
+    }
   }
 `;
 
