@@ -13,7 +13,7 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const url = process.env.REACT_APP_AUTH_URL;
+      const url = "https://xpens.onrender.com/api/auth";
       // console.log(url);
       const { data: res } = await axios.post(url, data);
       console.log(res);
