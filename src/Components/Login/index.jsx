@@ -14,7 +14,7 @@ const Login = () => {
     e.preventDefault();
     try {
       const url = process.env.REACT_APP_AUTH_URL;
-      console.log(url);
+      // console.log(url);
       const { data: res } = await axios.post(url, data);
       console.log(res);
       localStorage.setItem("token", res.data);
