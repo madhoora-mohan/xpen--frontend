@@ -45,7 +45,6 @@ function Navigation({ active, setActive, openn }) {
   // useEffect(()=>{
   //   // setPleaseWork(openn)
   //   console.log(openn)
-
   // },[openn]);
   // console.log(pleaseWork)
 
@@ -70,7 +69,7 @@ function Navigation({ active, setActive, openn }) {
         <img src={avatar} alt="" />
         <div className="text">
           <h5>{username}</h5>
-          <h5>Savings: ₹{totalBalance}</h5>
+          <h5>Savings: ₹{totalBalance()}</h5>
         </div>
       </div>
       <ul className="menu-items">

@@ -1,7 +1,6 @@
 import React, { useContext, useState } from "react";
 import axios from "axios";
 
-
 const BASE_URL = process.env.REACT_APP_BASE_URL;
 
 const GlobalContext = React.createContext();
@@ -71,7 +70,7 @@ export const GlobalProvider = ({ children }) => {
   const getExpenses = async () => {
     const response = await axios.get(`${BASE_URL}get-expenses/${emailid}`);
     setExpenses(response.data);
-    console.log(response.data);
+    // console.log(response.data);
   };
 
   const deleteExpense = async (id) => {
