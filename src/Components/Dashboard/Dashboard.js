@@ -55,7 +55,7 @@ function Dashboard() {
           <div className="amount-con">
             <div className="income">
               <h2>Total Income</h2>
-              <p>₹ {totalIncome()}</p>
+              <p>₹ {totalIncome}</p>
             </div>
             <div className="expense">
               <h2>Total Expense</h2>
@@ -307,14 +307,17 @@ const DashboardStyled = styled.div`
       }
     }
   }
-@media (max-width: 425px) {
-  .no-graph {
+  @media (max-width: 425px) {
+    .no-graph {
       .amount-con {
         .expense,
         .income,
         .balance {
-          padding: 0.5rem;}}}
-}
+          padding: 0.5rem;
+        }
+      }
+    }
+  }
 
   @media (max-width: 375px) {
     .no-graph {
@@ -334,7 +337,6 @@ const DashboardStyled = styled.div`
         }
       }
     }
-
   }
   @media (max-width: 320px) {
     .no-graph {
@@ -353,7 +355,6 @@ const DashboardStyled = styled.div`
         }
       }
     }
-
   }
 `;
 

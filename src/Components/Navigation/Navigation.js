@@ -16,7 +16,6 @@ function Navigation({ active, setActive, openn }) {
     window.location.reload();
   };
 
-
   const [sheetData, setSheetData] = useState(null);
   const { totalBalance, setError } = useGlobalContext();
 
@@ -46,7 +45,7 @@ function Navigation({ active, setActive, openn }) {
   // useEffect(()=>{
   //   // setPleaseWork(openn)
   //   console.log(openn)
-    
+
   // },[openn]);
   // console.log(pleaseWork)
 
@@ -71,7 +70,7 @@ function Navigation({ active, setActive, openn }) {
         <img src={avatar} alt="" />
         <div className="text">
           <h5>{username}</h5>
-          <h5>Savings: ₹{totalBalance()}</h5>
+          <h5>Savings: ₹{totalBalance}</h5>
         </div>
       </div>
       <ul className="menu-items">
@@ -246,8 +245,8 @@ const NavStyled = styled.nav`
     border-top-left-radius: 0rem;
     height: 88%;
     z-index: 1;
-    /* background-color: ${({openn}) => (openn? "blue" : "red")}; */
-    transform: ${({ openn }) => (openn ?  "translateX(100%)":"translateX(0)")};
+    /* background-color: ${({ openn }) => (openn ? "blue" : "red")}; */
+    transform: ${({ openn }) => (openn ? "translateX(100%)" : "translateX(0)")};
     transition: transform 0.3s ease-in-out;
     /* display: none; */
     .bottom-nav {
@@ -259,7 +258,6 @@ const NavStyled = styled.nav`
       }
     }
   }
-
 `;
 
 export default Navigation;
