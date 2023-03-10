@@ -59,11 +59,11 @@ function Dashboard() {
             </div>
             <div className="expense">
               <h2>Total Expense</h2>
-              <p>₹ {totalExpenses()}</p>
+              <p>₹ {totalExpenses}</p>
             </div>
             <div className="balance">
               <h2>Savings</h2>
-              <p>₹ {totalBalance()}</p>
+              <p>₹ {totalBalance}</p>
             </div>
           </div>
           <div className="history-con">
