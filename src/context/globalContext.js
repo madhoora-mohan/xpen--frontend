@@ -10,22 +10,10 @@ export const GlobalProvider = ({ children }) => {
   const [expenses, setExpenses] = useState([]);
   const [limits, setLimits] = useState([]);
   const [error, setError] = useState(null);
-  const [limiter, setlimiter] = useState(null);
+  // const [limiter, setlimiter] = useState(null);
   // const [expensesWCategory, setExpensesWCategory] = useState([]);
 
   const emailid = localStorage.getItem("email");
-
-  // if (totalBalance < getLimit) {
-  //   setError(
-  //     "Your Savings are dropping below your set Limit!! Reduce Your Expenses!!"
-  //   );
-  // } else if (
-  //   totalBalance > getLimit &&
-  //   error ===
-  //     "Your Savings are dropping below your set Limit!! Reduce Your Expenses!!"
-  // ) {
-  //   setError("");
-  // }
 
   //calculate incomes
   const addIncome = async (income) => {
@@ -78,11 +66,6 @@ export const GlobalProvider = ({ children }) => {
     getExpenses();
   };
 
-  // const getExpensesWCategory = async () => {
-  //   const response = await axios.get(`${BASE_URL}get-expenses/${emailid}`);
-  //   setExpensesWCategory(response.data);
-  //   console.log(response.data);
-  // };
   const totalExpenses = () => {
     let totalIncome = 0;
     expenses.forEach((income) => {
@@ -177,7 +160,7 @@ export const GlobalProvider = ({ children }) => {
   const getLimit = async () => {
     const response = await axios.get(`${BASE_URL}get-limit/${emailid}`);
     setLimits(response.data[0].limit);
-    setlimiter(response.data[0].limit);
+    // setlimiter(response.data[0].limit);
   };
 
   const updateLimit = async (uplimit) => {
@@ -219,7 +202,7 @@ export const GlobalProvider = ({ children }) => {
         limits,
         setLimits,
         getLimit,
-        limiter,
+        // limiter,
         updateLimit,
         totalExpenses,
         totalBalance,

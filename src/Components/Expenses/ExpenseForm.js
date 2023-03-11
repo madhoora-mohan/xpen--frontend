@@ -5,11 +5,11 @@ import "react-datepicker/dist/react-datepicker.css";
 import { useGlobalContext } from "../../context/globalContext";
 import Button from "../Button/Button";
 import { plus } from "../../utils/Icons";
-// import {email} from ""
 
 function ExpenseForm() {
   const emailid = localStorage.getItem("email");
-  const { addExpense, error, setError, totalBalance, getLimit, limiter } =
+  const user = localStorage.getItem("username");
+  const { addExpense, error, setError, totalBalance, limits, getLimit } =
     useGlobalContext();
   const [inputState, setInputState] = useState({
     email: emailid,
@@ -25,21 +25,35 @@ function ExpenseForm() {
   const handleInput = (name) => (e) => {
     setInputState({ ...inputState, [name]: e.target.value });
     setError("");
+    getLimit();
     // console.log(inputState);
   };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     await addExpense(inputState);
     // console.log(inputState);
-    getLimit();
-    console.log(limiter);
-    if (limiter < totalBalance()) {
+    // console.log(limits, totalBalance());
+    if (limits > totalBalance() - inputState.amount) {
+      // console.log(limits, totalBalance());
       setError(
         "Your Savings are dropping below your set Limit!! Reduce Your Expenses!!"
       );
-    }
 
+      window.Email.send({
+        SecureToken: "8d1d2a07-af18-472b-a490-3cd0d83c0978",
+        To: emailid,
+        From: "madhooramohan.s2003@gmail.com",
+        Subject: "Your Savings are dropping " + user,
+        Body:
+          "Your Savings are dropping below your set limit of " +
+          limits +
+          "!! Try to limit your expenses!!",
+      }).then((message) =>
+        alert(
+          "Your Savings are dropping below your set Limit!! Try to limit your expenses!!"
+        )
+      );
+    }
     setInputState({
       email: emailid,
       title: "",
@@ -51,7 +65,6 @@ function ExpenseForm() {
   };
   return (
     <ExpenseFormStyled onSubmit={handleSubmit}>
-      {/* <div className="exp-form"></div> */}
       {error && <p className="error_msg">{error}</p>}
       <div className="input-control">
         <input
@@ -127,7 +140,7 @@ function ExpenseForm() {
           bg={"var(--color-accent"}
           color={"#fff"}
         />
-      </div>  
+      </div>
     </ExpenseFormStyled>
   );
 }
