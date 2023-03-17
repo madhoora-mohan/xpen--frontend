@@ -81,11 +81,11 @@ const LoginStyled = styled.div`
   .login_container {
     width: 100%;
     height: 100vh;
-    background-color: #f5f5f5;
     display: flex;
     align-items: center;
     justify-content: center;
     background-color: #bfbfbf;
+    /* background: linear-gradient(0.65turn, #000, #44bb44, #000); */
   }
 
   .login_form_container {
@@ -105,6 +105,7 @@ const LoginStyled = styled.div`
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    /* background-color: rgb(68, 187, 68); */
     background-color: rgb(49, 54, 60);
     border-top-left-radius: 1rem;
     border-bottom-left-radius: 1rem;
@@ -129,6 +130,7 @@ const LoginStyled = styled.div`
     padding: 0.7rem;
     border-radius: 1rem;
     background-color: #edf5f3;
+    /* background: rgba(0, 0, 0, 0.9); */
     margin: 0.3rem 0;
     font-size: 0.7rem;
   }
@@ -154,6 +156,9 @@ const LoginStyled = styled.div`
     border: 3px solid black;
     border-top-right-radius: 1rem;
     border-bottom-right-radius: 1rem;
+    box-shadow: rgba(0, 0, 0, 0.2) 0rem 0.3rem 0.3rem -0.2rem,
+      rgba(0, 0, 0, 0.14) 0rem 0.3rem 0.4rem 0rem,
+      rgba(0, 0, 0, 0.12) 0rem 0.1rem 0.8rem 0rem;
   }
 
   .right h1 {

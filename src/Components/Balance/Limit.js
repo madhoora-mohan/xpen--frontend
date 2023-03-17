@@ -222,11 +222,12 @@ const LimitStyled = styled.div`
       h3 {
         background-color: black;
         padding: 1rem;
-        padding-top: 1.3rem;
+        padding-top: 1rem;
         width: 100%;
         text-align: center;
         position: absolute;
         z-index: 1000;
+        border: 0.1rem solid rgb(69, 69, 69);
         margin-top: -3.5rem;
         margin-left: -2rem;
         border-bottom-right-radius: 1rem;

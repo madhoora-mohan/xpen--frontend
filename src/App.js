@@ -9,6 +9,7 @@ import Dashboard from "./Components/Dashboard/Dashboard";
 import Income from "./Components/Income/Income";
 import Expenses from "./Components/Expenses/Expenses";
 import Limit from "./Components/Balance/Limit";
+import { Home } from "./Components/Home";
 // import LeftNav from "./Components/Navigation/LeftNav";
 // import
 // import { useGlobalContext } from "./context/globalContext";
@@ -98,9 +99,21 @@ function App() {
           }
         />
       )}
-      <Route path="/signup" exact element={<Signup />} />
-      <Route path="/login" exact element={<Login />} />
-      <Route path="/" exact element={<Navigate replace to="/login" />} />
+      {!user && <Route path="/signup" exact element={<Signup />} />}
+      {user && (
+        <Route path="/signup" exact element={<Navigate replace to="/" />} />
+      )}
+      {!user && <Route path="/login" exact element={<Login />} />}
+      {user && (
+        <Route path="/login" exact element={<Navigate replace to="/" />} />
+      )}
+      {!user && <Route path="/home" exact element={<Home />} />}
+      {user && (
+        <Route path="/home" exact element={<Navigate replace to="/" />} />
+      )}
+      {!user && (
+        <Route path="/" exact element={<Navigate replace to="/home" />} />
+      )}
     </Routes>
   );
 }
@@ -124,17 +137,7 @@ const AppStyled = styled.div`
     width: 100%;
   } */
   @media (max-width: 920px) {
-    /* overflow-x: hidden; */
-    .nav {
-      /* display: none !important; */
-      /* display: ${({ openn }) => (openn ? "none" : "flex")}; */
-      /* transform: ${({ openn }) =>
-        openn ? "translateX(0)" : "translateX(100%)"}; */
-      /* display: flex; */
-      /* flex-direction: column;
-      justify-content: center;
-      align-items: center; */
-    }
+    overflow-x: hidden;
     main {
       border: none;
       width: 100vw;
@@ -145,8 +148,8 @@ const AppStyled = styled.div`
     }
   }
   @media (min-width: 1024px) {
-    .nav{
-      width:30%;
+    .nav {
+      width: 30%;
     }
   }
 `;

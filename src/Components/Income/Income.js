@@ -15,7 +15,8 @@ function Income() {
     <IncomeStyled>
       <InnerLayout>
         <div className="top">
-        <h3>Incomes</h3></div>
+          <h3>Incomes</h3>
+        </div>
         <h3 className="total-income">
           Total Income: <span>₹{totalIncome()}</span>
         </h3>
@@ -65,12 +66,13 @@ const IncomeStyled = styled.div`
   }
   scroll-behavior: smooth;
   height: 100%;
-  .top{
-  h3 {
-    padding-left: 1rem;
-    padding-bottom: 0.5rem;
-    font-weight: 600;
-  }}
+  .top {
+    h3 {
+      padding-left: 1rem;
+      padding-bottom: 0.5rem;
+      font-weight: 600;
+    }
+  }
   .total-income {
     margin: 0rem;
     padding: 0.5rem;
@@ -117,13 +119,13 @@ const IncomeStyled = styled.div`
   @media (max-width: 920px) {
     width: 100vw;
     overflow-x: hidden;
-    .top{
+    .top {
       width: 100vw;
       display: flex;
       flex-direction: column;
       align-items: center;
       padding-bottom: 1.5rem;
-      h3{
+      h3 {
         background-color: black;
         padding: 1rem;
         padding-top: 1.5rem;
@@ -133,43 +135,41 @@ const IncomeStyled = styled.div`
         z-index: 1000;
         margin-top: -3.5rem;
         margin-left: -2rem;
+        border: 0.1rem solid rgb(69, 69, 69);
         border-bottom-right-radius: 1rem;
         border-bottom-left-radius: 1rem;
       }
     }
-    }
-    @media (max-width: 425px) {      
-      .income-content{
-        display: flex;
-        flex-direction: column;
-        /* justify-content: center; */
-        /* align-items: flex-start; */
-        .inc-cont{
-          .incomes{
+  }
+  @media (max-width: 425px) {
+    .income-content {
+      display: flex;
+      flex-direction: column;
+      /* justify-content: center; */
+      /* align-items: flex-start; */
+      .inc-cont {
+        .incomes {
           /* width: 90%; */
           /* margin: 1rem; */
         }
-        }
-        .form-container{
-          margin-left: -6rem;
-        }
       }
-      .total-income{
-        font-size: 1.2rem;
-        span{
-          font-size: 1.2rem;
-
-        }
+      .form-container {
+        margin-left: -6rem;
       }
-
     }
-    @media (min-width: 1024px) {
-      .income-content{
-        .form-container{
-           /* width:50rem; */
-        }
+    .total-income {
+      font-size: 1.2rem;
+      span {
+        font-size: 1.2rem;
       }
-   
+    }
+  }
+  @media (min-width: 1024px) {
+    .income-content {
+      .form-container {
+        /* width:50rem; */
+      }
+    }
   }
 `;
 
