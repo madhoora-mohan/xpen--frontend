@@ -97,7 +97,11 @@ const DashboardStyled = styled.div`
   /* padding: 1rem; */
   overflow-x: hidden;
   &::-webkit-scrollbar {
-    width: 0;
+    width: 0.7rem;
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.6);
+    border-radius: 1rem;
   }
   scroll-behavior: smooth;
   height: 100%;
@@ -272,6 +276,9 @@ const DashboardStyled = styled.div`
     }
   }
   @media (max-width: 920px) {
+    &::-webkit-scrollbar {
+      width: 0rem;
+    }
     width: 100vw;
     padding-left: 0rem;
     margin-left: 0rem;
