@@ -29,7 +29,7 @@ function Navigation({ active, setActive, openn }) {
 
         setSheetData(res.data);
       });
-  }, []);
+  });
   useEffect(() => {
     axios
       .get("https://xpens.onrender.com/api/v1/" + `get-expenses/${emailid}`)

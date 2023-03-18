@@ -58,7 +58,7 @@ const Login = () => {
                 className="input"
               />
               {error && <div className="error_msg">{error}</div>}
-              <button type="submit" className="green_btn">
+              <button type="submit" className="sign_in_btn">
                 Sign In
               </button>
             </form>
@@ -84,8 +84,8 @@ const LoginStyled = styled.div`
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: #bfbfbf;
-    /* background: linear-gradient(0.65turn, #000, #44bb44, #000); */
+    /* background: rgb(33, 38, 45); */
+    background: linear-gradient(0.65turn, #000, rgb(33, 38, 45), #000);
   }
 
   .login_form_container {
@@ -93,7 +93,8 @@ const LoginStyled = styled.div`
     height: 60%;
     display: flex;
     border-radius: 1.5rem;
-    border-color: rgb(69, 69, 69);
+    background-color: black;
+    /* border: 0.3rem solid rgb(48, 55, 60); */
     box-shadow: 0rem 0.3rem 0.3rem -0.2rem rgb(0 0 0 / 20%),
       0rem 0.3rem 0.4rem 0rem rgb(0 0 0 / 14%),
       0rem 0.1rem 0.8rem 0rem rgb(0 0 0 / 12%);
@@ -105,8 +106,8 @@ const LoginStyled = styled.div`
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    /* background-color: rgb(68, 187, 68); */
     background-color: rgb(49, 54, 60);
+    /* border: 0.3rem solid #44bb44; */
     border-top-left-radius: 1rem;
     border-bottom-left-radius: 1rem;
   }
@@ -129,7 +130,7 @@ const LoginStyled = styled.div`
     width: 60%;
     padding: 0.7rem;
     border-radius: 1rem;
-    background-color: #edf5f3;
+    background-color: #ffffff;
     /* background: rgba(0, 0, 0, 0.9); */
     margin: 0.3rem 0;
     font-size: 0.7rem;
@@ -152,8 +153,9 @@ const LoginStyled = styled.div`
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    background-color: black;
+    background-color: rgb(0, 0, 0);
     border: 3px solid black;
+    border-radius: 1rem;
     border-top-right-radius: 1rem;
     border-bottom-right-radius: 1rem;
     box-shadow: rgba(0, 0, 0, 0.2) 0rem 0.3rem 0.3rem -0.2rem,
@@ -169,7 +171,7 @@ const LoginStyled = styled.div`
   }
 
   .white_btn,
-  .green_btn {
+  .sign_in_btn {
     border: none;
     outline: none;
     padding: 0.5rem 0;
@@ -183,7 +185,7 @@ const LoginStyled = styled.div`
     transition: 0.9s;
   }
 
-  .green_btn {
+  .sign_in_btn {
     background-color: black;
     color: white;
     margin: 0.5rem;

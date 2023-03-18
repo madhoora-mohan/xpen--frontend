@@ -121,6 +121,7 @@ function App() {
 const AppStyled = styled.div`
   height: 100vh;
   /* width: 100vw; */
+  /* background: linear-gradient(0.65turn, #000, rgb(33, 38, 45), #000); */
   background-color: #000;
   /* position: relative; */
   .nav {

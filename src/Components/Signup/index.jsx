@@ -109,7 +109,8 @@ const SignupStyled = styled.div`
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: #bfbfbf;
+    /* background: linear-gradient(0.65turn, #000, #012324); */
+    background: linear-gradient(0.65turn, #000, rgb(33, 38, 45), #000);
   }
 
   .signup_form_container {

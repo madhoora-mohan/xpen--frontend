@@ -54,9 +54,12 @@ export const Home = () => {
 };
 
 const HomeStyled = styled.div`
+  * {
+    transition: all 150ms ease-in-out;
+  }
   .home {
-    background: linear-gradient(0.65turn, #000, #44bb44, #000);
-    /* background-color: #000; */
+    /* background: rgb(33, 38, 45); */
+    background: linear-gradient(0.65turn, #000, rgb(33, 38, 45), #000);
     height: 100vh;
     overflow: hidden;
     display: flex;
@@ -64,7 +67,7 @@ const HomeStyled = styled.div`
     justify-content: center;
     align-items: center;
     .content {
-      border: 0.5rem solid #44bb44;
+      border: 0.3rem solid rgb(48, 55, 60);
       display: flex;
       justify-content: center;
       border-radius: 1.5rem;
@@ -75,7 +78,10 @@ const HomeStyled = styled.div`
         width: 55%;
         /* border: 1rem solid black; */
         flex-direction: column;
-        background-color: #44bb44;
+        background-color: black;
+        /* border-radius: 1rem; */
+        border-bottom-left-radius: 1rem;
+        border-top-left-radius: 1rem;
         margin: 0rem;
         .text {
           width: 100%;
@@ -115,29 +121,43 @@ const HomeStyled = styled.div`
             .signup {
               width: 48%;
               border-radius: 0.6rem;
-              background-color: rgba(0, 0, 0, 0.95);
+              background-color: #ffffff;
               padding: 0.75rem;
               text-align: center;
-              color: white;
+              color: #000000;
+              font-weight: 700;
+              border: 0.2rem solid #ffffff;
               text-decoration: none;
+              :hover {
+                cursor: pointer;
+                color: #ffffff;
+                background-color: #000000;
+              }
             }
             .login {
               width: 48%;
               border-radius: 0.6rem;
-              background-color: rgba(0, 0, 0, 0.95);
+              background-color: #ffffff;
               padding: 0.75rem;
               text-align: center;
-              color: white;
+              font-weight: 700;
+              border: 0.2rem solid #ffffff;
+              color: #000000;
               text-decoration: none;
+              :hover {
+                cursor: pointer;
+                color: #ffffff;
+                background-color: #000000;
+              }
             }
           }
           button {
             background-color: #000;
             color: #ffffff;
-            border: none;
+            border: 0.1rem solid white;
             width: 100%;
             padding: 0.7rem;
-            border-radius: 0.6rem;
+            border-radius: 1rem;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -145,6 +165,9 @@ const HomeStyled = styled.div`
             font-weight: 500;
             :hover {
               cursor: pointer;
+              font-size: 1.25rem;
+              padding: 0.71rem;
+              text-decoration: underline;
             }
             img {
               background-color: #000;
@@ -160,7 +183,8 @@ const HomeStyled = styled.div`
         display: flex;
         justify-content: center;
         align-items: center;
-        border-radius: 0.8rem;
+        border-bottom-right-radius: 1rem;
+        border-top-right-radius: 1rem;
         img {
           width: 30rem;
         }
