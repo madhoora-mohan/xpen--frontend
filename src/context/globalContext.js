@@ -1,7 +1,7 @@
 import React, { useContext, useState } from "react";
 import axios from "axios";
 
-const BASE_URL = process.env.REACT_APP_BASE_URL;
+const BASE_URL = "https://xpens.onrender.com/api/v1/";
 
 const GlobalContext = React.createContext();
 
