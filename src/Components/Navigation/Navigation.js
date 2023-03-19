@@ -23,7 +23,7 @@ function Navigation({ active, setActive, openn }) {
   const emailid = localStorage.getItem("email");
   useEffect(() => {
     axios
-      .get("https://xpens.onrender.com/api/v1/" + `get-incomes/${emailid}`)
+      .get(process.env.REACT_APP_BASE_URL + `get-incomes/${emailid}`)
       .then((res) => {
         // console.log(res.data);
 
@@ -32,7 +32,7 @@ function Navigation({ active, setActive, openn }) {
   });
   useEffect(() => {
     axios
-      .get("https://xpens.onrender.com/api/v1/" + `get-expenses/${emailid}`)
+      .get(process.env.REACT_APP_BASE_URL + `get-expenses/${emailid}`)
       .then((res) => {
         // console.log(res.data);
         setSheetData({ ...sheetData.concat(res.data) });

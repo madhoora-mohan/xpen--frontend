@@ -20,7 +20,7 @@ const Signup = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const url = "https://xpens.onrender.com/api/users";
+      const url = process.env.REACT_APP_USERS_URL;
       const { data: res } = await axios.post(url, data);
       navigate("/login");
       console.log(res.message);
