@@ -112,7 +112,7 @@ function App() {
         <Route path="/home" exact element={<Navigate replace to="/" />} />
       )}
       {!user && (
-        <Route path="/" exact element={<Navigate replace to="/login" />} />
+        <Route path="/" exact element={<Navigate replace to="/home" />} />
       )}
     </Routes>
   );
