@@ -107,10 +107,10 @@ function App() {
       {user && (
         <Route path="/login" exact element={<Navigate replace to="/" />} />
       )}
-      {/* {!user && <Route path="/home" exact element={<Home />} />}
+      {!user && <Route path="/home" exact element={<Home />} />}
       {user && (
         <Route path="/home" exact element={<Navigate replace to="/" />} />
-      )} */}
+      )}
       {!user && (
         <Route path="/" exact element={<Navigate replace to="/login" />} />
       )}
