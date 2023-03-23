@@ -61,7 +61,7 @@ const HomeStyled = styled.div`
     /* background: rgb(33, 38, 45); */
     background: linear-gradient(0.65turn, #000, rgb(33, 38, 45), #000);
     height: 100vh;
-    overflow: hidden;
+    overflow: auto;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -71,7 +71,8 @@ const HomeStyled = styled.div`
       display: flex;
       justify-content: center;
       border-radius: 1.5rem;
-      height: 85%;
+      /* height: 85%; */
+      /* overflow-y: scroll; */
       width: 90%;
       .left {
         display: flex;
@@ -85,8 +86,8 @@ const HomeStyled = styled.div`
         margin: 0rem;
         .text {
           width: 100%;
-          padding: 1rem;
-          padding-left: 2rem;
+          padding: 1.5rem;
+          /* padding-left: 2rem; */
           h1 {
             font-size: 3rem;
             font-weight: 800;
@@ -187,6 +188,294 @@ const HomeStyled = styled.div`
         border-top-right-radius: 1rem;
         img {
           width: 30rem;
+        }
+      }
+    }
+  }
+
+  @media (max-width: 1200px) {
+    .home {
+      .content {
+        .right {
+          img {
+            width: 25rem;
+          }
+        }
+      }
+    }
+  }
+  @media (max-width: 1050px) {
+    .home {
+      .content {
+        .left {
+          .text {
+            h1 {
+              font-size: 2.5rem;
+            }
+            h3 {
+              font-size: 1.2rem;
+            }
+            p {
+              font-size: 1rem;
+            }
+            ul {
+              li {
+                font-size: 1rem;
+                line-height: 1.5rem;
+              }
+            }
+            .btns {
+              /* width: 100%; */
+              padding-top: 0.8rem;
+              padding-bottom: 0.6rem;
+              font-size: 1rem;
+              .signup {
+                /* width: 48%;
+                border-radius: 0.6rem; */
+                padding: 0.6rem;
+                font-weight: 700;
+              }
+              .login {
+                /* width: 48%;
+                border-radius: 0.6rem; */
+                padding: 0.6rem;
+                font-weight: 700;
+              }
+            }
+            button {
+              padding: 0.5rem;
+              font-size: 1rem;
+              :hover {
+                font-size: 1.1rem;
+                padding: 0.65rem;
+              }
+              img {
+                padding-right: 0.5rem;
+              }
+            }
+          }
+        }
+        .right {
+          img {
+            width: 20rem;
+          }
+        }
+      }
+    }
+  }
+  @media (max-width: 800px) {
+    .home {
+      .content {
+        .left {
+          .text {
+            h1 {
+              font-size: 2rem;
+            }
+            h3 {
+              font-size: 1rem;
+            }
+            p {
+              font-size: 0.8rem;
+            }
+            ul {
+              li {
+                font-size: 0.8rem;
+                line-height: 1.2rem;
+              }
+            }
+            .btns {
+              padding-top: 0.8rem;
+              padding-bottom: 0.6rem;
+              font-size: 1rem;
+              .signup {
+                padding: 0.3rem;
+                font-weight: 700;
+              }
+              .login {
+                padding: 0.3rem;
+                font-weight: 700;
+              }
+            }
+            button {
+              padding: 0.3rem;
+              font-size: 0.8rem;
+              font-weight: 600;
+              :hover {
+                font-size: 1rem;
+                padding: 0.35rem;
+              }
+              img {
+                padding-right: 0.5rem;
+              }
+            }
+          }
+        }
+        .right {
+          img {
+            width: 16rem;
+          }
+        }
+      }
+    }
+  }
+  @media (max-width: 650px) {
+    .home {
+      .content {
+        .left {
+          .text {
+            h1 {
+              font-size: 1.5rem;
+            }
+            h3 {
+              font-size: 0.8rem;
+            }
+            p {
+              font-size: 0.6rem;
+              line-height: 1rem;
+            }
+            ul {
+              li {
+                font-size: 0.6rem;
+                line-height: 1.2rem;
+              }
+            }
+            .btns {
+              padding-top: 0.5rem;
+              padding-bottom: 0.6rem;
+              font-size: 0.8rem;
+              .signup {
+                padding: 0.15rem;
+                font-weight: 700;
+              }
+              .login {
+                padding: 0.15rem;
+                font-weight: 700;
+              }
+            }
+            button {
+              padding: 0.1rem;
+              font-size: 0.7rem;
+              border-radius: 0.75rem;
+              :hover {
+                font-size: 1rem;
+                padding: 0.35rem;
+              }
+              img {
+                width: 2rem;
+                padding-right: 0.5rem;
+              }
+            }
+          }
+        }
+        .right {
+          img {
+            width: 13rem;
+          }
+        }
+      }
+    }
+  }
+  @media (max-width: 425px) {
+    .home {
+      .content {
+        padding: 1.5rem;
+        /* padding-top: 1.5rem; */
+        background-color: #000000;
+        flex-direction: column-reverse;
+        justify-content: space-between;
+        align-items: center;
+        /* width: 70%; */
+        /* padding: 0.1rem; */
+        .left {
+          border-radius: 1.3rem;
+          padding: 0rem;
+          margin: 0rem;
+          width: 100%;
+          .text {
+            padding-top: 0rem;
+            h1 {
+              display: none;
+            }
+            h3 {
+              display: none;
+            }
+            p {
+              display: none;
+            }
+            ul {
+              li {
+                font-size: 0.8rem;
+                line-height: 1.2rem;
+              }
+            }
+            .btns {
+              padding-top: 0.8rem;
+              padding-bottom: 0.8rem;
+              font-size: 0.8rem;
+              font-weight: 800;
+              .signup {
+                padding: 0.15rem;
+                font-weight: 700;
+              }
+              .login {
+                padding: 0.15rem;
+                font-weight: 700;
+              }
+            }
+            button {
+              padding: 0.1rem;
+              font-size: 0.8rem;
+              border-radius: 0.75rem;
+              :hover {
+                font-size: 1rem;
+                padding: 0.35rem;
+              }
+              img {
+                width: 2rem;
+                padding-right: 0.5rem;
+              }
+            }
+          }
+        }
+        .right {
+          border-radius: 1.3rem;
+          /* height: 10rem; */
+          /* position: absolute; */
+          overflow: hidden;
+          height: 5rem;
+          width: 14rem;
+          img {
+            /* object-fit: contain; */
+            margin: 0 0 0 0;
+            /* height: 5rem; */
+            border-radius: 1.3rem;
+          }
+        }
+      }
+    }
+  }
+  @media (max-width: 320px) {
+    .home {
+      .content {
+        padding: 1rem;
+      }
+    }
+  }
+  @media (max-width: 290px) {
+    .home {
+      .content {
+        justify-content: space-around;
+        height: 55%;
+        .left {
+          .text {
+            .btns {
+              .login {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+              }
+            }
+          }
         }
       }
     }
