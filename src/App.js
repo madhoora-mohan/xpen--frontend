@@ -10,10 +10,6 @@ import Income from "./Components/Income/Income";
 import Expenses from "./Components/Expenses/Expenses";
 import Limit from "./Components/Balance/Limit";
 import { Home } from "./Components/Home";
-// import LeftNav from "./Components/Navigation/LeftNav";
-// import
-// import { useGlobalContext } from "./context/globalContext";
-// import { emailid } from "../src/App.js";
 const StyledLeftNav = styled.div`
   height: 1.8rem;
   display: none;

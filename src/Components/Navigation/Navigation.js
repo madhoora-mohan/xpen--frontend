@@ -1,14 +1,39 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import styled from "styled-components";
 import avatar from "../../img/avatar.png";
-import { signout, fileexport } from "../../utils/Icons";
+import { signout, fileexport, refresh } from "../../utils/Icons";
 import { menuItems } from "../../utils/menuItems";
-import XLSX from "xlsx";
 import { useGlobalContext } from "../../context/globalContext";
-import axios from "axios";
+
+const STRIPPED_EXPORT_FIELDS = ["email", "__v", "createdAt", "updatedAt"];
+
+function exportToCSV(rows, filename) {
+  if (!rows.length) {
+    alert("Nothing to export yet.");
+    return;
+  }
+  const headers = [...new Set(rows.flatMap((r) => Object.keys(r)))];
+  const escape = (v) => {
+    if (v === null || v === undefined) return "";
+    const s = String(v);
+    return /[",\n\r]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+  };
+  const csv = [
+    headers.join(","),
+    ...rows.map((r) => headers.map((h) => escape(r[h])).join(",")),
+  ].join("\n");
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
 
 function Navigation({ active, setActive, openn }) {
-  // let realopen = openn;
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("email");
@@ -16,55 +41,49 @@ function Navigation({ active, setActive, openn }) {
     window.location.reload();
   };
 
-  const [sheetData, setSheetData] = useState(null);
-  const { totalBalance, setError } = useGlobalContext();
+  const {
+    totalBalance,
+    setError,
+    incomes,
+    expenses,
+    getIncomes,
+    getExpenses,
+  } = useGlobalContext();
 
   const username = localStorage.getItem("username");
   const emailid = localStorage.getItem("email");
-  useEffect(() => {
-    axios
-      .get("https://xpens.onrender.com/api/v1/" + `get-incomes/${emailid}`)
-      .then((res) => {
-        // console.log(res.data);
 
-        setSheetData(res.data);
-      });
-  });
   useEffect(() => {
-    axios
-      .get("https://xpens.onrender.com/api/v1/" + `get-expenses/${emailid}`)
-      .then((res) => {
-        // console.log(res.data);
-        setSheetData({ ...sheetData.concat(res.data) });
-      })
-      .catch((err) => {
-        // console.log(err);
-      });
-  });
-  // console.log(openn);
-  // useEffect(()=>{
-  //   // setPleaseWork(openn)
-  //   console.log(openn)
-  // },[openn]);
-  // console.log(pleaseWork)
+    getIncomes();
+    getExpenses();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [emailid]);
+
+  const handleReload = () => {
+    getIncomes();
+    getExpenses();
+  };
 
   const handleExport = () => {
-    let data = Object.values(sheetData);
-    data.forEach((d) => {
-      delete d.email;
-      delete d.__v;
-      delete d.createdAt;
-      delete d.updatedAt;
+    const all = [...incomes, ...expenses];
+    const data = all.map((row) => {
+      const copy = { ...row };
+      STRIPPED_EXPORT_FIELDS.forEach((f) => delete copy[f]);
+      return copy;
     });
-    // console.log(data);
-    var wb = XLSX.utils.book_new(),
-      ws = XLSX.utils.json_to_sheet(Object.values(sheetData));
-    XLSX.utils.book_append_sheet(wb, ws, "MySheet");
-    XLSX.writeFile(wb, `${username} Data ${Date()}.xlsx`);
+    exportToCSV(data, `${username} Data ${Date()}.csv`);
   };
 
   return (
     <NavStyled openn={openn}>
+      <button
+        className="reload"
+        onClick={handleReload}
+        title="Reload data"
+        aria-label="Reload data"
+      >
+        {refresh}
+      </button>
       <div className="user-con">
         <img src={avatar} alt="" />
         <div className="text">
@@ -100,8 +119,8 @@ function Navigation({ active, setActive, openn }) {
 }
 
 const NavStyled = styled.nav`
+  position: relative;
   padding: 0.8rem 0.8rem;
-  /* width: 100%; */
   height: 100%;
   background: rgb(32, 38, 44);
   border: 0.3rem solid rgb(49, 54, 60);
@@ -115,6 +134,23 @@ const NavStyled = styled.nav`
   }
   scroll-behavior: smooth;
   gap: 1rem;
+  .reload {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    background: transparent;
+    border: none;
+    color: rgb(122, 122, 160);
+    cursor: pointer;
+    font-size: 1rem;
+    padding: 0.3rem;
+    border-radius: 0.3rem;
+    z-index: 1;
+    &:hover {
+      color: #fff;
+      transition: color 0.2s ease-in-out;
+    }
+  }
   .user-con {
     height: 5rem;
     display: flex;
@@ -138,7 +174,6 @@ const NavStyled = styled.nav`
     flex: 1;
     display: flex;
     flex-direction: column;
-    /* flex-flow: column; */
     flex-wrap: nowrap;
     li {
       display: grid;
@@ -237,17 +272,13 @@ const NavStyled = styled.nav`
   }
   @media (max-width: 920px) {
     position: absolute;
-    /* margin-top: 3rem;
-    margin-left: 0.5rem; */
     top: 3.5rem;
     left: -12.1rem;
     border-top-left-radius: 0rem;
     height: 88%;
     z-index: 1;
-    /* background-color: ${({ openn }) => (openn ? "blue" : "red")}; */
     transform: ${({ openn }) => (openn ? "translateX(100%)" : "translateX(0)")};
     transition: transform 0.3s ease-in-out;
-    /* display: none; */
     .bottom-nav {
       gap: 0.5rem;
       .sign-out,
