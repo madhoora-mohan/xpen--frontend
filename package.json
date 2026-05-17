@@ -13,7 +13,6 @@
     "emailjs": "^4.0.1",
     "fontawesome": "^5.6.3",
     "moment": "^2.29.4",
-    "net": "^1.0.2",
     "react": "^18.2.0",
     "react-chartjs-2": "^5.2.0",
     "react-datepicker": "^4.10.0",
@@ -25,14 +24,16 @@
     "react-scripts": "^5.0.1",
     "smtpjs": "^0.0.1",
     "styled-components": "^5.3.6",
-    "web-vitals": "^2.1.4",
-    "xlsx": "https://cdn.sheetjs.com/xlsx-0.19.1/xlsx-0.19.1.tgz"
+    "web-vitals": "^2.1.4"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
+  },
+  "engines": {
+    "node": "24.x"
   },
   "eslintConfig": {
     "extends": [

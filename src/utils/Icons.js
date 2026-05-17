@@ -27,3 +27,4 @@ export const medical = <i className="fa-regular fa-user"></i>;
 export const tv = <i className="fa-solid fa-tv"></i>;
 export const circle = <i className="fa-solid fa-circle-dot"></i>;
 export const fileexport = <i className="fas fa-file-export"></i>;
+export const refresh = <i className="fa-solid fa-arrows-rotate"></i>;

@@ -15,9 +15,7 @@ function Limit() {
   });
   useEffect(() => {
     getLimit();
-  }, []);
-  useEffect(() => {
-    totalBalance();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   // console.log(limits);
   const { limit } = inputState;
@@ -31,31 +29,22 @@ function Limit() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (parseInt(inputState.limit, 10) <= 0) {
+      setError("Limit must be a positive number!");
+      return;
+    }
     if (totalBalance() < limit) {
       setError(
         "Your Savings are dropping below your set Limit!! Reduce Your Expenses!!"
       );
     }
-    // setError("");
-
-    // console.log("HIIIIII CHELLAM");
-    // updateLimit(inputState.limit);
-    // Number(inputState.limit);
-    // console.log(parseInt(inputState.limit, 10), "yo");
     if (parseInt(inputState.limit, 10) > 0) {
-      const ans = updateLimit(parseInt(inputState.limit, 10)).then(
-        (response) => {
-          // setError("");
-        }
-      );
+      updateLimit(parseInt(inputState.limit, 10));
     }
     setInputState({
       limit: "",
     });
   };
-  if (inputState.limit < 0) {
-    setError("Limit must be a positive number!");
-  }
   return (
     <LimitStyled>
       <InnerLayout>
@@ -89,7 +78,7 @@ function Limit() {
                 icon={plus}
                 bPad={".6rem 1.6rem"}
                 bRad={"1.5rem"}
-                bg={"var(--color-accent"}
+                bg={"var(--color-accent)"}
                 color={"#fff"}
               />
             </div>

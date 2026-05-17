@@ -24,6 +24,7 @@ function Dashboard() {
     getIncomes();
     getExpenses();
     // getExpensesWCategory();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   // console.log("heyyy " + getExpensesWCategory);
 
@@ -72,15 +73,47 @@ function Dashboard() {
               Min <span>Income</span>Max
             </h2>
             <div className="salary-item">
-              <p>₹{Math.min(...incomes.map((item) => item.amount))}</p>
-              <p>₹{Math.max(...incomes.map((item) => item.amount))}</p>
+              <p>
+                ₹
+                {incomes.length
+                  ? incomes.reduce(
+                      (m, i) => Math.min(m, i.amount),
+                      incomes[0].amount
+                    )
+                  : 0}
+              </p>
+              <p>
+                ₹
+                {incomes.length
+                  ? incomes.reduce(
+                      (m, i) => Math.max(m, i.amount),
+                      incomes[0].amount
+                    )
+                  : 0}
+              </p>
             </div>
             <h2 className="salary-title">
               Min <span>Expense</span>Max
             </h2>
             <div className="salary-item">
-              <p>₹{Math.min(...expenses.map((item) => item.amount))}</p>
-              <p>₹{Math.max(...expenses.map((item) => item.amount))}</p>
+              <p>
+                ₹
+                {expenses.length
+                  ? expenses.reduce(
+                      (m, i) => Math.min(m, i.amount),
+                      expenses[0].amount
+                    )
+                  : 0}
+              </p>
+              <p>
+                ₹
+                {expenses.length
+                  ? expenses.reduce(
+                      (m, i) => Math.max(m, i.amount),
+                      expenses[0].amount
+                    )
+                  : 0}
+              </p>
             </div>
           </div>
         </div>
