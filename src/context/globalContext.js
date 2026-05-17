@@ -117,7 +117,7 @@ export const GlobalProvider = ({ children }) => {
 
   const getLimit = async () => {
     const response = await axios.get(`${BASE_URL}get-limit/${emailid}`);
-    setLimits(response.data[0].limit);
+    setLimits(response.data[0]?.limit ?? 0);
   };
 
   const updateLimit = async (uplimit) => {
