@@ -31,10 +31,6 @@ A personal expense tracker built with React. Sign up, log your income and expens
 1. Clone the repo and install dependencies:
 
    ```bash
-   # with npm
-   npm install
-
-   # or with bun
    bun install
    ```
 
@@ -59,7 +55,7 @@ A personal expense tracker built with React. Sign up, log your income and expens
 Start the dev server:
 
 ```bash
-npm start
+bun start
 ```
 
 The app runs at <http://localhost:3000>.
@@ -67,7 +63,7 @@ The app runs at <http://localhost:3000>.
 ## Building for production
 
 ```bash
-npm run build
+bun run build
 ```
 
 The bundled output is written to `build/` and can be served by any static host.
@@ -97,6 +93,6 @@ public/            # static assets and index.html
 
 ## Scripts
 
-- `npm start` — run the dev server
-- `npm run build` — production build
-- `npm test` — run tests
+- `bun start` — run the dev server
+- `bun run build` — production build
+- `bun test` — run tests
