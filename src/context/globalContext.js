@@ -17,9 +17,8 @@ export const GlobalProvider = ({ children }) => {
   const [loadingCount, setLoadingCount] = useState(0);
   const loading = loadingCount > 0;
 
-  const emailid = localStorage.getItem("email");
-
   const addIncome = async (income) => {
+    const emailid = localStorage.getItem("email");
     await axios
       .post(`${BASE_URL}add-income/${emailid}`, income)
       .catch((err) => {
@@ -29,6 +28,7 @@ export const GlobalProvider = ({ children }) => {
   };
 
   const getIncomes = async () => {
+    const emailid = localStorage.getItem("email");
     setLoadingCount((c) => c + 1);
     try {
       const response = await axios.get(`${BASE_URL}get-incomes/${emailid}`);
@@ -47,6 +47,7 @@ export const GlobalProvider = ({ children }) => {
     incomes.reduce((acc, item) => acc + item.amount, 0);
 
   const addExpense = async (expense) => {
+    const emailid = localStorage.getItem("email");
     await axios
       .post(`${BASE_URL}add-expense/${emailid}`, expense)
       .catch((err) => {
@@ -56,6 +57,7 @@ export const GlobalProvider = ({ children }) => {
   };
 
   const getExpenses = async () => {
+    const emailid = localStorage.getItem("email");
     setLoadingCount((c) => c + 1);
     try {
       const response = await axios.get(`${BASE_URL}get-expenses/${emailid}`);
@@ -74,6 +76,7 @@ export const GlobalProvider = ({ children }) => {
     expenses.reduce((acc, item) => acc + item.amount, 0);
 
   const addTransfer = async (transfer) => {
+    const emailid = localStorage.getItem("email");
     await axios
       .post(`${BASE_URL}add-transfer/${emailid}`, transfer)
       .catch((err) => {
@@ -83,6 +86,7 @@ export const GlobalProvider = ({ children }) => {
   };
 
   const getTransfers = async () => {
+    const emailid = localStorage.getItem("email");
     setLoadingCount((c) => c + 1);
     try {
       const response = await axios.get(`${BASE_URL}get-transfers/${emailid}`);
@@ -145,11 +149,13 @@ export const GlobalProvider = ({ children }) => {
   const netCash = () => totalIncome() - totalExpenses() - netTransferOut();
 
   const getLimit = async () => {
+    const emailid = localStorage.getItem("email");
     const response = await axios.get(`${BASE_URL}get-limit/${emailid}`);
     setLimits(response.data[0]?.limit ?? 0);
   };
 
   const updateLimit = async (uplimit) => {
+    const emailid = localStorage.getItem("email");
     await axios.put(`${BASE_URL}update-limit/${emailid}/${uplimit}`);
     getLimit();
   };

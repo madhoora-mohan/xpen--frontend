@@ -2,6 +2,7 @@ import { useState } from "react";
 import styled from "styled-components";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 
 const Signup = () => {
   const [data, setData] = useState({
@@ -12,6 +13,7 @@ const Signup = () => {
   });
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const handleChange = ({ currentTarget: input }) => {
     setData({ ...data, [input.name]: input.value });
@@ -21,8 +23,9 @@ const Signup = () => {
     e.preventDefault();
     try {
       const url = process.env.REACT_APP_USERS_URL;
-      await axios.post(url, data);
-      navigate("/login");
+      const { data: res } = await axios.post(url, data);
+      login(res.email, res.username);
+      navigate("/");
     } catch (error) {
       if (
         error.response &&

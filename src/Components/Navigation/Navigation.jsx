@@ -1,9 +1,11 @@
 import React, { useEffect } from "react";
+import axios from "axios";
 import styled from "styled-components";
 import avatar from "../../img/avatar.png";
 import { signout, fileexport, refresh } from "../../utils/Icons";
 import { menuItems } from "../../utils/menuItems";
 import { useGlobalContext } from "../../context/globalContext";
+import { useAuth } from "../../context/AuthContext";
 import { formatRupee } from "../../utils/currency";
 
 const STRIPPED_EXPORT_FIELDS = ["email", "__v", "createdAt", "updatedAt"];
@@ -35,11 +37,12 @@ function exportToCSV(rows, filename) {
 }
 
 function Navigation({ active, setActive, openn, closeNav }) {
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("email");
-    localStorage.removeItem("username");
-    window.location.reload();
+  const { logout } = useAuth();
+  const handleLogout = async () => {
+    try {
+      await axios.post(`${process.env.REACT_APP_AUTH_URL}/logout`);
+    } catch {}
+    logout();
   };
 
   const {

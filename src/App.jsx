@@ -11,6 +11,8 @@ import Expenses from "./Components/Expenses/Expenses";
 import Transfers from "./Components/Transfers/Transfers";
 import Limit from "./Components/Balance/Limit";
 import { Home } from "./Components/Home";
+import ErrorBoundary from "./Components/ErrorBoundary/ErrorBoundary";
+import { useAuth } from "./context/AuthContext";
 const StyledLeftNav = styled.div`
   height: 1.8rem;
   display: none;
@@ -69,11 +71,11 @@ function App() {
     }
   };
 
-  const user = localStorage.getItem("token");
+  const { isLoggedIn } = useAuth();
 
   return (
     <Routes>
-      {user && (
+      {isLoggedIn && (
         <Route
           path="/"
           exact
@@ -85,33 +87,37 @@ function App() {
                   <div />
                   <div />
                 </StyledLeftNav>
-                <div className="nav">
-                  <Navigation
-                    active={active}
-                    setActive={setActive}
-                    openn={openn}
-                    closeNav={() => setopenn(false)}
-                  />
-                </div>
-                <main>{displayData()}</main>
+                <ErrorBoundary>
+                  <div className="nav">
+                    <Navigation
+                      active={active}
+                      setActive={setActive}
+                      openn={openn}
+                      closeNav={() => setopenn(false)}
+                    />
+                  </div>
+                </ErrorBoundary>
+                <ErrorBoundary>
+                  <main>{displayData()}</main>
+                </ErrorBoundary>
               </MainLayout>
             </AppStyled>
           }
         />
       )}
-      {!user && <Route path="/signup" exact element={<Signup />} />}
-      {user && (
+      {!isLoggedIn && <Route path="/signup" exact element={<Signup />} />}
+      {isLoggedIn && (
         <Route path="/signup" exact element={<Navigate replace to="/" />} />
       )}
-      {!user && <Route path="/login" exact element={<Login />} />}
-      {user && (
+      {!isLoggedIn && <Route path="/login" exact element={<Login />} />}
+      {isLoggedIn && (
         <Route path="/login" exact element={<Navigate replace to="/" />} />
       )}
-      {!user && <Route path="/home" exact element={<Home />} />}
-      {user && (
+      {!isLoggedIn && <Route path="/home" exact element={<Home />} />}
+      {isLoggedIn && (
         <Route path="/home" exact element={<Navigate replace to="/" />} />
       )}
-      {!user && (
+      {!isLoggedIn && (
         <Route path="/" exact element={<Navigate replace to="/home" />} />
       )}
     </Routes>
