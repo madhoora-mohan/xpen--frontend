@@ -47,9 +47,4 @@ A personal finance tracker built with React. Track income, expenses, and transfe
 bun run build
 ```
 
-## Docker
-
-```bash
-docker build -t xpenz .
-docker run -p 3000:3000 xpenz
-```
+> **Vercel:** set build command to `bun run build`, output directory to `build`, and add `REACT_APP_*` env vars in project settings.
