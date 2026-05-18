@@ -14,6 +14,8 @@ export const GlobalProvider = ({ children }) => {
   const [transfers, setTransfers] = useState([]);
   const [limits, setLimits] = useState([]);
   const [error, setError] = useState(null);
+  const [loadingCount, setLoadingCount] = useState(0);
+  const loading = loadingCount > 0;
 
   const emailid = localStorage.getItem("email");
 
@@ -27,8 +29,13 @@ export const GlobalProvider = ({ children }) => {
   };
 
   const getIncomes = async () => {
-    const response = await axios.get(`${BASE_URL}get-incomes/${emailid}`);
-    setIncomes(response.data);
+    setLoadingCount((c) => c + 1);
+    try {
+      const response = await axios.get(`${BASE_URL}get-incomes/${emailid}`);
+      setIncomes(response.data);
+    } finally {
+      setLoadingCount((c) => c - 1);
+    }
   };
 
   const deleteIncome = async (id) => {
@@ -49,8 +56,13 @@ export const GlobalProvider = ({ children }) => {
   };
 
   const getExpenses = async () => {
-    const response = await axios.get(`${BASE_URL}get-expenses/${emailid}`);
-    setExpenses(response.data);
+    setLoadingCount((c) => c + 1);
+    try {
+      const response = await axios.get(`${BASE_URL}get-expenses/${emailid}`);
+      setExpenses(response.data);
+    } finally {
+      setLoadingCount((c) => c - 1);
+    }
   };
 
   const deleteExpense = async (id) => {
@@ -71,8 +83,13 @@ export const GlobalProvider = ({ children }) => {
   };
 
   const getTransfers = async () => {
-    const response = await axios.get(`${BASE_URL}get-transfers/${emailid}`);
-    setTransfers(response.data);
+    setLoadingCount((c) => c + 1);
+    try {
+      const response = await axios.get(`${BASE_URL}get-transfers/${emailid}`);
+      setTransfers(response.data);
+    } finally {
+      setLoadingCount((c) => c - 1);
+    }
   };
 
   const deleteTransfer = async (id) => {
@@ -139,10 +156,12 @@ export const GlobalProvider = ({ children }) => {
 
   const totalBalance = () => totalIncome() - totalExpenses();
 
+  const HISTORY_LIMIT = 3;
+
   const transactionHistory = () => {
     const history = [...incomes, ...expenses, ...transfers];
     history.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-    return history.slice(0, 3);
+    return history.slice(0, HISTORY_LIMIT);
   };
 
   return (
@@ -176,6 +195,7 @@ export const GlobalProvider = ({ children }) => {
         sumTransferCat,
         error,
         setError,
+        loading,
       }}
     >
       {children}

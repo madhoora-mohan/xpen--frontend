@@ -2,92 +2,80 @@ import React, { useEffect } from "react";
 import styled from "styled-components";
 import { useGlobalContext } from "../../context/globalContext";
 import { InnerLayout } from "../../styles/Layouts";
-import { formatRupee } from "../../utils/currency";
 import IncomeItem from "../IncomeItem/IncomeItem";
-import ExpenseForm from "./ExpenseForm";
+import TransferForm from "./TransferForm";
+import Spinner from "../Spinner/Spinner";
+import { formatRupee } from "../../utils/currency";
 
-function Expenses() {
-  const { expenses, getExpenses, deleteExpense, totalExpenses } =
+function Transfers() {
+  const { transfers, getTransfers, deleteTransfer, outstandingLent, loading } =
     useGlobalContext();
 
   useEffect(() => {
-    getExpenses();
+    getTransfers();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  if (loading) return <Spinner />;
+
   return (
-    <ExpenseStyled>
+    <TransferStyled>
       <InnerLayout>
         <div className="top">
-          <h3>Expenses</h3>
+          <h3>Transfers</h3>
         </div>
-        <h3 className="total-income">
-          Total Expense: <span>{formatRupee(totalExpenses())}</span>
+        <h3 className="summary-line">
+          Outstanding Lending: <span>{formatRupee(outstandingLent())}</span>
         </h3>
         <div className="income-content">
           <div className="form-container">
-            <ExpenseForm />
+            <TransferForm />
           </div>
-          <div className="exp-cont">
+          <div className="inc-cont">
             <div className="incomes">
-              {expenses.map((income) => {
-                const {
-                  _id,
-                  title,
-                  amount,
-                  date,
-                  category,
-                  description,
-                  type,
-                } = income;
-                // console.log(income);
-                // console.log(_id);
-                return (
-                  <IncomeItem
-                    key={_id}
-                    id={_id}
-                    title={title}
-                    description={description}
-                    amount={amount}
-                    date={date}
-                    type={type}
-                    category={category}
-                    indicatorColor="rgb(196,2,1)"
-                    deleteItem={deleteExpense}
-                  />
-                );
-              })}
+              {transfers.map((t) => (
+                <IncomeItem
+                  key={t._id}
+                  id={t._id}
+                  title={t.title}
+                  description={t.description}
+                  amount={t.amount}
+                  date={t.date}
+                  type="transfer"
+                  direction={t.direction}
+                  category={t.category}
+                  indicatorColor="var(--color-accent)"
+                  deleteItem={deleteTransfer}
+                />
+              ))}
             </div>
           </div>
         </div>
       </InnerLayout>
-    </ExpenseStyled>
+    </TransferStyled>
   );
 }
 
-const ExpenseStyled = styled.div`
+const TransferStyled = styled.div`
   overflow: auto;
   &::-webkit-scrollbar {
     width: 0;
   }
   scroll-behavior: smooth;
   height: 100%;
-  .top {
-    h3 {
-      padding-left: 1rem;
-      padding-bottom: 0.5rem;
-      font-weight: 600;
-    }
+  .top h3 {
+    padding-left: 1rem;
+    padding-bottom: 0.5rem;
+    font-weight: 600;
   }
-
-  .total-income {
-    margin: 0rem;
+  .summary-line {
+    margin: 0;
     padding: 0.5rem;
     display: flex;
     justify-content: center;
     align-items: center;
     background: rgb(49, 54, 60);
     border: 0.1rem solid rgb(69, 69, 69);
-    // box-shadow: 0px 1px 15px rgba(0, 0, 0, 0.06);
     border-radius: 1rem;
     font-size: 1.5rem;
     font-weight: 500;
@@ -96,7 +84,7 @@ const ExpenseStyled = styled.div`
     span {
       font-size: 1.5rem;
       font-weight: 600;
-      color: rgb(196, 2, 1);
+      color: #6fa8dc;
     }
   }
   .income-content {
@@ -108,8 +96,7 @@ const ExpenseStyled = styled.div`
     .form-container {
       width: 40%;
     }
-    /* overflow: hidden; */
-    .exp-cont {
+    .inc-cont {
       width: 99%;
       .incomes {
         flex: 1;
@@ -151,19 +138,11 @@ const ExpenseStyled = styled.div`
     .income-content {
       display: flex;
       flex-direction: column;
-      /* justify-content: center; */
-      align-items: center;
-      .inc-cont {
-        .incomes {
-          /* width: 90%; */
-          /* margin: 1rem; */
-        }
-      }
       .form-container {
         margin-left: -6rem;
       }
     }
-    .total-income {
+    .summary-line {
       font-size: 1.2rem;
       span {
         font-size: 1.2rem;
@@ -172,4 +151,4 @@ const ExpenseStyled = styled.div`
   }
 `;
 
-export default Expenses;
+export default Transfers;

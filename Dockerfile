@@ -1,15 +1,18 @@
-FROM node:24-slim
+FROM oven/bun:1
 
-# Set the working directory to /app
-WORKDIR /
+WORKDIR /app
 
-COPY . ./
+COPY package.json ./
+RUN bun install
 
-# building the app
-RUN npm i
-RUN npm run build
+COPY . .
+
+ARG REACT_APP_API_BASE_URL
+ARG REACT_APP_AUTH_URL
+ARG REACT_APP_USERS_URL
+
+RUN bun run build
 
 EXPOSE 3000
 
-# Running the app
-CMD [ "npm", "start" ]
+CMD ["bunx", "serve", "-s", "build", "-l", "3000"]

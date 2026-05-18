@@ -10,7 +10,6 @@ import { formatRupee } from "../../utils/currency";
 function Limit() {
   const { totalBalance, limits, getLimit, updateLimit, error, setError } =
     useGlobalContext();
-  // const [error, setError] = useState("");
   const [inputState, setInputState] = useState({
     limit: "",
   });
@@ -18,13 +17,10 @@ function Limit() {
     getLimit();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  // console.log(limits);
   const { limit } = inputState;
-  // console.log(inputState);
 
   const handleInput = (name) => (e) => {
     setInputState({ ...inputState, [name]: e.target.value });
-    // console.log(inputState);
     setError("");
   };
 
