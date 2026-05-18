@@ -4,6 +4,8 @@ import "react-datepicker/dist/react-datepicker.css";
 import { useGlobalContext } from "../../context/globalContext";
 import Button from "../Button/Button";
 import { plus } from "../../utils/Icons";
+import { EXPENSE } from "../../config/categories";
+import CategorySelect from "../CategorySelect/CategorySelect";
 import FormStyled from "../Form/FormStyled";
 
 function ExpenseForm() {
@@ -111,27 +113,13 @@ function ExpenseForm() {
           }}
         />
       </div>
-      <div className="selects input-control">
-        <select
-          required
+      <div className="input-control">
+        <CategorySelect
+          options={EXPENSE}
           value={category}
-          name="category"
-          id="category"
-          onChange={handleInput("category")}
-        >
-          <option value="" disabled>
-            Select Option*
-          </option>
-
-          <option value="education">Education</option>
-          <option value="groceries">Groceries</option>
-          <option value="health">Health</option>
-          <option value="subscriptions">Subscriptions</option>
-          <option value="takeaways">Takeouts</option>
-          <option value="shopping">Shopping</option>
-          <option value="travelling">Travelling</option>
-          <option value="other">Other</option>
-        </select>
+          onChange={(id) => setInputState({ ...inputState, category: id })}
+          placeholder="Select Expense Category*"
+        />
       </div>
       <div className="input-control">
         <input
@@ -142,7 +130,6 @@ function ExpenseForm() {
           className="desc"
           onChange={handleInput("description")}
         ></input>
-        <h5 className="input-control">* - Required fields</h5>
       </div>
       <div className="submit-btn">
         <Button

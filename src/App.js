@@ -8,6 +8,7 @@ import Navigation from "./Components/Navigation/Navigation";
 import Dashboard from "./Components/Dashboard/Dashboard";
 import Income from "./Components/Income/Income";
 import Expenses from "./Components/Expenses/Expenses";
+import Transfers from "./Components/Transfers/Transfers";
 import Limit from "./Components/Balance/Limit";
 import { Home } from "./Components/Home";
 const StyledLeftNav = styled.div`
@@ -61,6 +62,8 @@ function App() {
         return <Income />;
       case 4:
         return <Expenses />;
+      case 5:
+        return <Transfers />;
       default:
         return <Dashboard />;
     }

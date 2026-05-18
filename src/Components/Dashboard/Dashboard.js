@@ -3,27 +3,25 @@ import styled from "styled-components";
 import { useGlobalContext } from "../../context/globalContext";
 import History from "../../History/History";
 import { InnerLayout } from "../../styles/Layouts";
-import Chart from "../Chart/Chart";
-import ExpenseBar from "../Chart/ExpenseBar";
 import PieChart from "../Chart/PieChart";
-import IncomeBar from "../Chart/IncomeBar";
+import { formatRupee } from "../../utils/currency";
 
 function Dashboard() {
   const {
     totalExpenses,
-    incomes,
-    expenses,
     totalIncome,
     totalBalance,
     getIncomes,
     getExpenses,
-    // expCat,
+    getTransfers,
+    outstandingLent,
+    netCash,
   } = useGlobalContext();
 
   useEffect(() => {
     getIncomes();
     getExpenses();
-    // getExpensesWCategory();
+    getTransfers();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   // console.log("heyyy " + getExpensesWCategory);
@@ -38,83 +36,34 @@ function Dashboard() {
         <div className="top">
           <h3>Dashboard</h3>
           <div className="stats-con">
-            <div className="chart-con line">
-              <Chart />
-            </div>
-            <div className="chart-con">
-              <PieChart />
-            </div>
-            <div className="chart-con">
-              <ExpenseBar />
-            </div>
-            <div className="chart-con">
-              <IncomeBar />
-            </div>
+            <PieChart />
           </div>
         </div>
         <div className="no-graph">
           <div className="amount-con">
             <div className="income">
               <h2>Total Income</h2>
-              <p>₹ {totalIncome()}</p>
+              <p>{formatRupee(totalIncome())}</p>
             </div>
             <div className="expense">
               <h2>Total Expense</h2>
-              <p>₹ {totalExpenses()}</p>
+              <p>{formatRupee(totalExpenses())}</p>
             </div>
             <div className="balance">
               <h2>Savings</h2>
-              <p>₹ {totalBalance()}</p>
+              <p>{formatRupee(totalBalance())}</p>
+            </div>
+            <div className="lending">
+              <h2>Outstanding Lending</h2>
+              <p>{formatRupee(outstandingLent())}</p>
+            </div>
+            <div className="netcash">
+              <h2>Bank Balance</h2>
+              <p>{formatRupee(netCash())}</p>
             </div>
           </div>
           <div className="history-con">
             <History />
-            <h2 className="salary-title">
-              Min <span>Income</span>Max
-            </h2>
-            <div className="salary-item">
-              <p>
-                ₹
-                {incomes.length
-                  ? incomes.reduce(
-                      (m, i) => Math.min(m, i.amount),
-                      incomes[0].amount
-                    )
-                  : 0}
-              </p>
-              <p>
-                ₹
-                {incomes.length
-                  ? incomes.reduce(
-                      (m, i) => Math.max(m, i.amount),
-                      incomes[0].amount
-                    )
-                  : 0}
-              </p>
-            </div>
-            <h2 className="salary-title">
-              Min <span>Expense</span>Max
-            </h2>
-            <div className="salary-item">
-              <p>
-                ₹
-                {expenses.length
-                  ? expenses.reduce(
-                      (m, i) => Math.min(m, i.amount),
-                      expenses[0].amount
-                    )
-                  : 0}
-              </p>
-              <p>
-                ₹
-                {expenses.length
-                  ? expenses.reduce(
-                      (m, i) => Math.max(m, i.amount),
-                      expenses[0].amount
-                    )
-                  : 0}
-              </p>
-            </div>
           </div>
         </div>
       </InnerLayout>
@@ -147,87 +96,56 @@ const DashboardStyled = styled.div`
       font-weight: 600;
     }
     .stats-con {
-      display: grid;
-      grid-template-rows: repeat(2, 50%);
-      grid-template-columns: repeat(4, 1fr);
-      gap: 1rem;
-      .chart-con {
-        grid-column: span 2;
-      }
+      width: 100%;
+      margin-top: 0.5rem;
     }
   }
   .no-graph {
     /* margin: -0.5rem; */
     .amount-con {
-      display: flex;
-      justify-content: space-between;
-      /* gap: 0.5rem; */
-      /* margin: 1rem; */
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 0.6rem;
       margin-top: 2rem;
       color: rgb(255, 255, 255);
-      .income {
+      .income,
+      .expense,
+      .balance,
+      .lending,
+      .netcash {
         display: flex;
         flex-direction: column;
         justify-content: center;
         align-items: center;
-        width: 33%;
         background: rgb(49, 54, 60);
         border: 0.1rem solid rgb(69, 69, 69);
         border-radius: 1rem;
-        padding: 1rem;
+        padding: 0.6rem;
+        text-align: center;
         h2 {
-          font-size: 1.2rem;
+          font-size: 1rem;
           font-weight: 600;
         }
         p {
-          font-size: 1.5rem;
+          font-size: 1.2rem;
           font-weight: 500;
-          color: var(--color-green);
-          opacity: 0.6;
+          opacity: 0.8;
         }
       }
-      .expense {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        width: 33%;
-        align-items: center;
-        background: rgb(49, 54, 60);
-        border: 0.1rem solid rgb(69, 69, 69);
-        border-radius: 1rem;
-        padding: 0.4rem;
-        h2 {
-          font-size: 1.2rem;
-          font-weight: 600;
-        }
-        p {
-          color: rgb(255, 30, 0);
-          opacity: 0.6;
-          font-size: 1.5rem;
-          font-weight: 500;
-        }
+      .income p {
+        color: var(--color-green);
       }
-
-      .balance {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        width: 33%;
-        background: rgb(49, 54, 60);
-        border: 0.1rem solid rgb(69, 69, 69);
-        border-radius: 1rem;
-        padding: 0.4rem;
-        h2 {
-          font-size: 1.2rem;
-          font-weight: 600;
-        }
-        p {
-          color: #fff;
-          opacity: 0.6;
-          font-size: 1.5rem;
-          font-weight: 500;
-        }
+      .expense p {
+        color: rgb(255, 30, 0);
+      }
+      .balance p {
+        color: #fff;
+      }
+      .lending p {
+        color: #ff8b8b;
+      }
+      .netcash p {
+        color: #6fa8dc;
       }
     }
 
@@ -244,30 +162,6 @@ const DashboardStyled = styled.div`
         align-items: center;
         justify-content: space-between;
       }
-      .salary-title {
-        padding: 10px;
-        font-size: 1.1rem;
-        span {
-          font-size: 1.5rem;
-          // font-weight: 600;
-        }
-      }
-      .salary-item {
-        background: rgb(49, 54, 60);
-        /* width: 80%; */
-        border: 0.1rem solid rgb(69, 69, 69);
-        border-radius: 0.8rem;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        p {
-          padding: 0.5rem;
-          color: #fff;
-          opacity: 0.8;
-          font-weight: 400;
-          font-size: 1.3rem;
-        }
-      }
     }
   }
   @media (max-width: 1000px) {
@@ -279,29 +173,23 @@ const DashboardStyled = styled.div`
         padding-bottom: 1rem;
         padding-left: 0rem;
       }
-      .stats-con {
-        display: flex;
-        flex-wrap: wrap;
-        flex-direction: column;
-        justify-content: center;
-        align-content: center;
-        gap: 2.5rem;
-        width: 100%;
-      }
     }
   }
   @media (max-width: 730px) {
     .no-graph {
       .amount-con {
+        grid-template-columns: repeat(2, 1fr);
         .expense,
         .income,
-        .balance {
+        .balance,
+        .lending,
+        .netcash {
           h2 {
-            font-size: 1rem;
+            font-size: 0.9rem;
             font-weight: 600;
           }
           p {
-            font-size: 1.2rem;
+            font-size: 1rem;
             font-weight: 500;
           }
         }
@@ -336,17 +224,16 @@ const DashboardStyled = styled.div`
         border-bottom-right-radius: 1rem;
         border-bottom-left-radius: 1rem;
       }
+    }
+    .top {
       .stats-con {
-        width: 95vw;
-      }
-      .stats-con .line {
-        padding-top: 2rem;
+        margin: 1.5rem 1rem 0;
+        width: calc(100% - 2rem);
       }
     }
     .no-graph {
       .amount-con {
-        display: flex;
-        justify-content: space-between;
+        grid-template-columns: repeat(2, 1fr);
         gap: 0.5rem;
         margin: 1rem;
       }
@@ -360,16 +247,13 @@ const DashboardStyled = styled.div`
     }
   } */
   @media (max-width: 425px) {
-    .top {
-      .stats-con .line {
-        padding-top: 1.5rem;
-      }
-    }
     .no-graph {
       .amount-con {
         .expense,
         .income,
-        .balance {
+        .balance,
+        .lending,
+        .netcash {
           padding: 0.5rem;
           border-radius: 0.8rem;
         }
@@ -382,14 +266,16 @@ const DashboardStyled = styled.div`
       .amount-con {
         .expense,
         .income,
-        .balance {
+        .balance,
+        .lending,
+        .netcash {
           border-radius: 0.8rem;
           h2 {
             font-size: 0.7rem;
             font-weight: 500;
           }
           p {
-            font-size: 1rem;
+            font-size: 0.9rem;
             font-weight: 500;
           }
         }
@@ -403,13 +289,15 @@ const DashboardStyled = styled.div`
         margin: 0.6rem;
         .expense,
         .income,
-        .balance {
+        .balance,
+        .lending,
+        .netcash {
           h2 {
             font-size: 0.6rem;
             font-weight: 600;
           }
           p {
-            font-size: 0.9rem;
+            font-size: 0.8rem;
             font-weight: 500;
           }
         }

@@ -1,5 +1,6 @@
 import React, { useContext, useState } from "react";
 import axios from "axios";
+import { EXPENSE, INCOME } from "../config/categories";
 
 const BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
@@ -10,6 +11,7 @@ const DEFAULT_ERROR = "Something went wrong. Please try again.";
 export const GlobalProvider = ({ children }) => {
   const [incomes, setIncomes] = useState([]);
   const [expenses, setExpenses] = useState([]);
+  const [transfers, setTransfers] = useState([]);
   const [limits, setLimits] = useState([]);
   const [error, setError] = useState(null);
 
@@ -27,7 +29,6 @@ export const GlobalProvider = ({ children }) => {
   const getIncomes = async () => {
     const response = await axios.get(`${BASE_URL}get-incomes/${emailid}`);
     setIncomes(response.data);
-    // console.log(response.data);
   };
 
   const deleteIncome = async (id) => {
@@ -35,14 +36,8 @@ export const GlobalProvider = ({ children }) => {
     getIncomes();
   };
 
-  const totalIncome = () => {
-    let total = 0;
-    incomes.forEach((income) => {
-      total = total + income.amount;
-    });
-
-    return total;
-  };
+  const totalIncome = () =>
+    incomes.reduce((acc, item) => acc + item.amount, 0);
 
   const addExpense = async (expense) => {
     await axios
@@ -56,7 +51,6 @@ export const GlobalProvider = ({ children }) => {
   const getExpenses = async () => {
     const response = await axios.get(`${BASE_URL}get-expenses/${emailid}`);
     setExpenses(response.data);
-    // console.log(response.data);
   };
 
   const deleteExpense = async (id) => {
@@ -64,56 +58,74 @@ export const GlobalProvider = ({ children }) => {
     getExpenses();
   };
 
-  const totalExpenses = () => {
-    let total = 0;
-    expenses.forEach((expense) => {
-      total = total + expense.amount;
-    });
+  const totalExpenses = () =>
+    expenses.reduce((acc, item) => acc + item.amount, 0);
 
-    return total;
+  const addTransfer = async (transfer) => {
+    await axios
+      .post(`${BASE_URL}add-transfer/${emailid}`, transfer)
+      .catch((err) => {
+        setError(err.response?.data?.message ?? DEFAULT_ERROR);
+      });
+    getTransfers();
   };
 
-  const EXPENSE_CATEGORIES = [
-    "education",
-    "groceries",
-    "health",
-    "subscriptions",
-    "takeaways",
-    "shopping",
-    "travelling",
-    "other",
-  ];
+  const getTransfers = async () => {
+    const response = await axios.get(`${BASE_URL}get-transfers/${emailid}`);
+    setTransfers(response.data);
+  };
 
-  const INCOME_CATEGORIES = [
-    "salary",
-    "freelancing",
-    "investments",
-    "stocks",
-    "crypto",
-    "loan",
-    "pocketmoney",
-    "other",
-  ];
+  const deleteTransfer = async (id) => {
+    await axios.delete(`${BASE_URL}delete-transfer/${id}`);
+    getTransfers();
+  };
 
-  const expCat = () => {
-    const totals = Object.fromEntries(EXPENSE_CATEGORIES.map((c) => [c, 0]));
-    expenses.forEach((expense) => {
-      if (expense.category in totals) {
-        totals[expense.category] += expense.amount;
+  const totalsByCategory = (items, catalog) => {
+    const totals = Object.fromEntries(catalog.map((c) => [c.id, 0]));
+    items.forEach((item) => {
+      if (item.category in totals) {
+        totals[item.category] += item.amount;
       }
     });
-    return EXPENSE_CATEGORIES.map((c) => totals[c]);
+    return catalog.map((c) => totals[c.id]);
   };
 
-  const incCat = () => {
-    const totals = Object.fromEntries(INCOME_CATEGORIES.map((c) => [c, 0]));
-    incomes.forEach((income) => {
-      if (income.category in totals) {
-        totals[income.category] += income.amount;
-      }
-    });
-    return INCOME_CATEGORIES.map((c) => totals[c]);
+  const expCat = () => totalsByCategory(expenses, EXPENSE);
+  const incCat = () => totalsByCategory(incomes, INCOME);
+
+  const sumTransferCat = (catId) =>
+    transfers
+      .filter((t) => t.category === catId)
+      .reduce(
+        (acc, t) => acc + (t.direction === "out" ? t.amount : -t.amount),
+        0
+      );
+
+  const outstandingLent = () => {
+    const lentOut = transfers
+      .filter((t) => t.category === "lending_money" && t.direction === "out")
+      .reduce((acc, t) => acc + t.amount, 0);
+    const lentBack = transfers
+      .filter((t) => t.category === "lent_money" && t.direction === "in")
+      .reduce((acc, t) => acc + t.amount, 0);
+    return lentOut - lentBack;
   };
+
+  const totalInvested = () =>
+    transfers
+      .filter((t) => t.category === "investments")
+      .reduce(
+        (acc, t) => acc + (t.direction === "out" ? t.amount : -t.amount),
+        0
+      );
+
+  const netTransferOut = () =>
+    transfers.reduce(
+      (acc, t) => acc + (t.direction === "out" ? t.amount : -t.amount),
+      0
+    );
+
+  const netCash = () => totalIncome() - totalExpenses() - netTransferOut();
 
   const getLimit = async () => {
     const response = await axios.get(`${BASE_URL}get-limit/${emailid}`);
@@ -125,16 +137,11 @@ export const GlobalProvider = ({ children }) => {
     getLimit();
   };
 
-  const totalBalance = () => {
-    return totalIncome() - totalExpenses();
-  };
+  const totalBalance = () => totalIncome() - totalExpenses();
 
   const transactionHistory = () => {
-    const history = [...incomes, ...expenses];
-    history.sort((a, b) => {
-      return new Date(b.createdAt) - new Date(a.createdAt);
-    });
-
+    const history = [...incomes, ...expenses, ...transfers];
+    history.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
     return history.slice(0, 3);
   };
 
@@ -159,6 +166,14 @@ export const GlobalProvider = ({ children }) => {
         totalExpenses,
         totalBalance,
         transactionHistory,
+        transfers,
+        addTransfer,
+        getTransfers,
+        deleteTransfer,
+        outstandingLent,
+        totalInvested,
+        netCash,
+        sumTransferCat,
         error,
         setError,
       }}

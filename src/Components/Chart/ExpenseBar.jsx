@@ -10,74 +10,73 @@ import {
   Legend,
 } from "chart.js";
 import { useGlobalContext } from "../../context/globalContext";
+import { EXPENSE } from "../../config/categories";
 import { Bar } from "react-chartjs-2";
 
 Chart.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 function ExpenseBar() {
   const { expCat } = useGlobalContext();
-  // console.log(expCat());
+  const totals = expCat();
+
+  const active = EXPENSE.map((c, i) => ({ ...c, total: totals[i] })).filter(
+    (c) => c.total > 0
+  );
+
   const config = {
     data: {
-      labels: [
-        "Education",
-        "Groceries",
-        "Health",
-        "Subscriptions",
-        "Takeaways",
-        "Shopping",
-        "Travelling",
-        "Other",
-      ],
+      labels: active.map((c) => c.label),
       datasets: [
         {
-          data: [
-            expCat()[0],
-            expCat()[1],
-            expCat()[2],
-            expCat()[3],
-            expCat()[4],
-            expCat()[5],
-            expCat()[6],
-            expCat()[7],
-          ],
-          backgroundColor: ["rgba(255, 99, 132, 0.2)"],
-          borderColor: ["rgb(255,102,102)"],
+          data: active.map((c) => c.total),
+          backgroundColor: active.map((c) => c.color),
+          borderColor: active.map((c) => c.color),
           borderWidth: 1,
+          borderRadius: 4,
         },
       ],
-    }, // options: {
-    //   plugins: {
-    //     legend: {
-    //         labels: {
-    //             // This more specific font property overrides the global property
-    //             font: {
-    //                 size: 14
-    //             }
-    //         }
-    //     }
-    // }
+    },
     options: {
+      maintainAspectRatio: false,
       plugins: {
-        legend: {
-          display: false,
+        legend: { display: false },
+      },
+      scales: {
+        x: {
+          ticks: {
+            font: { size: 9 },
+            maxRotation: 45,
+            minRotation: 45,
+          },
+          grid: { display: false },
+        },
+        y: {
+          ticks: { font: { size: 9 } },
+          grid: { color: "rgba(0,0,0,0.06)" },
         },
       },
     },
   };
+
   return (
-    <PieChartStyled>
+    <ExpenseBarStyled>
       <div className="piechart">
         <div className="pie">
           <h6>Expense Categories</h6>
-          <Bar {...config}></Bar>
+          <div className="chart-wrap">
+            {active.length > 0 ? (
+              <Bar {...config} />
+            ) : (
+              <p className="empty">No expenses yet</p>
+            )}
+          </div>
         </div>
       </div>
-    </PieChartStyled>
+    </ExpenseBarStyled>
   );
 }
 
-const PieChartStyled = styled.div`
+const ExpenseBarStyled = styled.div`
   .piechart {
     display: flex;
     justify-content: center;
@@ -86,77 +85,36 @@ const PieChartStyled = styled.div`
     width: 100%;
     .pie {
       width: 100%;
-      position: relative;
-      height: 14.5rem;
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
-      padding-top: 1rem;
-      /* font-variant: small-caps; */
+      padding: 0.8rem 0.6rem 0.6rem;
       h6 {
-        color: black;
+        color: #333;
+        font-size: 0.85rem;
+        font-weight: 600;
+        margin-bottom: 0.4rem;
+      }
+      .chart-wrap {
+        width: 100%;
+        position: relative;
+        height: 12rem;
+      }
+      .empty {
+        color: #999;
+        font-size: 0.9rem;
+        margin: auto;
       }
     }
   }
   @media (max-width: 1000px) {
-    .piechart {
-      .pie {
-        padding: 0.6rem;
-        height: 20rem;
-      }
+    .piechart .pie .chart-wrap {
+      height: 16rem;
     }
   }
   @media (max-width: 425px) {
-    .piechart {
-      .pie {
-        height: 13rem;
-        margin-left: 1rem;
-      }
-    }
-  }
-
-  @media (max-width: 375px) {
-    .piechart {
-      border-radius: 2rem;
-      .pie {
-        /* height: 13rem; */
-      }
-    }
-  }
-  @media (max-width: 365px) {
-    .piechart {
-      border-radius: 2rem;
-      .pie {
-        /* height: 13rem; */
-        /* margin-left: 0.9rem; */
-      }
-    }
-  }
-  @media (max-width: 350px) {
-    .piechart {
-      border-radius: 3rem;
-      .pie {
-        height: 12rem;
-      }
-    }
-  }
-  @media (max-width: 340px) {
-    .piechart {
-      border-radius: 3rem;
-      .pie {
-        height: 11.5rem;
-        margin-left: 0.5rem;
-      }
-    }
-  }
-  @media (max-width: 320px) {
-    .piechart {
-      border-radius: 3.5rem;
-      .pie {
-        height: 11.5rem;
-        margin-left: 0.5rem;
-      }
+    .piechart .pie .chart-wrap {
+      height: 11rem;
     }
   }
 `;

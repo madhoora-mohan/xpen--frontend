@@ -5,7 +5,7 @@
 /.pnp
 .pnp.js
 .env
-build/
+/build
 
 # testing
 /coverage
@@ -31,4 +31,4 @@ yarn-error.log*
 .vercel
 
 # Personal docs
-/my_docs
+/docs

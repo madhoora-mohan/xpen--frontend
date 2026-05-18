@@ -4,6 +4,7 @@ import avatar from "../../img/avatar.png";
 import { signout, fileexport, refresh } from "../../utils/Icons";
 import { menuItems } from "../../utils/menuItems";
 import { useGlobalContext } from "../../context/globalContext";
+import { formatRupee } from "../../utils/currency";
 
 const STRIPPED_EXPORT_FIELDS = ["email", "__v", "createdAt", "updatedAt"];
 
@@ -88,7 +89,7 @@ function Navigation({ active, setActive, openn }) {
         <img src={avatar} alt="" />
         <div className="text">
           <h5>{username}</h5>
-          <h5>Savings: ₹{totalBalance()}</h5>
+          <h5>Savings: {formatRupee(totalBalance())}</h5>
         </div>
       </div>
       <ul className="menu-items">

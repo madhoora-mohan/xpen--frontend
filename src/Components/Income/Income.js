@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import styled from "styled-components";
 import { useGlobalContext } from "../../context/globalContext";
 import { InnerLayout } from "../../styles/Layouts";
+import { formatRupee } from "../../utils/currency";
 import Form from "../Form/Form";
 import IncomeItem from "../IncomeItem/IncomeItem";
 
@@ -19,7 +20,7 @@ function Income() {
           <h3>Incomes</h3>
         </div>
         <h3 className="total-income">
-          Total Income: <span>₹{totalIncome()}</span>
+          Total Income: <span>{formatRupee(totalIncome())}</span>
         </h3>
         <div className="income-content">
           <div className="form-container">

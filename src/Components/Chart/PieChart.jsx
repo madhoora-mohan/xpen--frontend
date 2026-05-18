@@ -1,162 +1,132 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { Doughnut } from "react-chartjs-2";
-import { Chart, ArcElement } from "chart.js";
+import { Chart, ArcElement, Tooltip, Legend } from "chart.js";
 import { useGlobalContext } from "../../context/globalContext";
+import { EXPENSE } from "../../config/categories";
 
-Chart.register(ArcElement);
+Chart.register(ArcElement, Tooltip, Legend);
+
+const WIDE = 600;
 
 function PieChart() {
-  const { totalExpenses, totalIncome, totalBalance } = useGlobalContext();
+  const { expCat } = useGlobalContext();
+  const [isWide, setIsWide] = useState(window.innerWidth >= WIDE);
+
+  useEffect(() => {
+    const handler = () => setIsWide(window.innerWidth >= WIDE);
+    window.addEventListener("resize", handler);
+    return () => window.removeEventListener("resize", handler);
+  }, []);
+
+  const totals = expCat();
+  const active = EXPENSE.map((c, i) => ({ ...c, total: totals[i] })).filter(
+    (c) => c.total > 0
+  );
+
   const config = {
     data: {
-      labels: ["Income", "Expense", "Savings"],
+      labels: active.map((c) => c.label),
       datasets: [
         {
-          data: [totalIncome(), totalExpenses(), totalBalance()],
-          backgroundColor: [
-            "rgba(57, 206, 51, 0.8)",
-            "rgba(255, 0, 0,0.6)",
-            "rgba(0, 0, 255, 0.6)",
-          ],
-          hoverOffset: 4,
-          borderRadius: 10,
-          spacing: 2,
+          data: active.map((c) => c.total),
+          backgroundColor: active.map((c) => c.color),
+          borderWidth: 0,
+          hoverOffset: 6,
         },
       ],
     },
     options: {
-      cutout: 60,
+      responsive: true,
+      maintainAspectRatio: !isWide,
+      cutout: "55%",
+      layout: { padding: 0 },
+      plugins: {
+        legend: {
+          display: true,
+          position: isWide ? "right" : "bottom",
+          labels: {
+            boxWidth: 10,
+            boxHeight: 10,
+            font: { size: isWide ? 13 : 11 },
+            color: "#fff",
+            padding: 8,
+          },
+        },
+        tooltip: {
+          callbacks: {
+            label: (ctx) =>
+              ` ${ctx.label}: ₹${ctx.parsed.toLocaleString("en-IN")}`,
+          },
+        },
+      },
     },
   };
+
   return (
     <PieChartStyled>
-      <div className="piechart">
-        <div className="pie">
-          <Doughnut {...config}></Doughnut>
-          <div className="cont">
-            <p>
-              Incomes: <span>₹{totalIncome()}</span>
-            </p>
-            <p>
-              Expense: <span>₹{totalExpenses()}</span>
-            </p>
-            <p>
-              Savings: <span>₹{totalBalance()}</span>
-            </p>
+      <h6>Expense Breakdown</h6>
+      {active.length > 0 ? (
+        <div className="chart-group">
+          <div className="chart-wrap">
+            <Doughnut {...config} />
           </div>
         </div>
-      </div>
+      ) : (
+        <p className="empty">No expenses yet</p>
+      )}
     </PieChartStyled>
   );
 }
 
 const PieChartStyled = styled.div`
-  .piechart {
+  background: rgb(49, 54, 60);
+  border: 0.1rem solid rgb(69, 69, 69);
+  border-radius: 1rem;
+  padding: 1rem;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+
+  h6 {
+    color: #fff;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+  }
+
+  .chart-group {
+    width: 100%;
     display: flex;
     justify-content: center;
-    background-color: white;
-    border-radius: 1rem;
-    width: 100%;
-    .pie {
-      width: 100%;
-      position: relative;
-      height: 14.5rem;
-      display: flex;
-      justify-content: center;
-      overflow: hidden;
-      .cont {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        gap: 1rem;
-        font-size: 1rem;
-        font-weight: 800;
-        align-items: center;
-      }
+    align-items: center;
+
+    .chart-wrap {
+      width: 260px;
     }
   }
-  @media (max-width: 1160px) {
-    .cont {
-      p {
-        display: flex;
-        flex-direction: column;
-      }
+
+  .empty {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.9rem;
+    padding: 2rem 0;
+  }
+
+  @media (min-width: 480px) {
+    .chart-group .chart-wrap {
+      width: 320px;
     }
   }
-  @media (max-width: 1000px) {
-    .piechart {
-      padding-top: 0.5rem;
-      padding-bottom: 1rem;
-      .pie {
-        height: 18rem;
-        .cont {
-          p {
-            font-size: 1.3rem;
-          }
-        }
-      }
+
+  @media (min-width: ${WIDE}px) {
+    .chart-group .chart-wrap {
+      width: 500px;
+      height: 230px;
     }
   }
-  @media (max-width: 425px) {
-    .piechart {
-      width: 25rem;
-      padding-top: 0.5rem;
-      padding-bottom: 0.5rem;
-      .pie {
-        width: 25rem;
-        height: 14rem;
-        .cont {
-          p {
-            font-size: 1rem;
-          }
-        }
-      }
-    }
-  }
-  @media (max-width: 375px) {
-    .piechart {
-      padding-top: 0rem;
-      padding-bottom: 0rem;
-      border-radius: 2rem;
-      .pie {
-        /* width: 25rem; */
-        /* height: 13rem; */
-        .cont {
-          p {
-            font-size: 0.8rem;
-          }
-        }
-      }
-    }
-  }
-  @media (max-width: 350px) {
-    .piechart {
-      border-radius: 3rem;
-      .pie {
-        /* width: 25rem; */
-        /* height: 11rem; */
-        .cont {
-          p {
-            font-size: 0.8rem;
-          }
-        }
-      }
-    }
-  }
-  @media (max-width: 320px) {
-    .piechart {
-      border-radius: 4rem;
-      .pie {
-        /* width: 25rem; */
-        height: 14rem;
-        .cont {
-          p {
-            font-size: 0.7rem;
-          }
-        }
-      }
-    }
+
+  @media (min-width: 900px) {
+    padding: 1.25rem;
   }
 `;
 
