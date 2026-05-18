@@ -1,11 +1,14 @@
 import { useState } from "react";
 import axios from "axios";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import styled from "styled-components";
+import { useAuth } from "../../context/AuthContext";
 
 const Login = () => {
   const [data, setData] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
+  const { login } = useAuth();
+  const navigate = useNavigate();
 
   const handleChange = ({ currentTarget: input }) => {
     setData({ ...data, [input.name]: input.value });
@@ -15,10 +18,8 @@ const Login = () => {
     try {
       const url = process.env.REACT_APP_AUTH_URL;
       const { data: res } = await axios.post(url, data);
-      localStorage.setItem("token", res.data);
-      localStorage.setItem("email", res.email);
-      localStorage.setItem("username", res.username);
-      window.location = "/";
+      login(res.email, res.username);
+      navigate("/");
     } catch (error) {
       if (
         error.response &&
