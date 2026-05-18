@@ -1,25 +1,9 @@
 import React from "react";
 import styled from "styled-components";
 import { dateFormat } from "../../utils/dateFormat";
-import {
-  bitcoin,
-  book,
-  calender,
-  card,
-  shopping,
-  comment,
-  food,
-  freelance,
-  medical,
-  money,
-  piggy,
-  stocks,
-  takeaway,
-  trash,
-  tv,
-  users,
-  other,
-} from "../../utils/Icons";
+import { calender, comment, trash, arrowUp, arrowDown } from "../../utils/Icons";
+import { getCategory } from "../../config/categories";
+import { formatRupee } from "../../utils/currency";
 import Button from "../Button/Button";
 
 function IncomeItem({
@@ -32,65 +16,27 @@ function IncomeItem({
   deleteItem,
   indicatorColor,
   type,
+  direction,
 }) {
-  const categoryIcon = () => {
-    switch (category) {
-      case "salary":
-        return money;
-      case "freelancing":
-        return freelance;
-      case "investments":
-        return stocks;
-      case "stocks":
-        return users;
-      case "crypto":
-        return bitcoin;
-      case "loan":
-        return card;
-      case "pocketmoney":
-        return piggy;
-      case "other":
-        return other;
-      default:
-        return "";
-    }
-  };
-
-  const expenseCatIcon = () => {
-    switch (category) {
-      case "education":
-        return book;
-      case "groceries":
-        return food;
-      case "health":
-        return medical;
-      case "subscriptions":
-        return tv;
-      case "takeaways":
-        return takeaway;
-      case "shopping":
-        return shopping;
-      case "travelling":
-        return freelance;
-      case "other":
-        return other;
-      default:
-        return "";
-    }
-  };
-
-  // console.log("type", type);
+  const cat = getCategory(type, category);
+  const dotColor = cat.color || indicatorColor;
 
   return (
-    <IncomeItemStyled indicator={indicatorColor}>
-      <div className="icon">
-        {type === "expense" ? expenseCatIcon() : categoryIcon()}
-      </div>
+    <IncomeItemStyled indicator={dotColor}>
+      <div className="icon">{cat.icon}</div>
       <div className="content">
-        <h5>{title}</h5>
+        <h5>
+          {title}
+          <span className="cat-label">{cat.label}</span>
+          {type === "transfer" && direction && (
+            <span className={`dir-badge ${direction}`}>
+              {direction === "out" ? arrowUp : arrowDown} {direction.toUpperCase()}
+            </span>
+          )}
+        </h5>
         <div className="inner-content">
           <div className="text">
-            <p>₹ {amount}</p>
+            <p>{formatRupee(amount)}</p>
             <p>
               {calender} {dateFormat(date)}
             </p>
@@ -120,7 +66,6 @@ function IncomeItem({
 const IncomeItemStyled = styled.div`
   background: rgb(49, 54, 60);
   border: 0.1rem solid rgb(69, 69, 69);
-  // box-shadow: 0px 1px 15px rgba(0, 0, 0, 0.06);
   border-radius: 1rem;
   padding: 0.7rem;
   margin-bottom: 1rem;
@@ -128,16 +73,12 @@ const IncomeItemStyled = styled.div`
   align-items: center;
   gap: 1.5rem;
   color: #222260;
-  /* height: fit-content; */
-  /* display: flex;
-  -ms-wrap-flow: end;
-  flex-wrap: wrap-reverse; */
   .icon {
     width: 10%;
     background: rgb(49, 54, 60);
     display: flex;
-    color: #000;
-    opacity: 0.8;
+    color: #fff;
+    opacity: 0.85;
     align-items: center;
     justify-content: center;
     i {
@@ -154,6 +95,11 @@ const IncomeItemStyled = styled.div`
       font-size: 1.2rem;
       padding-left: 1.5rem;
       position: relative;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+      color: #fff;
       &::before {
         content: "";
         position: absolute;
@@ -164,6 +110,30 @@ const IncomeItemStyled = styled.div`
         height: 0.8rem;
         border-radius: 50%;
         background: ${(props) => props.indicator};
+      }
+      .cat-label {
+        font-size: 0.7rem;
+        font-weight: 500;
+        padding: 0.15rem 0.5rem;
+        border-radius: 0.5rem;
+        background: rgba(255, 255, 255, 0.08);
+        color: rgba(255, 255, 255, 0.75);
+      }
+      .dir-badge {
+        font-size: 0.65rem;
+        padding: 0.15rem 0.4rem;
+        border-radius: 0.5rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.2rem;
+        &.out {
+          background: rgba(204, 0, 0, 0.2);
+          color: #ff8b8b;
+        }
+        &.in {
+          background: rgba(56, 118, 29, 0.25);
+          color: #9ee6a0;
+        }
       }
     }
 
@@ -183,6 +153,9 @@ const IncomeItemStyled = styled.div`
           color: var(--primary-color);
           opacity: 0.8;
         }
+      }
+      .btn-con {
+        flex-shrink: 0;
       }
     }
   }

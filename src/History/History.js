@@ -1,6 +1,20 @@
 import React from "react";
 import styled from "styled-components";
 import { useGlobalContext } from "../context/globalContext";
+import { formatRupee } from "../utils/currency";
+
+const colorFor = (type, direction) => {
+  if (type === "expense") return "rgb(200,40,24)";
+  if (type === "transfer")
+    return direction === "out" ? "#ff8b8b" : "#6fa8dc";
+  return "var(--color-green)";
+};
+
+const signFor = (type, direction) => {
+  if (type === "expense") return "-";
+  if (type === "transfer") return direction === "out" ? "-" : "+";
+  return "";
+};
 
 function History() {
   const { transactionHistory } = useGlobalContext();
@@ -11,27 +25,14 @@ function History() {
     <HistoryStyled>
       <h2>Recent History</h2>
       {history.map((item) => {
-        const { _id, title, amount, type } = item;
+        const { _id, title, amount, type, direction } = item;
+        const safe = amount <= 0 ? 0 : amount;
         return (
           <div key={_id} className="history-item">
-            <p
-              style={{
-                color: "rgba(255,255,255,0.8)",
-              }}
-            >
-              {title}
-            </p>
-
-            <p
-              style={{
-                color:
-                  type === "expense" ? "rgb(200,40,24)" : "var(--color-green)",
-                opacity: 0.8,
-              }}
-            >
-              {type === "expense"
-                ? `₹-${amount <= 0 ? 0 : amount}`
-                : `₹${amount <= 0 ? 0 : amount}`}
+            <p style={{ color: "rgba(255,255,255,0.8)" }}>{title}</p>
+            <p style={{ color: colorFor(type, direction), opacity: 0.8 }}>
+              {signFor(type, direction)}
+              {formatRupee(safe)}
             </p>
           </div>
         );

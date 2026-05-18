@@ -5,6 +5,7 @@ import { InnerLayout } from "../../styles/Layouts";
 import Button from "../Button/Button";
 import { plus } from "../../utils/Icons";
 import { useState, useEffect } from "react";
+import { formatRupee } from "../../utils/currency";
 
 function Limit() {
   const { totalBalance, limits, getLimit, updateLimit, error, setError } =
@@ -52,7 +53,7 @@ function Limit() {
           <h3>Set Limit</h3>
         </div>
         <h3 className="total-income">
-          Savings: <span>₹{totalBalance()}</span>
+          Savings: <span>{formatRupee(totalBalance())}</span>
         </h3>
       </InnerLayout>
       <div className="center">

@@ -10,6 +10,7 @@ import {
   Legend,
 } from "chart.js";
 import { useGlobalContext } from "../../context/globalContext";
+import { INCOME } from "../../config/categories";
 import { Bar } from "react-chartjs-2";
 
 Chart.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
@@ -18,30 +19,12 @@ function IncomeBar() {
   const { incCat } = useGlobalContext();
   const config = {
     data: {
-      labels: [
-        "Salary",
-        "Freelancing",
-        "Investments",
-        "Stocks",
-        "Crypto",
-        "Loan",
-        "Pocket Money",
-        "Other",
-      ],
+      labels: INCOME.map((c) => c.label),
       datasets: [
         {
-          data: [
-            incCat()[0],
-            incCat()[1],
-            incCat()[2],
-            incCat()[3],
-            incCat()[4],
-            incCat()[5],
-            incCat()[6],
-            incCat()[7],
-          ],
-          backgroundColor: ["rgba(97,216,92, 0.2)"],
-          borderColor: ["rgb(97,216,92)"],
+          data: incCat(),
+          backgroundColor: INCOME.map((c) => c.color),
+          borderColor: INCOME.map((c) => c.color),
           borderWidth: 1,
         },
       ],
