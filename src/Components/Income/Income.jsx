@@ -5,14 +5,17 @@ import { InnerLayout } from "../../styles/Layouts";
 import { formatRupee } from "../../utils/currency";
 import Form from "../Form/Form";
 import IncomeItem from "../IncomeItem/IncomeItem";
+import Spinner from "../Spinner/Spinner";
 
 function Income() {
-  const { incomes, getIncomes, deleteIncome, totalIncome } = useGlobalContext();
+  const { incomes, getIncomes, deleteIncome, totalIncome, loading } = useGlobalContext();
 
   useEffect(() => {
     getIncomes();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+  if (loading) return <Spinner />;
+
   return (
     <IncomeStyled>
       <InnerLayout>

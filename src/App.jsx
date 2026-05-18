@@ -90,6 +90,7 @@ function App() {
                     active={active}
                     setActive={setActive}
                     openn={openn}
+                    closeNav={() => setopenn(false)}
                   />
                 </div>
                 <main>{displayData()}</main>

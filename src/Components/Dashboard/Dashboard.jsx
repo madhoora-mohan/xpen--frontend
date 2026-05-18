@@ -4,6 +4,7 @@ import { useGlobalContext } from "../../context/globalContext";
 import History from "../../History/History";
 import { InnerLayout } from "../../styles/Layouts";
 import PieChart from "../Chart/PieChart";
+import Spinner from "../Spinner/Spinner";
 import { formatRupee } from "../../utils/currency";
 
 function Dashboard() {
@@ -16,6 +17,7 @@ function Dashboard() {
     getTransfers,
     outstandingLent,
     netCash,
+    loading,
   } = useGlobalContext();
 
   useEffect(() => {
@@ -24,11 +26,8 @@ function Dashboard() {
     getTransfers();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  // console.log("heyyy " + getExpensesWCategory);
 
-  // getExpenses().forEach((element) => {
-  //   console.log(element);
-  // });
+  if (loading) return <Spinner />;
 
   return (
     <DashboardStyled>

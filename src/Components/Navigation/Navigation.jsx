@@ -34,7 +34,7 @@ function exportToCSV(rows, filename) {
   URL.revokeObjectURL(url);
 }
 
-function Navigation({ active, setActive, openn }) {
+function Navigation({ active, setActive, openn, closeNav }) {
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("email");
@@ -97,7 +97,7 @@ function Navigation({ active, setActive, openn }) {
           return (
             <li
               key={item.id}
-              onClick={() => setActive(item.id)}
+              onClick={() => { setActive(item.id); closeNav(); }}
               onClickCapture={() => setError("")}
               className={active === item.id ? "active" : ""}
             >

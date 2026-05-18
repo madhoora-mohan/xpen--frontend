@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { useGlobalContext } from "../../context/globalContext";
@@ -24,11 +24,14 @@ function ExpenseForm() {
 
   const { title, amount, date, category, description } = inputState;
 
+  useEffect(() => {
+    getLimit();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const handleInput = (name) => (e) => {
     setInputState({ ...inputState, [name]: e.target.value });
     setError("");
-    getLimit();
-    // console.log(inputState);
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
