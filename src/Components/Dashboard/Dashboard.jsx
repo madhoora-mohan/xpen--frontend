@@ -6,6 +6,7 @@ import { InnerLayout } from "../../styles/Layouts";
 import PieChart from "../Chart/PieChart";
 import Spinner from "../Spinner/Spinner";
 import { formatRupee } from "../../utils/currency";
+import { refresh } from "../../utils/Icons";
 
 function Dashboard() {
   const {
@@ -18,6 +19,7 @@ function Dashboard() {
     outstandingLent,
     netCash,
     loading,
+    refreshAll,
   } = useGlobalContext();
 
   useEffect(() => {
@@ -27,13 +29,39 @@ function Dashboard() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  if (loading) return <Spinner />;
+  if (loading)
+    return (
+      <DashboardStyled>
+        <InnerLayout>
+          <div className="top">
+            <h3>Dashboard</h3>
+            <button
+              className="reload-mobile"
+              onClick={refreshAll}
+              title="Reload data"
+              aria-label="Reload data"
+            >
+              {refresh}
+            </button>
+          </div>
+          <Spinner />
+        </InnerLayout>
+      </DashboardStyled>
+    );
 
   return (
     <DashboardStyled>
       <InnerLayout>
         <div className="top">
           <h3>Dashboard</h3>
+          <button
+            className="reload-mobile"
+            onClick={refreshAll}
+            title="Reload data"
+            aria-label="Reload data"
+          >
+            {refresh}
+          </button>
           <div className="stats-con">
             <PieChart />
           </div>
@@ -97,6 +125,9 @@ const DashboardStyled = styled.div`
     .stats-con {
       width: 100%;
       margin-top: 0.5rem;
+    }
+    .reload-mobile {
+      display: none;
     }
   }
   .no-graph {
@@ -222,6 +253,22 @@ const DashboardStyled = styled.div`
         /* margin-left: -0.5rem; */
         border-bottom-right-radius: 1rem;
         border-bottom-left-radius: 1rem;
+      }
+      .reload-mobile {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: fixed;
+        top: 0;
+        right: 0;
+        height: 3.5rem;
+        padding: 0 0.5rem 0 1rem;
+        background: transparent;
+        border: none;
+        color: #fff;
+        font-size: 1.1rem;
+        cursor: pointer;
+        z-index: 1001;
       }
     }
     .top {

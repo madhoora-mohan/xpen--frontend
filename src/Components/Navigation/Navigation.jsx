@@ -277,12 +277,15 @@ const NavStyled = styled.nav`
   @media (max-width: 920px) {
     position: absolute;
     top: 3.5rem;
-    left: -12.1rem;
+    left: -12.5rem;
     border-top-left-radius: 0rem;
     height: 88%;
     z-index: 1;
     transform: ${({ openn }) => (openn ? "translateX(100%)" : "translateX(0)")};
     transition: transform 0.3s ease-in-out;
+    .reload {
+      display: none;
+    }
     .bottom-nav {
       gap: 0.5rem;
       .sign-out,

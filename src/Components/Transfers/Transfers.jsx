@@ -6,23 +6,56 @@ import IncomeItem from "../IncomeItem/IncomeItem";
 import TransferForm from "./TransferForm";
 import Spinner from "../Spinner/Spinner";
 import { formatRupee } from "../../utils/currency";
+import { refresh } from "../../utils/Icons";
 
 function Transfers() {
-  const { transfers, getTransfers, deleteTransfer, outstandingLent, loading } =
-    useGlobalContext();
+  const {
+    transfers,
+    getTransfers,
+    deleteTransfer,
+    outstandingLent,
+    loading,
+    refreshAll,
+  } = useGlobalContext();
 
   useEffect(() => {
     getTransfers();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  if (loading) return <Spinner />;
+  if (loading)
+    return (
+      <TransferStyled>
+        <InnerLayout>
+          <div className="top">
+            <h3>Transfers</h3>
+            <button
+              className="reload-mobile"
+              onClick={refreshAll}
+              title="Reload data"
+              aria-label="Reload data"
+            >
+              {refresh}
+            </button>
+          </div>
+          <Spinner />
+        </InnerLayout>
+      </TransferStyled>
+    );
 
   return (
     <TransferStyled>
       <InnerLayout>
         <div className="top">
           <h3>Transfers</h3>
+          <button
+            className="reload-mobile"
+            onClick={refreshAll}
+            title="Reload data"
+            aria-label="Reload data"
+          >
+            {refresh}
+          </button>
         </div>
         <h3 className="summary-line">
           Outstanding Lending: <span>{formatRupee(outstandingLent())}</span>
@@ -67,6 +100,9 @@ const TransferStyled = styled.div`
     padding-left: 1rem;
     padding-bottom: 0.5rem;
     font-weight: 600;
+  }
+  .top .reload-mobile {
+    display: none;
   }
   .summary-line {
     margin: 0;
@@ -131,6 +167,22 @@ const TransferStyled = styled.div`
         border: 0.1rem solid rgb(69, 69, 69);
         border-bottom-right-radius: 1rem;
         border-bottom-left-radius: 1rem;
+      }
+      .reload-mobile {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: fixed;
+        top: 0;
+        right: 0;
+        height: 3.5rem;
+        padding: 0 0.5rem 0 1rem;
+        background: transparent;
+        border: none;
+        color: #fff;
+        font-size: 1.1rem;
+        cursor: pointer;
+        z-index: 1001;
       }
     }
   }

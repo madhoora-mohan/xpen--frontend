@@ -162,6 +162,12 @@ export const GlobalProvider = ({ children }) => {
 
   const totalBalance = () => totalIncome() - totalExpenses();
 
+  const refreshAll = () => {
+    getIncomes();
+    getExpenses();
+    getTransfers();
+  };
+
   const HISTORY_LIMIT = 3;
 
   const transactionHistory = () => {
@@ -202,6 +208,7 @@ export const GlobalProvider = ({ children }) => {
         error,
         setError,
         loading,
+        refreshAll,
       }}
     >
       {children}

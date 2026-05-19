@@ -6,22 +6,55 @@ import { formatRupee } from "../../utils/currency";
 import IncomeItem from "../IncomeItem/IncomeItem";
 import ExpenseForm from "./ExpenseForm";
 import Spinner from "../Spinner/Spinner";
+import { refresh } from "../../utils/Icons";
 
 function Expenses() {
-  const { expenses, getExpenses, deleteExpense, totalExpenses, loading } =
-    useGlobalContext();
+  const {
+    expenses,
+    getExpenses,
+    deleteExpense,
+    totalExpenses,
+    loading,
+    refreshAll,
+  } = useGlobalContext();
 
   useEffect(() => {
     getExpenses();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  if (loading) return <Spinner />;
+  if (loading)
+    return (
+      <ExpenseStyled>
+        <InnerLayout>
+          <div className="top">
+            <h3>Expenses</h3>
+            <button
+              className="reload-mobile"
+              onClick={refreshAll}
+              title="Reload data"
+              aria-label="Reload data"
+            >
+              {refresh}
+            </button>
+          </div>
+          <Spinner />
+        </InnerLayout>
+      </ExpenseStyled>
+    );
 
   return (
     <ExpenseStyled>
       <InnerLayout>
         <div className="top">
           <h3>Expenses</h3>
+          <button
+            className="reload-mobile"
+            onClick={refreshAll}
+            title="Reload data"
+            aria-label="Reload data"
+          >
+            {refresh}
+          </button>
         </div>
         <h3 className="total-income">
           Total Expense: <span>{formatRupee(totalExpenses())}</span>
@@ -77,6 +110,9 @@ const ExpenseStyled = styled.div`
       padding-left: 1rem;
       padding-bottom: 0.5rem;
       font-weight: 600;
+    }
+    .reload-mobile {
+      display: none;
     }
   }
 
@@ -145,6 +181,22 @@ const ExpenseStyled = styled.div`
         border: 0.1rem solid rgb(69, 69, 69);
         border-bottom-right-radius: 1rem;
         border-bottom-left-radius: 1rem;
+      }
+      .reload-mobile {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: fixed;
+        top: 0;
+        right: 0;
+        height: 3.5rem;
+        padding: 0 0.5rem 0 1rem;
+        background: transparent;
+        border: none;
+        color: #fff;
+        font-size: 1.1rem;
+        cursor: pointer;
+        z-index: 1001;
       }
     }
   }

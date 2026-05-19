@@ -6,21 +6,49 @@ import { formatRupee } from "../../utils/currency";
 import Form from "../Form/Form";
 import IncomeItem from "../IncomeItem/IncomeItem";
 import Spinner from "../Spinner/Spinner";
+import { refresh } from "../../utils/Icons";
 
 function Income() {
-  const { incomes, getIncomes, deleteIncome, totalIncome, loading } = useGlobalContext();
+  const { incomes, getIncomes, deleteIncome, totalIncome, loading, refreshAll } =
+    useGlobalContext();
 
   useEffect(() => {
     getIncomes();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  if (loading) return <Spinner />;
+  if (loading)
+    return (
+      <IncomeStyled>
+        <InnerLayout>
+          <div className="top">
+            <h3>Incomes</h3>
+            <button
+              className="reload-mobile"
+              onClick={refreshAll}
+              title="Reload data"
+              aria-label="Reload data"
+            >
+              {refresh}
+            </button>
+          </div>
+          <Spinner />
+        </InnerLayout>
+      </IncomeStyled>
+    );
 
   return (
     <IncomeStyled>
       <InnerLayout>
         <div className="top">
           <h3>Incomes</h3>
+          <button
+            className="reload-mobile"
+            onClick={refreshAll}
+            title="Reload data"
+            aria-label="Reload data"
+          >
+            {refresh}
+          </button>
         </div>
         <h3 className="total-income">
           Total Income: <span>{formatRupee(totalIncome())}</span>
@@ -76,6 +104,9 @@ const IncomeStyled = styled.div`
       padding-left: 1rem;
       padding-bottom: 0.5rem;
       font-weight: 600;
+    }
+    .reload-mobile {
+      display: none;
     }
   }
   .total-income {
@@ -143,6 +174,22 @@ const IncomeStyled = styled.div`
         border: 0.1rem solid rgb(69, 69, 69);
         border-bottom-right-radius: 1rem;
         border-bottom-left-radius: 1rem;
+      }
+      .reload-mobile {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: fixed;
+        top: 0;
+        right: 0;
+        height: 3.5rem;
+        padding: 0 0.5rem 0 1rem;
+        background: transparent;
+        border: none;
+        color: #fff;
+        font-size: 1.1rem;
+        cursor: pointer;
+        z-index: 1001;
       }
     }
   }

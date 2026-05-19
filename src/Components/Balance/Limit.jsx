@@ -3,13 +3,20 @@ import styled from "styled-components";
 import { useGlobalContext } from "../../context/globalContext";
 import { InnerLayout } from "../../styles/Layouts";
 import Button from "../Button/Button";
-import { plus } from "../../utils/Icons";
+import { plus, refresh } from "../../utils/Icons";
 import { useState, useEffect } from "react";
 import { formatRupee } from "../../utils/currency";
 
 function Limit() {
-  const { totalBalance, limits, getLimit, updateLimit, error, setError } =
-    useGlobalContext();
+  const {
+    totalBalance,
+    limits,
+    getLimit,
+    updateLimit,
+    error,
+    setError,
+    refreshAll,
+  } = useGlobalContext();
   const [inputState, setInputState] = useState({
     limit: "",
   });
@@ -47,6 +54,17 @@ function Limit() {
       <InnerLayout>
         <div className="top">
           <h3>Set Limit</h3>
+          <button
+            className="reload-mobile"
+            onClick={() => {
+              refreshAll();
+              getLimit();
+            }}
+            title="Reload data"
+            aria-label="Reload data"
+          >
+            {refresh}
+          </button>
         </div>
         <h3 className="total-income">
           Savings: <span>{formatRupee(totalBalance())}</span>
@@ -116,6 +134,9 @@ const LimitStyled = styled.div`
       font-weight: 600;
       display: flex;
       justify-content: center;
+    }
+    .reload-mobile {
+      display: none;
     }
   }
   .total-income {
@@ -218,6 +239,22 @@ const LimitStyled = styled.div`
         margin-left: -2rem;
         border-bottom-right-radius: 1rem;
         border-bottom-left-radius: 1rem;
+      }
+      .reload-mobile {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: fixed;
+        top: 0;
+        right: 0;
+        height: 3.5rem;
+        padding: 0 0.5rem 0 1rem;
+        background: transparent;
+        border: none;
+        color: #fff;
+        font-size: 1.1rem;
+        cursor: pointer;
+        z-index: 1001;
       }
     }
   }

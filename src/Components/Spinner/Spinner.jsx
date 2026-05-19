@@ -14,6 +14,7 @@ const SpinnerStyled = styled.div`
   justify-content: center;
   align-items: center;
   height: 100%;
+  min-height: 60vh;
 
   .spinner {
     width: 2.5rem;
