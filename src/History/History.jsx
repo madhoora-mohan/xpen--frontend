@@ -2,38 +2,60 @@ import React from "react";
 import styled from "styled-components";
 import { useGlobalContext } from "../context/globalContext";
 import { formatRupee } from "../utils/currency";
-
-const colorFor = (type, direction) => {
-  if (type === "expense") return "rgb(200,40,24)";
-  if (type === "transfer")
-    return direction === "out" ? "#ff8b8b" : "#6fa8dc";
-  return "var(--color-green)";
-};
+import { dateFormat } from "../utils/dateFormat";
+import { getCategory } from "../config/categories";
+import EmptyState from "../Components/EmptyState/EmptyState";
+import { comment } from "../utils/Icons";
 
 const signFor = (type, direction) => {
   if (type === "expense") return "-";
   if (type === "transfer") return direction === "out" ? "-" : "+";
-  return "";
+  return "+";
+};
+
+const toneFor = (type, direction) => {
+  if (type === "expense") return "expense";
+  if (type === "income") return "income";
+  return direction === "out" ? "transfer-out" : "transfer-in";
 };
 
 function History() {
   const { transactionHistory } = useGlobalContext();
+  const history = transactionHistory();
 
-  const [...history] = transactionHistory();
+  if (history.length === 0) {
+    return (
+      <EmptyState
+        icon={comment}
+        title="Nothing yet"
+        sub="Add an income or expense to start"
+      />
+    );
+  }
 
   return (
     <HistoryStyled>
-      <h2>Recent History</h2>
       {history.map((item) => {
-        const { _id, title, amount, type, direction } = item;
+        const { _id, title, amount, date, type, direction, category } = item;
+        const cat = getCategory(type, category);
+        const tone = toneFor(type, direction);
+        const sign = signFor(type, direction);
         const safe = amount <= 0 ? 0 : amount;
         return (
-          <div key={_id} className="history-item">
-            <p style={{ color: "rgba(255,255,255,0.8)" }}>{title}</p>
-            <p style={{ color: colorFor(type, direction), opacity: 0.8 }}>
-              {signFor(type, direction)}
+          <div key={_id} className="history-row">
+            <div className="h-icon" style={{ background: cat.color || "#888" }}>
+              {cat.icon}
+            </div>
+            <div className="h-body">
+              <div className="h-title">{title}</div>
+              <div className="h-sub">
+                {dateFormat(date)} · {cat.label}
+              </div>
+            </div>
+            <div className={`h-amt ${tone}`}>
+              {sign}
               {formatRupee(safe)}
-            </p>
+            </div>
           </div>
         );
       })}
@@ -44,21 +66,73 @@ function History() {
 const HistoryStyled = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-  // border: 3px solid rgb(49, 54, 60);
-  padding: 10px;
-  font-weight: 800;
-  padding-bottom: 20px;
-  border-radius: 10px;
-  .history-item {
-    background: rgb(49, 54, 60);
-    border: 2px solid rgb(69, 69, 69);
-    box-shadow: 0px 1px 15px rgba(0, 0, 0, 0.06);
-    padding: 1rem;
-    border-radius: 10px;
-    display: flex;
-    justify-content: space-between;
+  gap: 2px;
+
+  .history-row {
+    display: grid;
+    grid-template-columns: 32px 1fr auto;
+    gap: var(--s-3);
     align-items: center;
+    padding: 10px;
+    border-radius: var(--r-sm);
+    transition: background 120ms ease;
+
+    &:hover {
+      background: var(--bg-inset);
+    }
+  }
+
+  .h-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    display: grid;
+    place-items: center;
+    color: #0b0d10;
+    flex-shrink: 0;
+
+    i {
+      font-size: 14px;
+    }
+  }
+
+  .h-body {
+    min-width: 0;
+  }
+
+  .h-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--fg);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .h-sub {
+    font-size: 11px;
+    color: var(--fg-faint);
+    font-weight: 500;
+  }
+
+  .h-amt {
+    font-size: 14px;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+
+    &.income {
+      color: var(--accent-income);
+    }
+    &.expense {
+      color: var(--accent-expense);
+    }
+    &.transfer-out {
+      color: var(--accent-lending);
+    }
+    &.transfer-in {
+      color: var(--accent-balance);
+    }
   }
 `;
 

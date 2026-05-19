@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 
-function CategorySelect({ options, value, onChange, placeholder = "Select Category*" }) {
+function CategorySelect({ options, value, onChange, placeholder = "Select Category" }) {
   const [open, setOpen] = useState(false);
   const wrapRef = useRef(null);
 
@@ -19,38 +19,48 @@ function CategorySelect({ options, value, onChange, placeholder = "Select Catego
 
   return (
     <Wrap ref={wrapRef}>
-      <button type="button" className="trigger" onClick={() => setOpen((v) => !v)}>
+      <button
+        type="button"
+        className={selected ? "trigger" : "trigger placeholder"}
+        onClick={() => setOpen((v) => !v)}
+        aria-haspopup="listbox"
+        aria-expanded={open}
+      >
         {selected ? (
-          <span className="row">
-            <span className="swatch" style={{ background: selected.color }} />
-            <span className="icon">{selected.icon}</span>
-            <span className="label">{selected.label}</span>
-          </span>
-        ) : (
-          <span className="placeholder">{placeholder}</span>
-        )}
-        <span className="caret">▾</span>
-      </button>
-      {open && (
-        <ul className="panel" role="listbox">
-          {options.map((opt) => (
-            <li
-              key={opt.id}
-              role="option"
-              aria-selected={opt.id === value}
-              className={opt.id === value ? "option selected" : "option"}
-              onClick={() => {
-                onChange(opt.id);
-                setOpen(false);
-              }}
+          <>
+            <span
+              className="trigger-swatch"
+              style={{ background: selected.color }}
             >
-              <span className="swatch" style={{ background: opt.color }} />
-              <span className="icon">{opt.icon}</span>
-              <span className="label">{opt.label}</span>
-            </li>
-          ))}
-        </ul>
-      )}
+              <span className="trigger-icon">{selected.icon}</span>
+            </span>
+            <span className="trigger-label">{selected.label}</span>
+          </>
+        ) : (
+          <span className="placeholder-text">{placeholder}</span>
+        )}
+        <span className="caret" aria-hidden="true" />
+      </button>
+      <ul className={`menu${open ? " menu--open" : ""}`} role="listbox" aria-hidden={!open}>
+        {options.map((opt) => (
+          <li
+            key={opt.id}
+            role="option"
+            aria-selected={opt.id === value}
+            className={opt.id === value ? "option selected" : "option"}
+            onClick={(e) => {
+              e.stopPropagation();
+              onChange(opt.id);
+              setOpen(false);
+            }}
+          >
+            <span className="opt-swatch" style={{ background: opt.color }}>
+              <span className="opt-icon">{opt.icon}</span>
+            </span>
+            <span className="opt-label">{opt.label}</span>
+          </li>
+        ))}
+      </ul>
     </Wrap>
   );
 }
@@ -58,92 +68,142 @@ function CategorySelect({ options, value, onChange, placeholder = "Select Catego
 const Wrap = styled.div`
   position: relative;
   width: 100%;
+
   .trigger {
     width: 100%;
-    height: 2.5rem;
-    padding: 0 0.8rem;
-    background: rgb(86, 88, 88);
-    border: 0.1rem solid rgb(69, 69, 69);
-    border-radius: 0.8rem;
-    color: #fff;
-    font-size: 1rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    cursor: pointer;
+    height: 44px;
+    padding: 0 36px 0 var(--s-3);
+    background: var(--bg-inset);
+    border: 1px solid var(--line);
+    border-radius: var(--r-sm);
+    color: var(--fg);
     font-family: inherit;
-    &:hover {
-      opacity: 0.9;
-    }
-  }
-  .row,
-  .option {
+    font-size: 14px;
+    font-weight: 500;
     display: flex;
     align-items: center;
-    gap: 0.6rem;
-    min-width: 0;
-  }
-  .swatch {
-    width: 0.9rem;
-    height: 0.9rem;
-    border-radius: 50%;
-    flex-shrink: 0;
-    border: 0.05rem solid rgba(255, 255, 255, 0.2);
-  }
-  .icon {
-    width: 1.2rem;
-    text-align: center;
-    color: rgba(255, 255, 255, 0.85);
-    i {
-      font-size: 0.95rem;
+    gap: var(--s-3);
+    text-align: left;
+    cursor: pointer;
+    position: relative;
+    transition: border-color 120ms ease, background 120ms ease;
+
+    &:hover {
+      background: var(--bg-inset-2);
+    }
+    &:focus-visible {
+      outline: none;
+      border-color: var(--line-focus);
+      background: var(--bg-inset-2);
     }
   }
-  .label {
+
+  .trigger.placeholder .placeholder-text {
+    color: var(--fg-faint);
+  }
+
+  .trigger-swatch {
+    width: 22px;
+    height: 22px;
+    border-radius: 5px;
+    display: grid;
+    place-items: center;
+    color: #0b0d10;
+    flex-shrink: 0;
+  }
+
+  .trigger-icon i,
+  .opt-icon i {
+    font-size: 12px;
+  }
+
+  .trigger-label {
+    flex: 1;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
-  .placeholder {
-    color: rgba(255, 255, 255, 0.4);
-  }
+
   .caret {
-    color: rgba(255, 255, 255, 0.6);
-    margin-left: 0.5rem;
-  }
-  .panel {
     position: absolute;
-    top: calc(100% + 0.3rem);
+    right: 14px;
+    top: 50%;
+    width: 8px;
+    height: 8px;
+    border-right: 1.5px solid currentColor;
+    border-bottom: 1.5px solid currentColor;
+    transform: translateY(-70%) rotate(45deg);
+    opacity: 0.6;
+    pointer-events: none;
+  }
+
+  .menu {
+    position: absolute;
+    top: calc(100% + 4px);
     left: 0;
     right: 0;
-    z-index: 50;
-    max-height: 16rem;
+    z-index: 30;
+    background: var(--bg-inset);
+    border: 1px solid var(--line-strong);
+    border-radius: var(--r-md);
+    box-shadow: var(--shadow-pop);
+    max-height: 280px;
     overflow-y: auto;
-    background: rgb(40, 44, 50);
-    border: 0.1rem solid rgb(69, 69, 69);
-    border-radius: 0.8rem;
-    padding: 0.3rem;
+    padding: 4px;
     list-style: none;
     margin: 0;
-    box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.4);
+    opacity: 0;
+    transform: translateY(-6px) scale(0.98);
+    pointer-events: none;
+    transition: opacity 160ms ease, transform 160ms ease;
+
+    &.menu--open {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      pointer-events: auto;
+    }
+
     &::-webkit-scrollbar {
-      width: 0.4rem;
+      width: 6px;
     }
     &::-webkit-scrollbar-thumb {
-      background-color: rgba(255, 255, 255, 0.2);
-      border-radius: 0.4rem;
+      background-color: var(--bg-inset-2);
+      border-radius: 3px;
     }
   }
+
   .option {
-    padding: 0.5rem 0.6rem;
-    border-radius: 0.5rem;
-    color: #fff;
+    display: flex;
+    align-items: center;
+    gap: var(--s-3);
+    padding: 8px 10px;
+    border-radius: var(--r-xs);
     cursor: pointer;
+    font-size: 14px;
+    color: var(--fg);
+
     &:hover {
-      background: rgba(255, 255, 255, 0.08);
+      background: var(--bg-inset-2);
     }
     &.selected {
-      background: rgba(255, 255, 255, 0.12);
+      background: var(--bg-inset-2);
     }
+  }
+
+  .opt-swatch {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    display: grid;
+    place-items: center;
+    color: #0b0d10;
+    flex-shrink: 0;
+  }
+
+  .opt-label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 `;
 

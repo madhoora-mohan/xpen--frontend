@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { Route, Routes, Navigate } from "react-router-dom";
+import styled from "styled-components";
 import Signup from "./Components/Signup";
 import Login from "./Components/Login";
-import styled from "styled-components";
 import { MainLayout } from "./styles/Layouts";
 import Navigation from "./Components/Navigation/Navigation";
 import Dashboard from "./Components/Dashboard/Dashboard";
@@ -13,51 +13,26 @@ import Limit from "./Components/Balance/Limit";
 import { Home } from "./Components/Home";
 import ErrorBoundary from "./Components/ErrorBoundary/ErrorBoundary";
 import { useAuth } from "./context/AuthContext";
-const StyledLeftNav = styled.div`
-  height: 1.8rem;
-  display: none;
-  justify-content: space-evenly;
-  flex-flow: column nowrap;
-  /* margin-left: 1rem; */
-  position: absolute;
-  z-index: 1000000;
-  /* margin-top: -0.7rem; */
+import { useGlobalContext } from "./context/globalContext";
+import { refresh } from "./utils/Icons";
 
-  div {
-    width: 1.4rem;
-    height: 0.2rem;
-    background-color: white;
-    border-radius: 5px;
-    transform-origin: 0.001rem;
-    transition: all 0.3s linear;
+const PAGE_TITLES = {
+  1: "Dashboard",
+  2: "Set Limit",
+  3: "Incomes",
+  4: "Expenses",
+  5: "Transfers",
+};
 
-    &:nth-child(1) {
-      transform: ${({ openn }) => (openn ? "rotate(45deg)" : "rotate(0)")};
-    }
-    &:nth-child(2) {
-      transform: ${({ openn }) =>
-        openn ? "translateY(100%)" : "translateY(0)"};
-      opacity: ${({ openn }) => (openn ? 0 : 1)};
-    }
-    &:nth-child(3) {
-      transform: ${({ openn }) => (openn ? "rotate(-45deg)" : "rotate(0)")};
-    }
-  }
-  @media (max-width: 920px) {
-    display: flex;
-    margin-left: 2rem;
-    margin-top: -0.5rem;
-  }
-`;
-
-function App() {
+function Shell() {
   const [active, setActive] = useState(1);
-  const [openn, setopenn] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const { refreshAll, getLimit } = useGlobalContext();
 
   const displayData = () => {
     switch (active) {
       case 1:
-        return <Dashboard />;
+        return <Dashboard setActive={setActive} />;
       case 2:
         return <Limit />;
       case 3:
@@ -67,44 +42,64 @@ function App() {
       case 5:
         return <Transfers />;
       default:
-        return <Dashboard />;
+        return <Dashboard setActive={setActive} />;
     }
   };
 
+  const onReload = () => {
+    refreshAll();
+    if (typeof getLimit === "function") getLimit();
+  };
+
+  return (
+    <AppStyled>
+      <MainLayout>
+        <ErrorBoundary>
+          <Navigation
+            active={active}
+            setActive={setActive}
+            drawerOpen={drawerOpen}
+            closeDrawer={() => setDrawerOpen(false)}
+          />
+        </ErrorBoundary>
+        <div className="main">
+          <div className="topbar">
+            <button
+              type="button"
+              className="menu-btn"
+              onClick={() => setDrawerOpen(true)}
+              aria-label="Open menu"
+            >
+              <i className="fa-solid fa-bars" />
+            </button>
+            <h1>{PAGE_TITLES[active]}</h1>
+            <div className="right">
+              <button
+                type="button"
+                className="icon-btn"
+                onClick={onReload}
+                title="Reload data"
+                aria-label="Reload data"
+              >
+                {refresh}
+              </button>
+            </div>
+          </div>
+          <ErrorBoundary>
+            <main>{displayData()}</main>
+          </ErrorBoundary>
+        </div>
+      </MainLayout>
+    </AppStyled>
+  );
+}
+
+function App() {
   const { isLoggedIn } = useAuth();
 
   return (
     <Routes>
-      {isLoggedIn && (
-        <Route
-          path="/"
-          exact
-          element={
-            <AppStyled className="App">
-              <MainLayout>
-                <StyledLeftNav openn={openn} onClick={() => setopenn(!openn)}>
-                  <div />
-                  <div />
-                  <div />
-                </StyledLeftNav>
-                <ErrorBoundary>
-                  <div className="nav">
-                    <Navigation
-                      active={active}
-                      setActive={setActive}
-                      openn={openn}
-                      closeNav={() => setopenn(false)}
-                    />
-                  </div>
-                </ErrorBoundary>
-                <ErrorBoundary>
-                  <main>{displayData()}</main>
-                </ErrorBoundary>
-              </MainLayout>
-            </AppStyled>
-          }
-        />
-      )}
+      {isLoggedIn && <Route path="/" exact element={<Shell />} />}
       {!isLoggedIn && <Route path="/signup" exact element={<Signup />} />}
       {isLoggedIn && (
         <Route path="/signup" exact element={<Navigate replace to="/" />} />
@@ -125,38 +120,111 @@ function App() {
 }
 
 const AppStyled = styled.div`
-  height: 100vh;
-  /* width: 100vw; */
-  /* background: linear-gradient(0.65turn, #000, rgb(33, 38, 45), #000); */
-  background-color: #000;
-  /* position: relative; */
-  .nav {
-    /* width: 30%; */
+  min-height: 100vh;
+  background: var(--bg-deep);
+  color: var(--fg);
+
+  .main {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    position: relative;
   }
+
   main {
+    flex: 1;
     width: 100%;
-    background: rgb(32, 38, 44);
-    /* height: 100vh; */
-    border: 0.3rem solid rgb(49, 54, 60);
-    border-radius: 1rem;
   }
-  /* @media (max-width: 825px) {
-    width: 100%;
-  } */
-  @media (max-width: 920px) {
-    overflow-x: hidden;
-    main {
-      border: none;
-      width: 100vw;
-      /* padding: 1rem; */
-      gap: 0rem;
-      margin: 0%;
-      border-radius: 0rem;
+
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    gap: var(--s-3);
+    padding: 0 var(--s-5);
+    height: var(--topbar-h);
+    background: rgba(11, 13, 16, 0.7);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .topbar h1 {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    margin: 0;
+    font-size: 20px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: var(--fg);
+    white-space: nowrap;
+    pointer-events: none;
+  }
+
+  .topbar .menu-btn {
+    width: 40px;
+    height: 40px;
+    border: 0;
+    background: transparent;
+    border-radius: var(--r-sm);
+    display: grid;
+    place-items: center;
+    color: var(--fg);
+    cursor: pointer;
+    font-size: 16px;
+  }
+  .topbar .menu-btn:hover {
+    background: rgba(255, 255, 255, 0.06);
+  }
+
+  .topbar .right {
+    margin-left: auto;
+    display: flex;
+    gap: var(--s-2);
+    align-items: center;
+  }
+
+  .topbar .icon-btn {
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    border-radius: var(--r-sm);
+    display: grid;
+    place-items: center;
+    color: var(--fg-muted);
+    cursor: pointer;
+    font-size: 15px;
+  }
+  .topbar .icon-btn:hover {
+    color: var(--fg);
+    background: rgba(255, 255, 255, 0.06);
+  }
+
+  @media (min-width: 900px) {
+    .topbar .menu-btn {
+      display: none;
     }
-  }
-  @media (min-width: 1024px) {
-    .nav {
-      width: 30%;
+    .topbar h1 {
+      display: none;
+    }
+    .topbar {
+      background: transparent;
+      border-bottom: 0;
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+      height: 0;
+      padding: 0;
+    }
+    .topbar .right {
+      position: absolute;
+      top: 16px;
+      right: 24px;
+      z-index: 5;
     }
   }
 `;

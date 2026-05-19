@@ -168,7 +168,7 @@ export const GlobalProvider = ({ children }) => {
     getTransfers();
   };
 
-  const HISTORY_LIMIT = 3;
+  const HISTORY_LIMIT = 6;
 
   const transactionHistory = () => {
     const history = [...incomes, ...expenses, ...transfers];

@@ -7,24 +7,26 @@ import { plus } from "../../utils/Icons";
 import { INCOME } from "../../config/categories";
 import CategorySelect from "../CategorySelect/CategorySelect";
 import FormStyled from "./FormStyled";
+import Field from "./Field";
 
 function Form() {
   const emailid = localStorage.getItem("email");
   const { addIncome, error, setError } = useGlobalContext();
-  const [inputState, setInputState] = useState({
+  const empty = {
     email: emailid,
     title: "",
     amount: "",
-    date: "",
+    date: null,
     category: "",
     description: "",
-  });
+  };
+  const [inputState, setInputState] = useState(empty);
 
   const { title, amount, date, category, description } = inputState;
 
   const handleInput = (name) => (e) => {
     setInputState({ ...inputState, [name]: e.target.value });
-    // setError("");
+    setError("");
   };
 
   const handleSubmit = (e) => {
@@ -46,76 +48,69 @@ function Form() {
       return;
     }
     addIncome(inputState);
-    setInputState({
-      email: emailid,
-      title: "",
-      amount: "",
-      date: "",
-      category: "",
-      description: "",
-    });
+    setInputState({ ...empty, email: emailid });
   };
 
   return (
     <FormStyled onSubmit={handleSubmit}>
-      {error && <p className="error_msg">{error}</p>}
-      <div className="input-control">
+      <Field label="Title" required>
         <input
           type="text"
+          className="input"
           value={title}
-          name={"title"}
-          placeholder="Income Title*"
+          name="title"
+          placeholder="e.g. May Salary"
           onChange={handleInput("title")}
         />
+      </Field>
+      <div className="field-row-2">
+        <Field label="Amount" required>
+          <input
+            type="number"
+            className="input"
+            value={amount}
+            name="amount"
+            placeholder="0"
+            onChange={handleInput("amount")}
+          />
+        </Field>
+        <Field label="Date" required>
+          <DatePicker
+            id="date"
+            placeholderText="DD / MM / YYYY"
+            selected={date}
+            dateFormat="dd/MM/yyyy"
+            onChange={(d) => {
+              setInputState({ ...inputState, date: d });
+              setError("");
+            }}
+          />
+        </Field>
       </div>
-      <div className="input-control">
-        <input
-          value={amount}
-          type="number"
-          name={"amount"}
-          placeholder={"Income Amount*"}
-          onChange={handleInput("amount")}
-        />
-      </div>
-      <div className="input-control">
-        <DatePicker
-          id="date"
-          placeholderText="Enter A Date*"
-          selected={date}
-          dateFormat="dd/MM/yyyy"
-          onChange={(date) => {
-            setInputState({ ...inputState, date: date });
-          }}
-        />
-      </div>
-      <div className="input-control">
+      <Field label="Category" required>
         <CategorySelect
           options={INCOME}
           value={category}
-          onChange={(id) => setInputState({ ...inputState, category: id })}
-          placeholder="Select Income Category*"
+          onChange={(id) => {
+            setInputState({ ...inputState, category: id });
+            setError("");
+          }}
+          placeholder="Select income category"
         />
-      </div>
-      <div className="input-control">
+      </Field>
+      <Field label="Description">
         <input
           name="description"
           type="text"
+          className="input"
           value={description}
-          placeholder="Add A Short Description"
-          className="desc"
+          placeholder="Add a short note (optional)"
           onChange={handleInput("description")}
-        ></input>
-      </div>
-
-      <div className="submit-btn">
-        <Button
-          name={"Add Income"}
-          icon={plus}
-          bPad={".5rem 1rem"}
-          bRad={"1.5rem"}
-          bg={"var(--color-accent)"}
-          color={"#fff"}
         />
+      </Field>
+      {error && <p className="error_msg">{error}</p>}
+      <div className="submit-btn">
+        <Button name="Add income" icon={plus} variant="primary" size="lg" block type="submit" />
       </div>
     </FormStyled>
   );

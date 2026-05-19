@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
 import { useGlobalContext } from "../../context/globalContext";
 import { InnerLayout } from "../../styles/Layouts";
@@ -6,31 +6,32 @@ import { formatRupee } from "../../utils/currency";
 import Form from "../Form/Form";
 import IncomeItem from "../IncomeItem/IncomeItem";
 import Spinner from "../Spinner/Spinner";
-import { refresh } from "../../utils/Icons";
+import EmptyState from "../EmptyState/EmptyState";
+import { trend } from "../../utils/Icons";
 
 function Income() {
-  const { incomes, getIncomes, deleteIncome, totalIncome, loading, refreshAll } =
+  const { incomes, getIncomes, deleteIncome, totalIncome, loading } =
     useGlobalContext();
 
   useEffect(() => {
     getIncomes();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const [expandedId, setExpandedId] = useState(null);
+  const handleExpand = (id) => setExpandedId((prev) => (prev === id ? null : id));
+
+  const list = useMemo(
+    () => incomes.slice().sort((a, b) => new Date(b.date) - new Date(a.date)),
+    [incomes]
+  );
+
   if (loading)
     return (
       <IncomeStyled>
         <InnerLayout>
-          <div className="top">
-            <h3>Incomes</h3>
-            <button
-              className="reload-mobile"
-              onClick={refreshAll}
-              title="Reload data"
-              aria-label="Reload data"
-            >
-              {refresh}
-            </button>
-          </div>
+          <h2 className="page-title">Incomes</h2>
+          <p className="page-sub">Where money came from this month</p>
           <Spinner />
         </InnerLayout>
       </IncomeStyled>
@@ -39,52 +40,50 @@ function Income() {
   return (
     <IncomeStyled>
       <InnerLayout>
-        <div className="top">
-          <h3>Incomes</h3>
-          <button
-            className="reload-mobile"
-            onClick={refreshAll}
-            title="Reload data"
-            aria-label="Reload data"
-          >
-            {refresh}
-          </button>
+        <h2 className="page-title">Incomes</h2>
+        <p className="page-sub">Where money came from this month</p>
+
+        <div className="total-banner income">
+          <div className="label">Total income</div>
+          <div className="value">{formatRupee(totalIncome())}</div>
         </div>
-        <h3 className="total-income">
-          Total Income: <span>{formatRupee(totalIncome())}</span>
-        </h3>
-        <div className="income-content">
-          <div className="form-container">
+
+        <div className="row-spacer" />
+
+        <div className="form-page-grid">
+          <div className="card">
+            <h3 className="card-h3">Add income</h3>
             <Form />
           </div>
-          <div className="inc-cont">
-            <div className="incomes">
-              {incomes.map((income) => {
-                const {
-                  _id,
-                  title,
-                  amount,
-                  date,
-                  category,
-                  description,
-                  type,
-                } = income;
-                return (
-                  <IncomeItem
-                    key={_id}
-                    id={_id}
-                    title={title}
-                    description={description}
-                    amount={amount}
-                    date={date}
-                    type={type}
-                    category={category}
-                    indicatorColor="var(--color-green)"
-                    deleteItem={deleteIncome}
-                  />
-                );
-              })}
-            </div>
+          <div>
+            {list.length === 0 ? (
+              <EmptyState
+                icon={trend}
+                title="No incomes yet"
+                sub="Log your salary, bonus, or cashback"
+              />
+            ) : (
+              <div className="scroll-list">
+                {list.map((income) => {
+                  const { _id, title, amount, date, category, description, type } = income;
+                  return (
+                    <IncomeItem
+                      key={_id}
+                      id={_id}
+                      title={title}
+                      description={description}
+                      amount={amount}
+                      date={date}
+                      type={type || "income"}
+                      category={category}
+                      deleteItem={deleteIncome}
+                      isExpanded={expandedId === _id}
+                      onExpand={handleExpand}
+                    />
+                  );
+                })}
+              </div>
+            )}
           </div>
         </div>
       </InnerLayout>
@@ -93,134 +92,95 @@ function Income() {
 }
 
 const IncomeStyled = styled.div`
-  overflow: auto;
-  &::-webkit-scrollbar {
-    width: 0;
+  width: 100%;
+
+  .page-title {
+    font-size: 26px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin: 0 0 var(--s-2);
   }
-  scroll-behavior: smooth;
-  height: 100%;
-  .top {
-    h3 {
-      padding-left: 1rem;
-      padding-bottom: 0.5rem;
-      font-weight: 600;
-    }
-    .reload-mobile {
-      display: none;
-    }
+  .page-sub {
+    color: var(--fg-muted);
+    font-size: 14px;
+    margin: 0 0 var(--s-5);
   }
-  .total-income {
-    margin: 0rem;
-    padding: 0.5rem;
+
+  .total-banner {
     display: flex;
-    justify-content: center;
-    align-items: center;
-    background: rgb(49, 54, 60);
-    border: 0.1rem solid rgb(69, 69, 69);
-    // box-shadow: 0px 1px 15px rgba(0, 0, 0, 0.06);
-    border-radius: 1rem;
-    font-size: 1.5rem;
-    font-weight: 500;
-    gap: 0.5rem;
-    color: #fff;
-    span {
-      font-size: 1.5rem;
+    align-items: baseline;
+    gap: var(--s-3);
+    background: var(--bg-surface);
+    border: 1px solid var(--line);
+    border-radius: var(--r-lg);
+    padding: var(--s-4) var(--s-5);
+
+    .label {
+      font-size: 13px;
       font-weight: 600;
-      color: var(--color-green);
+      color: var(--fg-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .value {
+      margin-left: auto;
+      font-size: 22px;
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+    }
+    &.income .value {
+      color: var(--accent-income);
     }
   }
-  .income-content {
-    padding-top: 1.5rem;
-    display: flex;
-    gap: 1rem;
-    justify-content: center;
-    align-items: center;
-    .form-container {
-      width: 40%;
-    }
-    /* overflow: hidden; */
-    .inc-cont {
-      width: 99%;
-      .incomes {
-        flex: 1;
-        overflow: auto;
-        &::-webkit-scrollbar {
-          width: 0;
-        }
-        scroll-behavior: smooth;
-        height: 25rem;
-      }
+
+  .row-spacer {
+    height: var(--s-5);
+  }
+
+  .form-page-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: var(--s-5);
+    @media (max-width: 980px) {
+      grid-template-columns: 1fr;
     }
   }
-  @media (max-width: 920px) {
-    width: 100vw;
-    overflow-x: hidden;
-    .top {
-      width: 100vw;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding-bottom: 1.5rem;
-      h3 {
-        background-color: black;
-        padding: 1rem;
-        padding-top: 1.5rem;
-        width: 100%;
-        text-align: center;
-        position: absolute;
-        z-index: 1000;
-        margin-top: -3.5rem;
-        margin-left: -2rem;
-        border: 0.1rem solid rgb(69, 69, 69);
-        border-bottom-right-radius: 1rem;
-        border-bottom-left-radius: 1rem;
-      }
-      .reload-mobile {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        position: fixed;
-        top: 0;
-        right: 0;
-        height: 3.5rem;
-        padding: 0 0.5rem 0 1rem;
-        background: transparent;
-        border: none;
-        color: #fff;
-        font-size: 1.1rem;
-        cursor: pointer;
-        z-index: 1001;
-      }
+
+  .card {
+    background: var(--bg-surface);
+    border: 1px solid var(--line);
+    border-radius: var(--r-lg);
+    padding: var(--s-5);
+  }
+
+  .card-h3 {
+    margin: 0 0 var(--s-4);
+    font-size: 15px;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+  }
+
+  .scroll-list {
+    max-height: min(600px, 55vh);
+    overflow-y: auto;
+    padding-right: 4px;
+
+    @media (max-width: 899px) {
+      max-height: 40vh;
+    }
+
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+    &::-webkit-scrollbar-thumb {
+      background: var(--bg-inset-2);
+      border-radius: 3px;
     }
   }
-  @media (max-width: 425px) {
-    .income-content {
-      display: flex;
-      flex-direction: column;
-      /* justify-content: center; */
-      /* align-items: flex-start; */
-      .inc-cont {
-        .incomes {
-          /* width: 90%; */
-          /* margin: 1rem; */
-        }
-      }
-      .form-container {
-        margin-left: -6rem;
-      }
-    }
-    .total-income {
-      font-size: 1.2rem;
-      span {
-        font-size: 1.2rem;
-      }
-    }
-  }
-  @media (min-width: 1024px) {
-    .income-content {
-      .form-container {
-        /* width:50rem; */
-      }
+
+  @media (max-width: 720px) {
+    .page-title {
+      font-size: 22px;
     }
   }
 `;

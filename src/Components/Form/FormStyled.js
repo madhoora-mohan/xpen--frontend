@@ -1,84 +1,94 @@
 import styled from "styled-components";
 
 const FormStyled = styled.form`
-  .error_msg {
-    width: 75%;
-    padding: 1rem;
-    margin: 0;
-    font-size: 0.8rem;
-    background-color: #f34646;
-    color: white;
-    border-radius: 0.8rem;
-    text-align: center;
-  }
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
-  input,
+  gap: var(--s-3);
+
+  .input,
+  input.input,
+  input[type="text"],
+  input[type="number"],
+  input[type="email"],
+  input[type="password"],
+  input[type="date"],
   textarea,
   select {
+    width: 100%;
+    height: 44px;
+    padding: 0 var(--s-3);
+    background: var(--bg-inset);
+    color: var(--fg);
+    border: 1px solid var(--line);
+    border-radius: var(--r-sm);
     font-family: inherit;
-    font-size: 1rem;
+    font-size: 14px;
+    font-weight: 500;
     outline: none;
-    padding: 1rem 1rem;
-    border-radius: 0.8rem;
-    border: 0.1rem solid rgb(69, 69, 69);
-    background: rgb(86, 88, 88);
-    opacity: 0.6;
-    resize: none;
-    color: rgba(255, 255, 255, 1);
-    &::placeholder {
-      color: rgba(34, 34, 96, 0.4);
-      color: white;
-      opacity: 0.3;
-    }
-  }
-  select {
-    font-size: 1rem;
-    padding: 0.5rem 0.5rem;
+    transition: border-color 120ms ease, background 120ms ease;
+    appearance: none;
   }
 
-  .input-control {
-    input {
-      height: 2rem;
-      width: 100%;
-    }
-    .desc {
-      height: 20%;
-    }
-    h5 {
-      padding-left: 1rem;
-      padding-top: 0.5rem;
-      color: rgb(80, 80, 80);
-    }
+  input::placeholder,
+  textarea::placeholder {
+    color: var(--fg-faint);
   }
 
-  .selects {
-    display: flex;
-    height: 2.5rem;
-    justify-content: flex-end;
-    select {
-      color: rgba(255, 255, 255, 0.4);
-      &:focus,
-      &:active {
-        color: rgba(255, 255, 255, 1);
-      }
-    }
+  input:focus,
+  textarea:focus,
+  select:focus {
+    border-color: var(--line-focus);
+    background: var(--bg-inset-2);
+  }
+
+  textarea {
+    height: auto;
+    min-height: 80px;
+    padding: var(--s-3);
+    resize: vertical;
+  }
+
+  .react-datepicker-wrapper {
+    width: 100%;
+  }
+  .react-datepicker__input-container input {
+    width: 100%;
+  }
+
+  .field-row-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--s-3);
   }
 
   .submit-btn {
+    margin-top: var(--s-2);
     button {
-      justify-content: center;
-      font-size: 1rem;
-      &:hover {
-        background: var(--color-green) !important;
-      }
+      width: 100%;
     }
   }
-  @media (max-width: 425px) {
-    width: 15rem;
-    gap: 1rem;
-    justify-content: left;
+
+  .error_msg,
+  .error-msg {
+    padding: 10px 12px;
+    background: rgba(232, 60, 50, 0.12);
+    color: #ff857d;
+    border: 1px solid rgba(232, 60, 50, 0.3);
+    border-radius: var(--r-sm);
+    font-size: 13px;
+    font-weight: 600;
+    margin: 0;
+  }
+
+  .success_msg {
+    padding: 10px 12px;
+    background: rgba(66, 173, 0, 0.12);
+    color: #9be37b;
+    border: 1px solid rgba(66, 173, 0, 0.3);
+    border-radius: var(--r-sm);
+    font-size: 13px;
+    font-weight: 600;
+    margin: 0;
   }
 `;
 
