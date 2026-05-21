@@ -12,7 +12,7 @@ function Field({ label, required, hint, children, className }) {
       )}
       {children}
       {hint && <span className="field-hint">{hint}</span>}
-    </Wrap>
+    </FieldWrap>
   );
 }
 
