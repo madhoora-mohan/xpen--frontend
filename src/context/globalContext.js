@@ -155,8 +155,7 @@ export const GlobalProvider = ({ children }) => {
   };
 
   const updateLimit = async (uplimit) => {
-    const emailid = localStorage.getItem("email");
-    await axios.put(`${BASE_URL}update-limit/${emailid}/${uplimit}`);
+    await axios.put(`${BASE_URL}update-limit`, { uplimit });
     getLimit();
   };
 
