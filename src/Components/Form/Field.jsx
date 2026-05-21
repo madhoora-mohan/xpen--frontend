@@ -1,10 +1,9 @@
 import React from "react";
 import styled from "styled-components";
 
-function Field({ label, required, hint, htmlFor, children, className }) {
-  const Wrap = htmlFor ? FieldWrap : FieldWrap.withComponent("div");
+function Field({ label, required, hint, children, className }) {
   return (
-    <Wrap className={className} htmlFor={htmlFor}>
+    <FieldWrap className={className}>
       {label && (
         <span className="field-label">
           {label}
