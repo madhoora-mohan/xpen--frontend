@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
 import styled from "styled-components";
@@ -18,6 +18,13 @@ function AuthCard({ mode }) {
   const [error, setError] = useState("");
 
   const isSignup = mode === "signup";
+
+  useEffect(() => {
+    if (mode === "login" && sessionStorage.getItem("sessionExpired")) {
+      setError("Your session has expired. Please sign in again.");
+      sessionStorage.removeItem("sessionExpired");
+    }
+  }, [mode]);
 
   const handleChange = ({ currentTarget: input }) => {
     setData({ ...data, [input.name]: input.value });
