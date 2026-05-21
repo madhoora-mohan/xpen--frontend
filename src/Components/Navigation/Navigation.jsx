@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { signout, fileexport } from "../../utils/Icons";
 import { menuItems } from "../../utils/menuItems";
@@ -102,6 +103,7 @@ function NavFooter({ onSignOut, onExport }) {
 
 function Navigation({ active, setActive, drawerOpen, closeDrawer }) {
   const { logout } = useAuth();
+  const navigate = useNavigate();
   const {
     totalBalance,
     setError,
@@ -128,6 +130,7 @@ function Navigation({ active, setActive, drawerOpen, closeDrawer }) {
       await axios.post(`${process.env.REACT_APP_AUTH_URL}/logout`);
     } catch {}
     logout();
+    navigate("/login");
   };
 
   const handleExport = () => {
