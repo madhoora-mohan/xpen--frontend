@@ -16,7 +16,7 @@ function Field({ label, required, hint, children, className }) {
   );
 }
 
-const FieldWrap = styled.label`
+const FieldWrap = styled.div`
   display: block;
   width: 100%;
 
