@@ -1,10 +1,10 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { useGlobalContext } from "../../context/globalContext";
 import { InnerLayout } from "../../styles/Layouts";
 import Button from "../Button/Button";
-import { plus, refresh } from "../../utils/Icons";
-import { useState, useEffect } from "react";
+import Field from "../Form/Field";
+import { plus } from "../../utils/Icons";
 import { formatRupee } from "../../utils/currency";
 
 function Limit() {
@@ -15,323 +15,300 @@ function Limit() {
     updateLimit,
     error,
     setError,
-    refreshAll,
   } = useGlobalContext();
-  const [inputState, setInputState] = useState({
-    limit: "",
-  });
+  const [limit, setLimit] = useState("");
+  const [okMsg, setOkMsg] = useState("");
+
   useEffect(() => {
     getLimit();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  const { limit } = inputState;
-
-  const handleInput = (name) => (e) => {
-    setInputState({ ...inputState, [name]: e.target.value });
-    setError("");
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (parseInt(inputState.limit, 10) <= 0) {
+    const n = parseInt(limit, 10);
+    if (isNaN(n) || n <= 0) {
       setError("Limit must be a positive number!");
+      setOkMsg("");
       return;
     }
-    if (totalBalance() < limit) {
+    if (totalBalance() < n) {
       setError(
         "Your Savings are dropping below your set Limit!! Reduce Your Expenses!!"
       );
+    } else {
+      setError("");
     }
-    if (parseInt(inputState.limit, 10) > 0) {
-      updateLimit(parseInt(inputState.limit, 10));
-    }
-    setInputState({
-      limit: "",
-    });
+    await updateLimit(n);
+    setOkMsg(`Limit updated to ${formatRupee(n)}`);
+    setLimit("");
+    setTimeout(() => setOkMsg(""), 2400);
   };
+
+  const savings = totalBalance();
+  const limitNumber = Number(limits) || 0;
+  const tone =
+    limitNumber <= 0
+      ? "good"
+      : savings < limitNumber
+      ? "bad"
+      : savings < limitNumber * 1.5
+      ? "warn"
+      : "good";
+  const ratioMax = Math.max(limitNumber * 2, 1);
+  const ratio = limitNumber > 0
+    ? Math.min(100, Math.max(8, (savings / ratioMax) * 100))
+    : 0;
+  const statusPill =
+    limitNumber <= 0
+      ? "No limit set"
+      : tone === "bad"
+      ? "⚠ Below limit"
+      : tone === "warn"
+      ? "Close to limit"
+      : "On track";
+
   return (
     <LimitStyled>
       <InnerLayout>
-        <div className="top">
-          <h3>Set Limit</h3>
-          <button
-            className="reload-mobile"
-            onClick={() => {
-              refreshAll();
-              getLimit();
-            }}
-            title="Reload data"
-            aria-label="Reload data"
-          >
-            {refresh}
-          </button>
+        <h2 className="page-title">Set savings limit</h2>
+        <p className="page-sub">
+          Get a heads-up when your savings dip below this floor
+        </p>
+
+        <div className="total-banner">
+          <div className="label">Current savings</div>
+          <div className="value">{formatRupee(savings)}</div>
         </div>
-        <h3 className="total-income">
-          Savings: <span>{formatRupee(totalBalance())}</span>
-        </h3>
-      </InnerLayout>
-      <div className="center">
-        <div className="limiter">
-          <h3>Set Minimum Limit</h3>
-          <h4>Current Limit: {limits}</h4>
-          {error && <p className="error_msg">{error}</p>}
+
+        <div className="limit-card">
+          <h3 className="limit-card-title">Minimum savings limit</h3>
+          <div className="current">
+            <div className="l">Current limit</div>
+            <div className="v num">{formatRupee(limitNumber)}</div>
+          </div>
+
+          <div className="progress">
+            <div
+              className={"bar " + tone}
+              style={{ width: `${ratio}%` }}
+            />
+          </div>
+          <div className="progress-labels">
+            <span>0</span>
+            <span>{statusPill}</span>
+            <span>{formatRupee(limitNumber * 2)}</span>
+          </div>
 
           <form onSubmit={handleSubmit}>
-            <input
-              type="number"
-              value={limit}
-              name={"limit"}
-              placeholder="Limit"
-              onChange={handleInput("limit")}
-              // onChange={(e) => {
-              //   setInputState(e.target.value);
-              // }}
-            />
-            <div className="submit-btn">
+            <Field label="New limit (₹)">
+              <input
+                type="number"
+                className="input"
+                value={limit}
+                name="limit"
+                placeholder="e.g. 10000"
+                onChange={(e) => {
+                  setLimit(e.target.value);
+                  setError("");
+                  setOkMsg("");
+                }}
+              />
+            </Field>
+            {error && <p className="error_msg">{error}</p>}
+            {okMsg && <p className="success_msg">{okMsg}</p>}
+            <div className="submit-row">
               <Button
-                name={"Set limit"}
+                name="Save limit"
                 icon={plus}
-                bPad={".6rem 1.6rem"}
-                bRad={"1.5rem"}
-                bg={"var(--color-accent)"}
-                color={"#fff"}
+                variant="primary"
+                size="lg"
+                block
+                type="submit"
               />
             </div>
           </form>
         </div>
-      </div>
+      </InnerLayout>
     </LimitStyled>
   );
 }
 
 const LimitStyled = styled.div`
-  overflow: auto;
-  display: flex;
-  flex-direction: column;
-  /* align-items: center; */
-  /* justify-content: center; */
-  overflow-x: hidden;
-  &::-webkit-scrollbar {
-    width: 0;
+  width: 100%;
+
+  .page-title {
+    font-size: 26px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin: 0 0 var(--s-2);
   }
-  scroll-behavior: smooth;
-  height: 100%;
-  .error_msg {
-    width: 75%;
-    padding: 1rem;
-    margin: 0;
-    font-size: 0.8rem;
-    background-color: #f34646;
-    color: white;
-    border-radius: 0.8rem;
-    text-align: center;
+  .page-sub {
+    color: var(--fg-muted);
+    font-size: 14px;
+    margin: 0 0 var(--s-5);
   }
-  .top {
-    h3 {
-      padding-left: 1rem;
-      padding-bottom: 0.5rem;
-      font-size: 1.4rem;
-      font-weight: 600;
-      display: flex;
-      justify-content: center;
-    }
-    .reload-mobile {
-      display: none;
-    }
-  }
-  .total-income {
+
+  .total-banner {
+    max-width: 480px;
+    margin: 0 auto;
     display: flex;
-    justify-content: center;
-    /* align-items: center; */
-    background: rgb(49, 54, 60);
-    border: 0.1rem solid rgb(69, 69, 69);
-    // box-shadow: 0rem 1px 15px rgba(0, 0, 0, 0.06);
-    border-radius: 1rem;
-    padding: 0.5rem;
+    align-items: baseline;
+    gap: var(--s-3);
+    background: var(--bg-surface);
+    border: 1px solid var(--line);
+    border-radius: var(--r-lg);
+    padding: var(--s-4) var(--s-5);
+
+    .label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--fg-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .value {
+      margin-left: auto;
+      font-size: 22px;
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+      color: var(--fg);
+    }
+  }
+
+  .limit-card {
+    max-width: 480px;
+    margin: var(--s-5) auto 0;
+    background: var(--bg-surface);
+    border: 1px solid var(--line);
+    border-radius: var(--r-lg);
+    padding: var(--s-6);
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-3);
+  }
+
+  .limit-card-title {
+    margin: 0 0 var(--s-2);
+    font-size: 16px;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+  }
+
+  .current {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: var(--s-3) var(--s-4);
+    background: var(--bg-inset);
+    border-radius: var(--r-md);
+
+    .v {
+      font-size: 22px;
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+    }
+    .l {
+      color: var(--fg-muted);
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+  }
+
+  .progress {
+    position: relative;
+    height: 8px;
+    background: var(--bg-inset);
+    border-radius: 4px;
+    overflow: hidden;
+
+    .bar {
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      border-radius: 4px;
+      transition: width 240ms;
+      &.good {
+        background: var(--accent-income);
+      }
+      &.warn {
+        background: var(--accent-warn);
+      }
+      &.bad {
+        background: var(--accent-expense);
+      }
+    }
+  }
+
+  .progress-labels {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 6px;
+    font-size: 11px;
+    color: var(--fg-muted);
     font-weight: 600;
-    font-size: 1.3rem;
-    gap: 0.5rem;
-    span {
-      font-size: 1.3rem;
-      font-weight: 600;
-    }
   }
-  .center {
+
+  form {
+    margin-top: var(--s-3);
     display: flex;
-    justify-content: center;
-    /* text-align: center; */
-    align-items: center;
-    .limiter {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      width: 50%;
-      /* height: fit-content; */
-      background: rgb(49, 54, 60);
-      border: 0.1rem solid rgb(69, 69, 69);
-      // box-shadow: 0px 1px 15px rgba(0, 0, 0, 0.06);
-      border-radius: 1rem;
-      padding: 0.5rem;
-      margin: 1rem 0;
-      gap: 1rem;
-      h3 {
-        padding-bottom: 1rem;
-        font-weight: 600;
-        font-size: 1.3rem;
-      }
-      h4 {
-        font-weight: 600;
-        font-size: 1rem;
-      }
-      form {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        margin: 1rem 0;
-        font-size: 2rem;
-        gap: 1.5rem;
-      }
+    flex-direction: column;
+    gap: var(--s-3);
+  }
 
-      input {
-        width: 80%;
-        border-radius: 1rem;
-        border: 0.1rem solid rgb(88, 88, 88);
-        font-size: 1.2rem;
-        color: rgba(255, 255, 255, 0.6);
-        background: rgb(69, 69, 69);
-        padding: 0.5rem;
+  .input {
+    width: 100%;
+    height: 44px;
+    padding: 0 var(--s-3);
+    background: var(--bg-inset);
+    color: var(--fg);
+    border: 1px solid var(--line);
+    border-radius: var(--r-sm);
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    outline: none;
+    transition: border-color 120ms, background 120ms;
+  }
+  .input:focus {
+    border-color: var(--line-focus);
+    background: var(--bg-inset-2);
+  }
+  .input::placeholder {
+    color: var(--fg-faint);
+  }
 
-        &::placeholder {
-          color: rgb(91, 94, 97);
-        }
-      }
-      .submit-btn {
-        button {
-          justify-content: center;
-          font-size: 0.8rem;
-          &:hover {
-            background: var(--color-green) !important;
-          }
-        }
-      }
-    }
+  .error_msg {
+    padding: 10px 12px;
+    background: rgba(232, 60, 50, 0.12);
+    color: #ff857d;
+    border: 1px solid rgba(232, 60, 50, 0.3);
+    border-radius: var(--r-sm);
+    font-size: 13px;
+    font-weight: 600;
+    margin: 0;
   }
-  @media (max-width: 920px) {
-    width: 100vw;
-    .top {
-      width: 100vw;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding-bottom: 1.5rem;
-      h3 {
-        background-color: black;
-        padding: 1rem;
-        padding-top: 1rem;
-        width: 100%;
-        text-align: center;
-        position: absolute;
-        z-index: 1000;
-        border: 0.1rem solid rgb(69, 69, 69);
-        margin-top: -3.5rem;
-        margin-left: -2rem;
-        border-bottom-right-radius: 1rem;
-        border-bottom-left-radius: 1rem;
-      }
-      .reload-mobile {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        position: fixed;
-        top: 0;
-        right: 0;
-        height: 3.5rem;
-        padding: 0 0.5rem 0 1rem;
-        background: transparent;
-        border: none;
-        color: #fff;
-        font-size: 1.1rem;
-        cursor: pointer;
-        z-index: 1001;
-      }
-    }
+  .success_msg {
+    padding: 10px 12px;
+    background: rgba(66, 173, 0, 0.12);
+    color: #9be37b;
+    border: 1px solid rgba(66, 173, 0, 0.3);
+    border-radius: var(--r-sm);
+    font-size: 13px;
+    font-weight: 600;
+    margin: 0;
   }
-  @media (max-width: 1440px) {
-    .center {
-      padding: 0rem;
-      margin: 0rem;
-      .limiter {
-        width: 30%;
-        h3 {
-          font-size: 1.2rem;
-        }
-        h4 {
-          font-size: 1.2rem;
-        }
-        form {
-          input {
-            padding: 0.6rem;
-          }
-        }
-      }
-    }
+
+  .submit-row {
+    margin-top: var(--s-2);
   }
-  @media (max-width: 425px) {
-    .center {
-      .limiter {
-        width: 60% !important;
-        h3 {
-          font-size: 1rem;
-        }
-        h4 {
-          font-size: 0.8rem;
-        }
-        form {
-          input {
-            font-size: 1rem;
-            padding: 0.4rem;
-          }
-        }
-      }
-    }
-  }
-  @media (max-width: 375px) {
-    .center {
-      .limiter {
-        h3 {
-          font-size: 0.6rem;
-        }
-        h4 {
-          font-size: 0.6rem;
-        }
-        form {
-          input {
-            font-size: 0.6rem;
-            padding: 0.2rem;
-          }
-        }
-      }
-    }
-  }
-  @media (max-width: 768px) {
-    .center {
-      .limiter {
-        width: 40%;
-        h3 {
-          font-size: 1rem;
-        }
-        h4 {
-          font-size: 0.8rem;
-        }
-        form {
-          input {
-            font-size: 1rem;
-            padding: 0.4rem;
-          }
-        }
-      }
+
+  @media (max-width: 720px) {
+    .page-title {
+      font-size: 22px;
     }
   }
 `;

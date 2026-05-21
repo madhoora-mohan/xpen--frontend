@@ -8,6 +8,7 @@ import { plus } from "../../utils/Icons";
 import { TRANSFER, getCategory } from "../../config/categories";
 import CategorySelect from "../CategorySelect/CategorySelect";
 import FormStyled from "../Form/FormStyled";
+import Field from "../Form/Field";
 
 function TransferForm() {
   const emailid = localStorage.getItem("email");
@@ -17,7 +18,7 @@ function TransferForm() {
     email: emailid,
     title: "",
     amount: "",
-    date: "",
+    date: null,
     category: "",
     description: "",
     direction: "out",
@@ -37,6 +38,7 @@ function TransferForm() {
 
   const handleInput = (name) => (e) => {
     setInputState({ ...inputState, [name]: e.target.value });
+    setError("");
   };
 
   const handleSubmit = async (e) => {
@@ -54,79 +56,88 @@ function TransferForm() {
 
   return (
     <FormStyled onSubmit={handleSubmit}>
-      {error && <p className="error_msg">{error}</p>}
-      <div className="input-control">
+      <Field label="Title" required>
         <input
           type="text"
+          className="input"
           value={title}
           name="title"
-          placeholder="Transfer Title*"
+          placeholder="e.g. Loan to A"
           onChange={handleInput("title")}
         />
+      </Field>
+      <div className="field-row-2">
+        <Field label="Amount" required>
+          <input
+            type="number"
+            className="input"
+            value={amount}
+            name="amount"
+            placeholder="0"
+            onChange={handleInput("amount")}
+          />
+        </Field>
+        <Field label="Date" required>
+          <DatePicker
+            id="date"
+            placeholderText="DD / MM / YYYY"
+            selected={date}
+            dateFormat="dd/MM/yyyy"
+            onChange={(d) => {
+              setInputState({ ...inputState, date: d });
+              setError("");
+            }}
+          />
+        </Field>
       </div>
-      <div className="input-control">
-        <input
-          value={amount}
-          type="number"
-          name="amount"
-          placeholder="Transfer Amount*"
-          onChange={handleInput("amount")}
-        />
-      </div>
-      <div className="input-control">
-        <DatePicker
-          id="date"
-          placeholderText="Enter A Date*"
-          selected={date}
-          dateFormat="dd/MM/yyyy"
-          onChange={(d) => setInputState({ ...inputState, date: d })}
-        />
-      </div>
-      <div className="input-control">
+      <Field label="Type" required>
         <CategorySelect
           options={TRANSFER}
           value={category}
-          onChange={(id) => setInputState({ ...inputState, category: id })}
-          placeholder="Select Transfer Category*"
+          onChange={(id) => {
+            setInputState({ ...inputState, category: id });
+            setError("");
+          }}
+          placeholder="Select transfer type"
         />
-      </div>
-      <DirectionRow>
-        <button
-          type="button"
-          className={direction === "out" ? "dir-btn active" : "dir-btn"}
-          onClick={() => !isDirectionLocked && setInputState({ ...inputState, direction: "out" })}
-          disabled={isDirectionLocked}
-        >
-          Money Out
-        </button>
-        <button
-          type="button"
-          className={direction === "in" ? "dir-btn active" : "dir-btn"}
-          onClick={() => !isDirectionLocked && setInputState({ ...inputState, direction: "in" })}
-          disabled={isDirectionLocked}
-        >
-          Money In
-        </button>
-      </DirectionRow>
-      <div className="input-control">
+      </Field>
+      <Field label="Direction">
+        <DirectionRow>
+          <button
+            type="button"
+            className={direction === "out" ? "dir-btn active" : "dir-btn"}
+            onClick={() =>
+              !isDirectionLocked && setInputState({ ...inputState, direction: "out" })
+            }
+            disabled={isDirectionLocked}
+          >
+            Money out
+          </button>
+          <button
+            type="button"
+            className={direction === "in" ? "dir-btn active" : "dir-btn"}
+            onClick={() =>
+              !isDirectionLocked && setInputState({ ...inputState, direction: "in" })
+            }
+            disabled={isDirectionLocked}
+          >
+            Money in
+          </button>
+        </DirectionRow>
+      </Field>
+      <Field label="Description">
         <input
           name="description"
           type="text"
+          className="input"
           value={description}
-          placeholder="Add A Short Description"
-          className="desc"
+          placeholder="Add a short note (optional)"
           onChange={handleInput("description")}
         />
-      </div>
+      </Field>
+      {error && <p className="error_msg">{error}</p>}
       <div className="submit-btn">
-        <Button
-          name="Add Transfer"
-          icon={plus}
-          bPad=".5rem 1rem"
-          bRad="1.5rem"
-          bg="var(--color-accent)"
-          color="#fff"
-        />
+        <Button name="Add transfer" icon={plus} variant="primary" size="lg" block type="submit" />
       </div>
     </FormStyled>
   );
@@ -134,25 +145,35 @@ function TransferForm() {
 
 const DirectionRow = styled.div`
   display: flex;
-  gap: 0.5rem;
+  gap: 4px;
+  background: var(--bg-deep);
+  padding: 4px;
+  border-radius: var(--r-sm);
+  border: 1px solid var(--line);
+
   .dir-btn {
     flex: 1;
-    padding: 0.6rem;
-    border-radius: 0.8rem;
-    border: 0.1rem solid rgb(69, 69, 69);
-    background: rgb(86, 88, 88);
-    color: rgba(255, 255, 255, 0.6);
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 0;
+    background: transparent;
+    color: var(--fg-muted);
     font-family: inherit;
-    font-size: 0.95rem;
+    font-size: 13px;
+    font-weight: 700;
     cursor: pointer;
+    min-height: 36px;
+    transition: background 120ms, color 120ms, box-shadow 120ms;
+
     &.active {
-      background: var(--color-accent);
-      color: #fff;
-      opacity: 1;
+      background: var(--bg-surface);
+      color: var(--fg);
+      box-shadow: inset 0 0 0 1px var(--line);
     }
+
     &:disabled {
       cursor: not-allowed;
-      opacity: 0.5;
+      opacity: 0.6;
     }
   }
 `;

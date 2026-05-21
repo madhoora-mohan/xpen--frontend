@@ -1,10 +1,9 @@
 import React from "react";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 import { dateFormat } from "../../utils/dateFormat";
-import { calender, comment, trash, arrowUp, arrowDown } from "../../utils/Icons";
+import { trash } from "../../utils/Icons";
 import { getCategory } from "../../config/categories";
 import { formatRupee } from "../../utils/currency";
-import Button from "../Button/Button";
 
 function IncomeItem({
   id,
@@ -14,183 +13,284 @@ function IncomeItem({
   category,
   description,
   deleteItem,
-  indicatorColor,
   type,
   direction,
+  isExpanded,
+  onExpand,
 }) {
   const cat = getCategory(type, category);
-  const dotColor = cat.color || indicatorColor;
+  const catColor = cat.color || "#888";
+
+  const sign =
+    type === "income"
+      ? "+"
+      : type === "expense"
+      ? "-"
+      : direction === "out"
+      ? "-"
+      : "+";
+
+  const amountTone =
+    type === "income"
+      ? "income"
+      : type === "expense"
+      ? "expense"
+      : direction === "out"
+      ? "transfer-out"
+      : "transfer-in";
+
+  const safeAmount = amount < 0 ? 0 : amount;
 
   return (
-    <IncomeItemStyled indicator={dotColor}>
-      <div className="icon">{cat.icon}</div>
-      <div className="content">
-        <h5>
+    <ItemStyled
+      $color={catColor}
+      $isExpanded={isExpanded}
+      onClick={() => onExpand && onExpand(id)}
+    >
+      <div className="tx-icon" style={{ background: catColor }}>
+        {cat.icon}
+      </div>
+      <div className="tx-body">
+        <div className="tx-title">
           {title}
-          <span className="cat-label">{cat.label}</span>
-          {type === "transfer" && direction && (
-            <span className={`dir-badge ${direction}`}>
-              {direction === "out" ? arrowUp : arrowDown} {direction.toUpperCase()}
-            </span>
-          )}
-        </h5>
-        <div className="inner-content">
-          <div className="text">
-            <p>{formatRupee(amount)}</p>
-            <p>
-              {calender} {dateFormat(date)}
-            </p>
-            <p>
-              {comment}
-              {description}
-            </p>
-          </div>
-          <div className="btn-con">
-            <Button
-              icon={trash}
-              bPad={"0.3rem"}
-              bRad={"50%"}
-              bg={"var(--primary-color"}
-              color={"#000"}
-              iColor={"#000"}
-              hColor={"var(--color-green)"}
-              onClick={() => deleteItem(id)}
-            />
-          </div>
+          <i className={`fa-solid fa-chevron-down expand-caret${isExpanded ? " open" : ""}`} />
+        </div>
+        <div className="tx-meta">
+          <span className="cat-name" style={{ color: catColor }}>
+            <span className="cat-swatch" style={{ background: catColor }} />
+            {cat.label}
+          </span>
+          <span className="meta-divider" />
+          <span className="meta-date">{dateFormat(date)}</span>
         </div>
       </div>
-    </IncomeItemStyled>
+      <div className={`tx-amount ${amountTone}`}>
+        {sign}
+        {formatRupee(safeAmount)}
+      </div>
+      <button
+        type="button"
+        className="tx-delete"
+        onClick={(e) => { e.stopPropagation(); deleteItem(id); }}
+        aria-label="Delete"
+        title="Delete"
+      >
+        {trash}
+      </button>
+
+      {/* grid-template-rows: 0fr → 1fr gives exact-height smooth animation */}
+      <div className="tx-desc-row">
+        <div className="tx-desc-inner">
+          <span className="tx-full-date">{dateFormat(date)}</span>
+          <p className="tx-desc">
+            {description || <span className="no-desc">No description added</span>}
+          </p>
+        </div>
+      </div>
+    </ItemStyled>
   );
 }
 
-const IncomeItemStyled = styled.div`
-  background: rgb(49, 54, 60);
-  border: 0.1rem solid rgb(69, 69, 69);
-  border-radius: 1rem;
-  padding: 0.7rem;
-  margin-bottom: 1rem;
-  display: flex;
+const ItemStyled = styled.div`
+  display: grid;
+  grid-template-columns: 44px 1fr auto auto;
   align-items: center;
-  gap: 1.5rem;
-  color: #222260;
-  .icon {
-    width: 10%;
-    background: rgb(49, 54, 60);
+  gap: var(--s-3);
+  padding: var(--s-3) var(--s-4);
+  background: ${({ $color }) =>
+    `linear-gradient(90deg, ${$color}33 0%, ${$color}14 60%, ${$color}08 100%), var(--bg-surface)`};
+  border: 1px solid ${({ $color }) => `${$color}55`};
+  border-left: 3px solid ${({ $color }) => $color};
+  border-radius: var(--r-md);
+  cursor: pointer;
+  transition: background 120ms ease;
+
+  & + & {
+    margin-top: var(--s-2);
+  }
+
+  &:hover .tx-delete {
+    opacity: 1;
+  }
+
+  .tx-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: var(--r-sm);
+    display: grid;
+    place-items: center;
+    color: #0b0d10;
+    flex-shrink: 0;
+    align-self: center;
+
+    i { font-size: 20px; }
+  }
+
+  .tx-body {
+    min-width: 0;
+    align-self: center;
+  }
+
+  .tx-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--fg);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
     display: flex;
-    color: #fff;
-    opacity: 0.85;
     align-items: center;
-    justify-content: center;
-    i {
-      font-size: 1.5rem;
+    gap: 6px;
+  }
+
+  .expand-caret {
+    font-size: 10px;
+    color: var(--fg-faint);
+    flex-shrink: 0;
+    transition: transform 240ms ease;
+    &.open { transform: rotate(180deg); }
+  }
+
+  .tx-meta {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 6px;
+    align-items: center;
+    font-size: 12px;
+    color: var(--fg-muted);
+    margin-top: 2px;
+    overflow: hidden;
+  }
+
+  .meta-divider {
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background: currentColor;
+    opacity: 0.5;
+    flex-shrink: 0;
+  }
+
+  .cat-name {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    filter: brightness(1.05);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .cat-swatch {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+  }
+
+  .meta-date {
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .tx-amount {
+    font-size: 15px;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.01em;
+    white-space: nowrap;
+    align-self: center;
+  }
+  .tx-amount.expense      { color: var(--accent-expense); }
+  .tx-amount.income       { color: var(--accent-income); }
+  .tx-amount.transfer-out { color: var(--accent-lending); }
+  .tx-amount.transfer-in  { color: var(--accent-balance); }
+
+  .tx-delete {
+    width: 36px;
+    height: 36px;
+    border-radius: var(--r-sm);
+    background: transparent;
+    border: 0;
+    color: var(--fg-faint);
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    opacity: 0;
+    align-self: center;
+    transition: opacity 120ms ease, color 120ms ease, background 120ms ease;
+
+    i { font-size: 14px; }
+
+    &:hover {
+      color: var(--accent-expense);
+      background: rgba(232, 60, 50, 0.1);
     }
   }
 
-  .content {
-    flex: 1;
+  /* grid-template-rows: 0fr→1fr = exact content height, single-stage, no overshoot */
+  .tx-desc-row {
+    grid-column: 2 / -1;
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 240ms ease;
+  }
+
+  .tx-desc-inner {
+    overflow: hidden;
+    min-height: 0;
     display: flex;
     flex-direction: column;
-    gap: 0.2rem;
-    h5 {
-      font-size: 1.2rem;
-      padding-left: 1.5rem;
-      position: relative;
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-      flex-wrap: wrap;
-      color: #fff;
-      &::before {
-        content: "";
-        position: absolute;
-        left: 0;
-        top: 50%;
-        transform: translateY(-50%);
-        width: 0.8rem;
-        height: 0.8rem;
-        border-radius: 50%;
-        background: ${(props) => props.indicator};
-      }
-      .cat-label {
-        font-size: 0.7rem;
-        font-weight: 500;
-        padding: 0.15rem 0.5rem;
-        border-radius: 0.5rem;
-        background: rgba(255, 255, 255, 0.08);
-        color: rgba(255, 255, 255, 0.75);
-      }
-      .dir-badge {
-        font-size: 0.65rem;
-        padding: 0.15rem 0.4rem;
-        border-radius: 0.5rem;
-        display: inline-flex;
-        align-items: center;
-        gap: 0.2rem;
-        &.out {
-          background: rgba(204, 0, 0, 0.2);
-          color: #ff8b8b;
-        }
-        &.in {
-          background: rgba(56, 118, 29, 0.25);
-          color: #9ee6a0;
-        }
-      }
-    }
+    gap: 4px;
+  }
 
-    .inner-content {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      .text {
-        display: flex;
-        align-items: center;
-        gap: 1.5rem;
-        p {
-          font-size: 1rem;
-          display: flex;
-          align-items: center;
-          gap: 0.5rem;
-          color: var(--primary-color);
-          opacity: 0.8;
-        }
-      }
-      .btn-con {
-        flex-shrink: 0;
-      }
+  .tx-full-date {
+    font-size: 11px;
+    color: var(--fg-faint);
+    font-weight: 600;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    padding-top: var(--s-2);
+  }
+
+  .tx-desc {
+    font-size: 12px;
+    color: var(--fg-muted);
+    line-height: 1.5;
+    margin: 0;
+
+    .no-desc {
+      color: var(--fg-faint);
+      font-style: italic;
     }
   }
-  @media (max-width: 425px) {
-    gap: 0.7rem;
-    .icon {
-      width: 7%;
-      i {
-        font-size: 1.5rem;
+
+  ${({ $isExpanded }) =>
+    $isExpanded &&
+    css`
+      .tx-desc-row {
+        grid-template-rows: 1fr;
       }
+    `}
+
+  @media (max-width: 720px) {
+    padding: var(--s-2) var(--s-3);
+    gap: var(--s-2);
+
+    .tx-delete { opacity: 1; }
+
+    .tx-icon {
+      width: 36px;
+      height: 36px;
+      i { font-size: 17px; }
     }
-    .content {
-      gap: 0.5rem;
-      h5 {
-        font-size: 0.9rem;
-        padding-left: 1rem;
-      }
-      .inner-content {
-        justify-content: space-between;
-        align-items: center;
-        .text {
-          display: flex;
-          align-items: center;
-          gap: 0.5rem;
-          p {
-            font-size: 0.7rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-          }
-        }
-        .btn-con {
-          width: 8%;
-        }
-      }
+
+    .tx-title  { font-size: 13px; }
+    .tx-amount { font-size: 13px; }
+
+    .tx-delete {
+      width: 30px;
+      height: 30px;
     }
   }
 `;

@@ -155,8 +155,7 @@ export const GlobalProvider = ({ children }) => {
   };
 
   const updateLimit = async (uplimit) => {
-    const emailid = localStorage.getItem("email");
-    await axios.put(`${BASE_URL}update-limit/${emailid}/${uplimit}`);
+    await axios.put(`${BASE_URL}update-limit`, { uplimit });
     getLimit();
   };
 
@@ -168,7 +167,7 @@ export const GlobalProvider = ({ children }) => {
     getTransfers();
   };
 
-  const HISTORY_LIMIT = 3;
+  const HISTORY_LIMIT = 6;
 
   const transactionHistory = () => {
     const history = [...incomes, ...expenses, ...transfers];
