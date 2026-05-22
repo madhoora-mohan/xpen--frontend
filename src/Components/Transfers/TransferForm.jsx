@@ -50,7 +50,7 @@ function TransferForm() {
     if (!category) return setError("Category is required.");
     if (direction !== "in" && direction !== "out")
       return setError("Direction is required.");
-    await addTransfer(inputState);
+    await addTransfer({ ...inputState, amount: Number(amount) });
     setInputState({ ...empty, email: emailid });
   };
 
