@@ -9,7 +9,6 @@ import Dashboard from "./Components/Dashboard/Dashboard";
 import Income from "./Components/Income/Income";
 import Expenses from "./Components/Expenses/Expenses";
 import Transfers from "./Components/Transfers/Transfers";
-import Limit from "./Components/Balance/Limit";
 import { Home } from "./Components/Home";
 import ErrorBoundary from "./Components/ErrorBoundary/ErrorBoundary";
 import { useAuth } from "./context/AuthContext";
@@ -18,28 +17,25 @@ import { refresh } from "./utils/Icons";
 
 const PAGE_TITLES = {
   1: "Dashboard",
-  2: "Set Limit",
-  3: "Incomes",
-  4: "Expenses",
-  5: "Transfers",
+  2: "Incomes",
+  3: "Expenses",
+  4: "Transfers",
 };
 
 function Shell() {
   const [active, setActive] = useState(1);
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const { refreshAll, getLimit } = useGlobalContext();
+  const { refreshAll } = useGlobalContext();
 
   const displayData = () => {
     switch (active) {
       case 1:
         return <Dashboard setActive={setActive} />;
       case 2:
-        return <Limit />;
-      case 3:
         return <Income />;
-      case 4:
+      case 3:
         return <Expenses />;
-      case 5:
+      case 4:
         return <Transfers />;
       default:
         return <Dashboard setActive={setActive} />;
@@ -48,7 +44,6 @@ function Shell() {
 
   const onReload = () => {
     refreshAll();
-    if (typeof getLimit === "function") getLimit();
   };
 
   return (
