@@ -54,8 +54,9 @@ function ExpenseForm() {
       setError("Category is required.");
       return;
     }
-    await addExpense(inputState);
-    if (limits > totalBalance() - inputState.amount) {
+    const numericAmount = Number(amount);
+    await addExpense({ ...inputState, amount: numericAmount });
+    if (limits > totalBalance() - numericAmount) {
       setError(
         "Your Savings are dropping below your set Limit!! Reduce Your Expenses!!"
       );

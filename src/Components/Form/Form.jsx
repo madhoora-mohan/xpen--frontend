@@ -47,7 +47,7 @@ function Form() {
       setError("Category is required.");
       return;
     }
-    addIncome(inputState);
+    addIncome({ ...inputState, amount: Number(amount) });
     setInputState({ ...empty, email: emailid });
   };
 
