@@ -15,12 +15,10 @@ function Dashboard({ setActive }) {
     getIncomes,
     getExpenses,
     getTransfers,
-    getLimit,
     outstandingLent,
     netCash,
     incomes,
     expenses,
-    limits,
     loading,
   } = useGlobalContext();
 
@@ -28,24 +26,12 @@ function Dashboard({ setActive }) {
     getIncomes();
     getExpenses();
     getTransfers();
-    getLimit();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const income = totalIncome();
   const expense = totalExpenses();
   const savings = totalBalance();
-  const limitNumber = Number(limits) || 0;
-  const limitTone =
-    limitNumber <= 0
-      ? "good"
-      : savings < limitNumber
-      ? "bad"
-      : savings < limitNumber * 1.5
-      ? "warn"
-      : "good";
-  const limitMax = Math.max(limitNumber * 2, 1);
-  const limitProgress = Math.max(8, Math.min(100, (savings / limitMax) * 100));
   if (loading)
     return (
       <DashboardStyled>
@@ -100,18 +86,6 @@ function Dashboard({ setActive }) {
             <div className="stat-value">{formatRupee(netCash())}</div>
             <div className="stat-foot">Liquid cash</div>
           </div>
-          <div className="stat" data-tone="savings">
-            <div className="stat-label">
-              <span className="dot" /> Savings vs limit
-            </div>
-            <div className="stat-value">{formatRupee(savings)}</div>
-            <div className="stat-mini-progress">
-              <div className={"stat-mini-bar " + limitTone} style={{ width: `${limitProgress}%` }} />
-            </div>
-            <div className="stat-foot">
-              {limitNumber > 0 ? `Min ${formatRupee(limitNumber)}` : "No limit set"}
-            </div>
-          </div>
         </div>
 
           <div className="card pie-card">
@@ -125,7 +99,7 @@ function Dashboard({ setActive }) {
                 <button
                   type="button"
                   className="link-btn"
-                  onClick={() => setActive(4)}
+                  onClick={() => setActive(3)}
                 >
                   View all
                 </button>
@@ -239,23 +213,6 @@ const DashboardStyled = styled.div`
       color: var(--fg);
     }
   }
-
-.stat-mini-progress {
-    height: 4px;
-    background: var(--bg-inset);
-    border-radius: 2px;
-    overflow: hidden;
-    margin: 2px 0;
-  }
-  .stat-mini-bar {
-    height: 100%;
-    border-radius: 2px;
-    transition: width 240ms;
-    &.good { background: var(--accent-income); }
-    &.warn { background: var(--accent-warn); }
-    &.bad  { background: var(--accent-expense); }
-  }
-
 
   .card {
     background: var(--bg-surface);

@@ -13,7 +13,6 @@ function AuthCard({ mode }) {
     username: "",
     email: "",
     password: "",
-    limit: "",
   });
   const [error, setError] = useState("");
 
@@ -120,19 +119,6 @@ function AuthCard({ mode }) {
               required
             />
           </Field>
-          {isSignup && (
-            <Field label="Min savings limit (₹)" required>
-              <input
-                type="number"
-                className="input"
-                name="limit"
-                value={data.limit}
-                onChange={handleChange}
-                placeholder="5000"
-                required
-              />
-            </Field>
-          )}
           <Field label="Password" required>
             <input
               type="password"

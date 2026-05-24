@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { useGlobalContext } from "../../context/globalContext";
@@ -11,9 +11,7 @@ import Field from "../Form/Field";
 
 function ExpenseForm() {
   const emailid = localStorage.getItem("email");
-  // const user = localStorage.getItem("username"); // used for email alert (see FUTURE_TODOS.md)
-  const { addExpense, error, setError, totalBalance, limits, getLimit } =
-    useGlobalContext();
+  const { addExpense, error, setError } = useGlobalContext();
   const empty = {
     email: emailid,
     title: "",
@@ -25,11 +23,6 @@ function ExpenseForm() {
   const [inputState, setInputState] = useState(empty);
 
   const { title, amount, date, category, description } = inputState;
-
-  useEffect(() => {
-    getLimit();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   const handleInput = (name) => (e) => {
     setInputState({ ...inputState, [name]: e.target.value });
@@ -56,29 +49,6 @@ function ExpenseForm() {
     }
     const numericAmount = Number(amount);
     await addExpense({ ...inputState, amount: numericAmount });
-    if (limits > totalBalance() - numericAmount) {
-      setError(
-        "Your Savings are dropping below your set Limit!! Reduce Your Expenses!!"
-      );
-
-      // TODO: re-enable email alert once emailjs is set up (see FUTURE_TODOS.md)
-      // if (window.Email) {
-      //   window.Email.send({
-      //     SecureToken: process.env.REACT_APP_SMTP_TOKEN,
-      //     To: emailid,
-      //     From: process.env.REACT_APP_SMTP_FROM,
-      //     Subject: "Your Savings are dropping " + user,
-      //     Body:
-      //       "Your Savings are dropping below your set limit of " +
-      //       limits +
-      //       "!! Try to limit your expenses!!",
-      //   }).then(() =>
-      //     alert(
-      //       "Your Savings are dropping below your set Limit!! Try to limit your expenses!!"
-      //     )
-      //   );
-      // }
-    }
     setInputState({ ...empty, email: emailid });
   };
 

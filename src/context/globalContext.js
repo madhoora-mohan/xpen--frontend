@@ -12,7 +12,6 @@ export const GlobalProvider = ({ children }) => {
   const [incomes, setIncomes] = useState([]);
   const [expenses, setExpenses] = useState([]);
   const [transfers, setTransfers] = useState([]);
-  const [limits, setLimits] = useState([]);
   const [error, setError] = useState(null);
   const [loadingCount, setLoadingCount] = useState(0);
   const loading = loadingCount > 0;
@@ -142,16 +141,6 @@ export const GlobalProvider = ({ children }) => {
 
   const netCash = () => totalIncome() - totalExpenses() - netTransferOut();
 
-  const getLimit = async () => {
-    const response = await axios.get(`${BASE_URL}get-limit`);
-    setLimits(response.data?.limit ?? 0);
-  };
-
-  const updateLimit = async (uplimit) => {
-    await axios.put(`${BASE_URL}update-limit`, { uplimit });
-    getLimit();
-  };
-
   const totalBalance = () => totalIncome() - totalExpenses();
 
   const refreshAll = () => {
@@ -182,10 +171,6 @@ export const GlobalProvider = ({ children }) => {
         deleteExpense,
         expCat,
         incCat,
-        limits,
-        setLimits,
-        getLimit,
-        updateLimit,
         totalExpenses,
         totalBalance,
         transactionHistory,
