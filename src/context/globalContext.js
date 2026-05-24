@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useCallback } from "react";
 import axios from "axios";
 import { EXPENSE, INCOME } from "../config/categories";
 
@@ -25,7 +25,7 @@ export const GlobalProvider = ({ children }) => {
     getIncomes();
   };
 
-  const getIncomes = async () => {
+  const getIncomes = useCallback(async () => {
     setLoadingCount((c) => c + 1);
     try {
       const response = await axios.get(`${BASE_URL}get-incomes`);
@@ -33,7 +33,7 @@ export const GlobalProvider = ({ children }) => {
     } finally {
       setLoadingCount((c) => c - 1);
     }
-  };
+  }, []);
 
   const deleteIncome = async (id) => {
     await axios.delete(`${BASE_URL}delete-income/${id}`);
@@ -52,7 +52,7 @@ export const GlobalProvider = ({ children }) => {
     getExpenses();
   };
 
-  const getExpenses = async () => {
+  const getExpenses = useCallback(async () => {
     setLoadingCount((c) => c + 1);
     try {
       const response = await axios.get(`${BASE_URL}get-expenses`);
@@ -60,7 +60,7 @@ export const GlobalProvider = ({ children }) => {
     } finally {
       setLoadingCount((c) => c - 1);
     }
-  };
+  }, []);
 
   const deleteExpense = async (id) => {
     await axios.delete(`${BASE_URL}delete-expense/${id}`);
@@ -79,7 +79,7 @@ export const GlobalProvider = ({ children }) => {
     getTransfers();
   };
 
-  const getTransfers = async () => {
+  const getTransfers = useCallback(async () => {
     setLoadingCount((c) => c + 1);
     try {
       const response = await axios.get(`${BASE_URL}get-transfers`);
@@ -87,7 +87,7 @@ export const GlobalProvider = ({ children }) => {
     } finally {
       setLoadingCount((c) => c - 1);
     }
-  };
+  }, []);
 
   const deleteTransfer = async (id) => {
     await axios.delete(`${BASE_URL}delete-transfer/${id}`);
@@ -143,11 +143,11 @@ export const GlobalProvider = ({ children }) => {
 
   const totalBalance = () => totalIncome() - totalExpenses();
 
-  const refreshAll = () => {
+  const refreshAll = useCallback(() => {
     getIncomes();
     getExpenses();
     getTransfers();
-  };
+  }, [getIncomes, getExpenses, getTransfers]);
 
   const HISTORY_LIMIT = 6;
 

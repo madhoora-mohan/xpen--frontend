@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import styled from "styled-components";
 import { useGlobalContext } from "../../context/globalContext";
 import { InnerLayout } from "../../styles/Layouts";
@@ -11,17 +11,12 @@ import { transfers as transfersIcon } from "../../utils/Icons";
 import { fuzzyMatch } from "../../utils/fuzzySearch";
 
 function Transfers() {
-  const { transfers, getTransfers, deleteTransfer, loading } = useGlobalContext();
+  const { transfers, deleteTransfer, loading } = useGlobalContext();
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("all");
   const [expandedId, setExpandedId] = useState(null);
 
   const handleExpand = (id) => setExpandedId((prev) => (prev === id ? null : id));
-
-  useEffect(() => {
-    getTransfers();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   const totalOut = useMemo(
     () =>

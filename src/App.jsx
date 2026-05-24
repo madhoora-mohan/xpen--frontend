@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Route, Routes, Navigate } from "react-router-dom";
 import styled from "styled-components";
 import Signup from "./Components/Signup";
@@ -25,7 +25,24 @@ const PAGE_TITLES = {
 function Shell() {
   const [active, setActive] = useState(1);
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const { refreshAll } = useGlobalContext();
+  const { refreshAll, getIncomes, getExpenses, getTransfers } = useGlobalContext();
+
+  useEffect(() => {
+    refreshAll();
+  }, [refreshAll]);
+
+  useEffect(() => {
+    const es = new EventSource(
+      `${process.env.REACT_APP_API_BASE_URL}events`,
+      { withCredentials: true }
+    );
+
+    es.addEventListener("income_changed", () => getIncomes());
+    es.addEventListener("expense_changed", () => getExpenses());
+    es.addEventListener("transfer_changed", () => getTransfers());
+
+    return () => es.close();
+  }, [getIncomes, getExpenses, getTransfers]);
 
   const displayData = () => {
     switch (active) {

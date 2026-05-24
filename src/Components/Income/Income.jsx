@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import styled from "styled-components";
 import { useGlobalContext } from "../../context/globalContext";
 import { InnerLayout } from "../../styles/Layouts";
@@ -10,13 +10,7 @@ import EmptyState from "../EmptyState/EmptyState";
 import { trend } from "../../utils/Icons";
 
 function Income() {
-  const { incomes, getIncomes, deleteIncome, totalIncome, loading } =
-    useGlobalContext();
-
-  useEffect(() => {
-    getIncomes();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const { incomes, deleteIncome, totalIncome, loading } = useGlobalContext();
 
   const [expandedId, setExpandedId] = useState(null);
   const handleExpand = (id) => setExpandedId((prev) => (prev === id ? null : id));

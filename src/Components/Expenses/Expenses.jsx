@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react"; // useEffect kept for the moreOpen click-outside handler
 import styled from "styled-components";
 import { useGlobalContext } from "../../context/globalContext";
 import { InnerLayout } from "../../styles/Layouts";
@@ -12,8 +12,7 @@ import { getCategory } from "../../config/categories";
 import { fuzzyMatch } from "../../utils/fuzzySearch";
 
 function Expenses() {
-  const { expenses, getExpenses, deleteExpense, totalExpenses, loading } =
-    useGlobalContext();
+  const { expenses, deleteExpense, totalExpenses, loading } = useGlobalContext();
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("all");
   const [moreOpen, setMoreOpen] = useState(false);
@@ -30,11 +29,6 @@ function Expenses() {
   };
 
   const handleExpand = (id) => setExpandedId((prev) => (prev === id ? null : id));
-
-  useEffect(() => {
-    getExpenses();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   const { topCats, remainingCats } = useMemo(() => {
     const tally = {};

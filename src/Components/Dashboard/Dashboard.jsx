@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import styled from "styled-components";
 import { useGlobalContext } from "../../context/globalContext";
 import History from "../../History/History";
@@ -12,22 +12,12 @@ function Dashboard({ setActive }) {
     totalExpenses,
     totalIncome,
     totalBalance,
-    getIncomes,
-    getExpenses,
-    getTransfers,
     outstandingLent,
     netCash,
     incomes,
     expenses,
     loading,
   } = useGlobalContext();
-
-  useEffect(() => {
-    getIncomes();
-    getExpenses();
-    getTransfers();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   const income = totalIncome();
   const expense = totalExpenses();
