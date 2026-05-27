@@ -100,7 +100,7 @@ const InputWrapper = styled.div`
 
   .input {
     flex: 1;
-    padding-right: 44px;
+    padding-right: 48px;
   }
 `;
 
