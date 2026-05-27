@@ -201,6 +201,10 @@ export const GlobalProvider = ({ children }) => {
     return res.data; // { incomes, expenses, transfers }
   }, []);
 
+  const deleteCycle = async (id) => {
+    await axios.delete(`${BASE_URL}cycles/${id}`);
+  };
+
   const exportCycles = (n) => {
     const url = n ? `${BASE_URL}cycles/export?n=${n}` : `${BASE_URL}cycles/export`;
     window.open(url, "_blank");
@@ -256,6 +260,7 @@ export const GlobalProvider = ({ children }) => {
         bootstrap,
         openCycle,
         closeCycle,
+        deleteCycle,
         compareCycles,
         getCycleTransactions,
         exportCycles,

@@ -144,7 +144,7 @@ function StartNextCycle({ onClose }) {
                   }}
                 />
               </Field>
-              <Field label="End date (optional)">
+              <Field label="End date">
                 <DatePicker
                   placeholderText="DD / MM / YYYY"
                   selected={newEndDate}

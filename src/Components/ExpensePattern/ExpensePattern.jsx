@@ -12,12 +12,14 @@ import { collectCategories } from "./compareUtils";
 const TYPE = "expense";
 
 function ExpensePattern() {
-  const { cycles, activeCycle, compareCycles, refreshKey } = useGlobalContext();
+  const { cycles, activeCycle, compareCycles, deleteCycle, bootstrap, refreshKey } = useGlobalContext();
   const [n, setN] = useState(3);
   const [hidden, setHidden] = useState(new Set());
   const [summaries, setSummaries] = useState([]);
   const [loading, setLoading] = useState(false);
   const [showStart, setShowStart] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   // The N most recent cycles (incl. active), oldest→newest for the x-axis.
   const chronological = useMemo(() => {
@@ -132,6 +134,50 @@ function ExpensePattern() {
           <i className="fa-solid fa-calendar-plus" />
           Start next cycle
         </button>
+
+        {activeCycle && !confirmDelete && (
+          <button
+            type="button"
+            className="delete-cycle-link"
+            onClick={() => setConfirmDelete(true)}
+          >
+            Delete current cycle
+          </button>
+        )}
+        {activeCycle && confirmDelete && (
+          <div className="delete-cycle-confirm">
+            <p>
+              Delete <strong>{activeCycle.label}</strong> and all its transactions?
+              This cannot be undone.
+            </p>
+            <div className="delete-cycle-actions">
+              <button
+                type="button"
+                className="dca-cancel"
+                onClick={() => setConfirmDelete(false)}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className="dca-go"
+                disabled={deleting}
+                onClick={async () => {
+                  setDeleting(true);
+                  try {
+                    await deleteCycle(activeCycle._id);
+                    await bootstrap();
+                  } catch {
+                    setDeleting(false);
+                    setConfirmDelete(false);
+                  }
+                }}
+              >
+                {deleting ? "Deleting…" : "Yes, delete"}
+              </button>
+            </div>
+          </div>
+        )}
       </InnerLayout>
       {showStart && <StartNextCycle onClose={() => setShowStart(false)} />}
     </ExpensePatternStyled>
@@ -218,9 +264,9 @@ const ExpensePatternStyled = styled.div`
     margin-top: var(--s-5);
     padding: 14px;
     border-radius: var(--r-md);
-    background: rgba(234, 67, 53, 0.07);
-    border: 1px solid var(--accent-expense);
-    color: var(--accent-expense);
+    background: rgba(111, 168, 220, 0.07);
+    border: 1px solid #6fa8dc;
+    color: #6fa8dc;
     font-family: inherit;
     font-size: 14px;
     font-weight: 700;
@@ -230,7 +276,7 @@ const ExpensePatternStyled = styled.div`
     i { font-size: 14px; }
 
     &:hover {
-      background: rgba(234, 67, 53, 0.14);
+      background: rgba(111, 168, 220, 0.14);
     }
   }
 
@@ -278,6 +324,68 @@ const ExpensePatternStyled = styled.div`
     font-weight: 800;
     letter-spacing: -0.01em;
     margin: var(--s-6) 0 var(--s-4);
+  }
+
+  .delete-cycle-link {
+    display: block;
+    width: 100%;
+    margin-top: var(--s-3);
+    background: none;
+    border: none;
+    padding: 0;
+    color: var(--accent-expense);
+    font-family: inherit;
+    font-size: 13px;
+    text-align: center;
+    cursor: pointer;
+    text-decoration: underline;
+    opacity: 0.7;
+    &:hover { opacity: 1; }
+  }
+
+  .delete-cycle-confirm {
+    margin-top: var(--s-3);
+    padding: var(--s-3) var(--s-4);
+    background: color-mix(in srgb, var(--color-danger, #e53935) 8%, transparent);
+    border: 1px solid color-mix(in srgb, var(--color-danger, #e53935) 30%, transparent);
+    border-radius: var(--r-md);
+
+    p {
+      margin: 0 0 var(--s-3);
+      font-size: 13px;
+      color: var(--fg);
+      line-height: 1.5;
+    }
+  }
+
+  .delete-cycle-actions {
+    display: flex;
+    gap: var(--s-2);
+    justify-content: flex-end;
+
+    button {
+      padding: 6px 14px;
+      border-radius: var(--r-sm);
+      border: 1px solid transparent;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+  }
+
+  .dca-cancel {
+    background: var(--bg-surface);
+    border-color: var(--line) !important;
+    color: var(--fg-muted);
+    &:hover { color: var(--fg); }
+  }
+
+  .dca-go {
+    background: var(--color-danger, #e53935);
+    color: #fff;
+    &:hover { opacity: 0.9; }
+    &:disabled { opacity: 0.6; cursor: not-allowed; }
   }
 `;
 
