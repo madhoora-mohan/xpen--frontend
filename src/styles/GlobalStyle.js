@@ -26,7 +26,7 @@ export const GlobalStyle = createGlobalStyle`
 
     /* accents */
     --accent-income: #42AD00;
-    --accent-expense: rgb(232, 60, 50);
+    --accent-expense: #ff9e9e;
     --accent-balance: #6fa8dc;
     --accent-lending: #ff8b8b;
     --accent-savings: #ffffff;
@@ -162,7 +162,7 @@ export const GlobalStyle = createGlobalStyle`
   }
 
   .error {
-    color: var(--accent-expense);
+    color: var(--color-delete);
     font-weight: 600;
   }
 

@@ -1,43 +1,33 @@
-import React, { useEffect } from "react";
+import React from "react";
 import styled from "styled-components";
 import { useGlobalContext } from "../../context/globalContext";
 import History from "../../History/History";
 import { InnerLayout } from "../../styles/Layouts";
 import PieChart from "../Chart/PieChart";
 import Spinner from "../Spinner/Spinner";
+import DashboardCycleWidgets from "./DashboardCycleWidgets";
 import { formatRupee } from "../../utils/currency";
 
 function Dashboard({ setActive }) {
   const {
     totalExpenses,
-    totalIncome,
     totalBalance,
-    getIncomes,
-    getExpenses,
-    getTransfers,
     outstandingLent,
     netCash,
-    incomes,
     expenses,
     loading,
   } = useGlobalContext();
 
-  useEffect(() => {
-    getIncomes();
-    getExpenses();
-    getTransfers();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const income = totalIncome();
   const expense = totalExpenses();
   const savings = totalBalance();
   if (loading)
     return (
       <DashboardStyled>
         <InnerLayout>
-          <h2 className="page-title">Dashboard</h2>
-          <p className="page-sub">Your money at a glance — this month</p>
+          <div className="page-head">
+            <h2 className="page-title">Dashboard</h2>
+            <p className="page-sub">Your money at a glance — this month</p>
+          </div>
           <Spinner />
         </InnerLayout>
       </DashboardStyled>
@@ -46,18 +36,13 @@ function Dashboard({ setActive }) {
   return (
     <DashboardStyled>
       <InnerLayout>
-        <h2 className="page-title">Dashboard</h2>
-        <p className="page-sub">Your money at a glance — this month</p>
+        <div className="page-head">
+          <h2 className="page-title">Dashboard</h2>
+          <p className="page-sub">Your money at a glance — this month</p>
+        </div>
 
         <div className="content-grid">
         <div className="stat-grid">
-          <div className="stat" data-tone="income">
-            <div className="stat-label" style={{ color: "var(--accent-income)" }}>
-              <span className="dot" /> Total income
-            </div>
-            <div className="stat-value">{formatRupee(income)}</div>
-            <div className="stat-foot">{incomes.length} entries</div>
-          </div>
           <div className="stat" data-tone="expense">
             <div className="stat-label" style={{ color: "var(--accent-expense)" }}>
               <span className="dot" /> Total expense
@@ -86,6 +71,7 @@ function Dashboard({ setActive }) {
             <div className="stat-value">{formatRupee(netCash())}</div>
             <div className="stat-foot">Liquid cash</div>
           </div>
+          <DashboardCycleWidgets />
         </div>
 
           <div className="card pie-card">
@@ -117,6 +103,13 @@ function Dashboard({ setActive }) {
 const DashboardStyled = styled.div`
   width: 100%;
 
+  .page-head {
+    margin-bottom: var(--s-5);
+
+    @media (max-width: 899px) {
+      display: none;
+    }
+  }
   .page-title {
     font-size: 26px;
     font-weight: 800;
@@ -126,7 +119,19 @@ const DashboardStyled = styled.div`
   .page-sub {
     color: var(--fg-muted);
     font-size: 14px;
-    margin: 0 0 var(--s-5);
+    margin: 0;
+  }
+
+  @media (min-width: 900px) {
+    .page-head {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: var(--bg-deep);
+      margin: calc(-1 * var(--s-6)) calc(-1 * var(--s-6)) var(--s-5);
+      padding: var(--s-5) var(--s-6) var(--s-4);
+      border-bottom: 1px solid var(--line);
+    }
   }
 
   .content-grid {
@@ -149,11 +154,22 @@ const DashboardStyled = styled.div`
   .stat-grid {
     grid-area: stats;
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: var(--s-3);
 
     @media (max-width: 720px) {
-      grid-template-columns: repeat(2, 1fr);
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  .cycle-row {
+    display: grid;
+    grid-column: 1 / -1;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--s-3);
+
+    @media (max-width: 720px) {
+      grid-template-columns: 1fr;
     }
   }
 
@@ -161,6 +177,7 @@ const DashboardStyled = styled.div`
   .history-card { grid-area: history; }
 
   .stat {
+    min-width: 0;
     background: var(--bg-surface);
     border: 1px solid var(--line);
     border-radius: var(--r-md);
@@ -211,6 +228,74 @@ const DashboardStyled = styled.div`
     }
     &[data-tone="savings"] .stat-value {
       color: var(--fg);
+    }
+  }
+
+  .burn-widget {
+    .burn-progress {
+      height: 5px;
+      border-radius: var(--r-pill);
+      background: var(--bg-inset-2);
+      overflow: hidden;
+      margin: 2px 0;
+
+      .burn-bar {
+        height: 100%;
+        border-radius: var(--r-pill);
+        background: var(--accent-income);
+        transition: width 400ms ease;
+      }
+    }
+    .burn-projected {
+      color: var(--accent-income);
+      font-weight: 700;
+    }
+  }
+
+  .cycle-widget {
+    .cw-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 4px;
+      min-width: 0;
+
+      .stat-label {
+        justify-content: flex-start;
+        flex: 1;
+        min-width: 0;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+      }
+    }
+    .cw-select {
+      flex-shrink: 0;
+      background: var(--bg-inset);
+      color: var(--fg);
+      border: 1px solid var(--line);
+      border-radius: var(--r-sm);
+      font-family: inherit;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 4px;
+      max-width: 90px;
+      cursor: pointer;
+    }
+    .spark-wrap {
+      position: relative;
+      height: 120px;
+      margin: 4px 0 2px;
+      overflow: hidden;
+      min-width: 0;
+
+      @media (min-width: 721px) {
+        height: 80px;
+      }
+    }
+    .cw-empty {
+      font-size: 11px;
+      color: var(--fg-faint);
     }
   }
 

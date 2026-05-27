@@ -34,6 +34,7 @@ export const lunch = <i className="fa-solid fa-bowl-rice"></i>;
 export const dinner = <i className="fa-solid fa-plate-wheat"></i>;
 export const snacks = <i className="fa-solid fa-cookie-bite"></i>;
 export const transport = <i className="fa-solid fa-bus"></i>;
+export const rent = <i className="fa-solid fa-house"></i>;
 export const rentBills = <i className="fa-solid fa-file-invoice-dollar"></i>;
 export const outing = <i className="fa-solid fa-champagne-glasses"></i>;
 export const clothing = <i className="fa-solid fa-shirt"></i>;

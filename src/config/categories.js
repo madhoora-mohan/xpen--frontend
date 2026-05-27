@@ -5,6 +5,7 @@ import {
   snacks,
   food,
   transport,
+  rent,
   rentBills,
   outing,
   clothing,
@@ -30,8 +31,9 @@ export const EXPENSE = [
   { id: "dinner", label: "Dinner", color: "#0B5394", icon: dinner },
   { id: "snacks", label: "Snacks", color: "#93C47D", icon: snacks },
   { id: "groceries", label: "Groceries", color: "#C27BA0", icon: food },
-  { id: "transportation", label: "Transportation", color: "#F6B26B", icon: transport },
-  { id: "rent_bills", label: "Rent & Bills", color: "#E69138", icon: rentBills },
+  { id: "transport", label: "Transport", color: "#F6B26B", icon: transport },
+  { id: "rent", label: "Rent", color: "#CC4125", icon: rent },
+  { id: "utilities", label: "Utilities", color: "#E69138", icon: rentBills },
   { id: "outing", label: "Outing & Entertainment", color: "#D9D9D9", icon: outing },
   { id: "clothing", label: "Clothing", color: "#EAD1DC", icon: clothing },
   { id: "accessories", label: "Accessories & Gadgets", color: "#A4C2F4", icon: gadgets },
@@ -57,10 +59,21 @@ export const TRANSFER = [
   { id: "type_conversion", label: "Type Conversion", color: "#999999", icon: swap, defaultDirection: "out" },
 ];
 
+// Server-generated income categories that aren't user-selectable but can
+// appear in cycle data (e.g. the carry-over income created on opening a cycle).
+export const SPECIAL_INCOME = {
+  carry_over_bank_balance: {
+    id: "carry_over_bank_balance",
+    label: "Carry-over",
+    color: "#9FA8DA",
+    icon: money,
+  },
+};
+
 const indexBy = (list) => Object.fromEntries(list.map((c) => [c.id, c]));
 
 const BY_TYPE = {
-  income: indexBy(INCOME),
+  income: { ...indexBy(INCOME), ...SPECIAL_INCOME },
   expense: indexBy(EXPENSE),
   transfer: indexBy(TRANSFER),
 };

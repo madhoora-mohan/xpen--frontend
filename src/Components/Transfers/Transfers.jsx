@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import styled from "styled-components";
 import { useGlobalContext } from "../../context/globalContext";
 import { InnerLayout } from "../../styles/Layouts";
@@ -11,17 +11,13 @@ import { transfers as transfersIcon } from "../../utils/Icons";
 import { fuzzyMatch } from "../../utils/fuzzySearch";
 
 function Transfers() {
-  const { transfers, getTransfers, deleteTransfer, loading } = useGlobalContext();
+  const { transfers, deleteTransfer, loading } = useGlobalContext();
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("all");
   const [expandedId, setExpandedId] = useState(null);
+  const [isFormOpen, setIsFormOpen] = useState(false);
 
   const handleExpand = (id) => setExpandedId((prev) => (prev === id ? null : id));
-
-  useEffect(() => {
-    getTransfers();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   const totalOut = useMemo(
     () =>
@@ -70,6 +66,7 @@ function Transfers() {
         <h2 className="page-title">Transfers</h2>
         <p className="page-sub">Lending, investing, and money in motion</p>
 
+        <div className="mobile-head">
         <div className="stat-2up">
           <div className="stat" data-tone="lending">
             <div className="stat-label" style={{ color: "var(--accent-lending)" }}>
@@ -89,12 +86,39 @@ function Transfers() {
 
         <div className="row-spacer" />
 
+        <button
+          className="accordion-trigger"
+          aria-expanded={isFormOpen}
+          onClick={() => setIsFormOpen((o) => !o)}
+        >
+          <i className="fa-solid fa-plus" style={{ fontSize: 13 }} />
+          <span>Add transfer</span>
+          <i
+            className="fa-solid fa-chevron-down"
+            style={{
+              marginLeft: "auto",
+              fontSize: 11,
+              color: "var(--fg-muted)",
+              transition: "transform 200ms ease",
+              transform: isFormOpen ? "rotate(180deg)" : "none",
+            }}
+          />
+        </button>
+        </div>{/* end mobile-head */}
+
         <div className="form-page-grid">
-          <div className="card">
-            <h3 className="card-h3">Add transfer</h3>
-            <TransferForm />
+          <div
+            className="accordion-panel"
+            style={{ gridTemplateRows: isFormOpen ? "1fr" : "0fr" }}
+          >
+            <div className="accordion-panel-inner">
+              <div className="card" style={{ marginTop: 8 }}>
+                <h3 className="card-h3">Add transfer</h3>
+                <TransferForm />
+              </div>
+            </div>
           </div>
-          <div>
+          <div className="list-col">
             <div className="toolbar">
               <div className="search-wrap">
                 <i className="fa-solid fa-magnifying-glass ico" />
@@ -252,6 +276,48 @@ const TransferStyled = styled.div`
     }
   }
 
+  /* Mobile accordion form */
+  .accordion-trigger {
+    display: none;
+    width: 100%;
+    height: 40px;
+    border-radius: 10px;
+    background: transparent;
+    border: 1px dashed var(--line-strong);
+    color: var(--fg);
+    align-items: center;
+    gap: 8px;
+    padding: 0 14px;
+    font-family: inherit;
+    font-weight: 700;
+    font-size: 13px;
+    cursor: pointer;
+    margin-bottom: 0;
+    transition: background 150ms ease;
+  }
+  .accordion-trigger[aria-expanded="true"] {
+    background: var(--bg-inset-2);
+  }
+  @media (max-width: 899px) {
+    .accordion-trigger {
+      display: flex;
+    }
+  }
+
+  .accordion-panel {
+    display: grid;
+    transition: grid-template-rows 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  @media (min-width: 900px) {
+    .accordion-panel {
+      grid-template-rows: 1fr !important;
+    }
+  }
+  .accordion-panel-inner {
+    overflow: hidden;
+    min-height: 0;
+  }
+
   .card {
     background: var(--bg-surface);
     border: 1px solid var(--line);
@@ -340,13 +406,20 @@ const TransferStyled = styled.div`
     }
   }
 
+  .list-col {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+
   .scroll-list {
-    max-height: min(600px, 55vh);
+    flex: 1;
     overflow-y: auto;
     padding-right: 4px;
+    max-height: min(600px, 55vh);
 
     @media (max-width: 899px) {
-      max-height: 40vh;
+      max-height: none;
     }
 
     &::-webkit-scrollbar {
@@ -356,6 +429,69 @@ const TransferStyled = styled.div`
       background: var(--bg-inset-2);
       border-radius: 3px;
     }
+  }
+
+  @media (min-width: 981px) {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    min-height: 0;
+
+    ${InnerLayout} {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      min-height: 0;
+    }
+
+    .form-page-grid {
+      flex: 1;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .scroll-list {
+      max-height: none;
+    }
+  }
+
+  /* Mobile: banner+trigger pinned at top, form+list scroll below */
+  @media (max-width: 899px) {
+    height: calc(100vh - var(--topbar-h));
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+
+    ${InnerLayout} {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      min-height: 0;
+      padding-bottom: 0;
+    }
+
+    .page-title { display: none; }
+    .page-sub { display: none; }
+    .row-spacer { height: var(--s-2); }
+
+    .mobile-head { flex-shrink: 0; }
+
+    .form-page-grid {
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      padding-bottom: calc(var(--s-10) + var(--s-6));
+    }
+
+    .scroll-list {
+      overflow-y: visible;
+      max-height: none;
+      flex: none;
+    }
+
+    .empty-slot { flex: none; }
   }
 
   @media (max-width: 720px) {

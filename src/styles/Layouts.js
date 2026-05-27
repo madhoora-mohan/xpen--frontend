@@ -1,14 +1,18 @@
 import styled from "styled-components";
 
 export const MainLayout = styled.div`
-  min-height: 100vh;
   display: grid;
   grid-template-columns: var(--nav-w) 1fr;
+  height: 100vh;
+  overflow: hidden;
   background: var(--bg-deep);
   color: var(--fg);
 
   @media (max-width: 899px) {
     grid-template-columns: 1fr;
+    height: auto;
+    min-height: 100vh;
+    overflow: visible;
   }
 `;
 

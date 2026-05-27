@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useLayoutEffect } from "react";
 import styled from "styled-components";
 import { Doughnut } from "react-chartjs-2";
 import { Chart, ArcElement, Tooltip, Legend } from "chart.js";
@@ -7,6 +7,33 @@ import { EXPENSE } from "../../config/categories";
 import { formatRupee } from "../../utils/currency";
 
 Chart.register(ArcElement, Tooltip, Legend);
+
+function ScrollingName({ children }) {
+  const outerRef = useRef(null);
+  const innerRef = useRef(null);
+  const [overflow, setOverflow] = useState(0);
+
+  useLayoutEffect(() => {
+    const outer = outerRef.current;
+    const inner = innerRef.current;
+    if (!outer || !inner) return;
+    const delta = inner.scrollWidth - outer.clientWidth;
+    setOverflow(delta > 2 ? delta : 0);
+  }, [children]);
+
+  return (
+    <span ref={outerRef} className="name">
+      <span
+        ref={innerRef}
+        className="name-copy"
+        style={overflow > 0 ? { "--scroll-px": `-${overflow}px` } : undefined}
+        data-scrolling={overflow > 0 ? "" : undefined}
+      >
+        {children}
+      </span>
+    </span>
+  );
+}
 
 function PieChart() {
   const { expCat, totalExpenses } = useGlobalContext();
@@ -99,7 +126,7 @@ function PieChart() {
                 >
                   <span className="lbl">
                     <span className="swatch" style={{ background: isHidden ? "var(--bg-inset-2)" : c.color }} />
-                    <span className="name">{c.label}</span>
+                    <ScrollingName>{c.label}</ScrollingName>
                   </span>
                   <span className="ttl">{formatRupee(c.total)}</span>
                 </div>
@@ -244,9 +271,21 @@ const PieChartStyled = styled.div`
       transition: background 120ms;
     }
     .name {
-      white-space: nowrap;
       overflow: hidden;
-      text-overflow: ellipsis;
+      min-width: 0;
+      display: block;
+    }
+    .name-copy {
+      display: inline-block;
+      white-space: nowrap;
+    }
+    .name-copy[data-scrolling] {
+      animation: marquee-name 5s linear infinite;
+    }
+    @keyframes marquee-name {
+      0%    { transform: translateX(0); }
+      25%   { transform: translateX(0); }
+      100%  { transform: translateX(var(--scroll-px)); }
     }
     .ttl {
       color: var(--fg);

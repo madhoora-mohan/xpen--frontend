@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Route, Routes, Navigate } from "react-router-dom";
 import styled from "styled-components";
 import Signup from "./Components/Signup";
@@ -9,7 +9,10 @@ import Dashboard from "./Components/Dashboard/Dashboard";
 import Income from "./Components/Income/Income";
 import Expenses from "./Components/Expenses/Expenses";
 import Transfers from "./Components/Transfers/Transfers";
+import ExpensePattern from "./Components/ExpensePattern/ExpensePattern";
+import FirstCycleGate from "./Components/Cycles/FirstCycleGate";
 import { Home } from "./Components/Home";
+import GlobalFAB from "./Components/FAB/GlobalFAB";
 import ErrorBoundary from "./Components/ErrorBoundary/ErrorBoundary";
 import { useAuth } from "./context/AuthContext";
 import { useGlobalContext } from "./context/globalContext";
@@ -20,14 +23,44 @@ const PAGE_TITLES = {
   2: "Incomes",
   3: "Expenses",
   4: "Transfers",
+  5: "Expense Pattern",
 };
 
 function Shell() {
   const [active, setActive] = useState(1);
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const { refreshAll } = useGlobalContext();
+  const {
+    bootstrap,
+    getIncomes,
+    getExpenses,
+    getTransfers,
+    cyclesLoaded,
+    activeCycle,
+    loading,
+  } = useGlobalContext();
+
+  useEffect(() => {
+    bootstrap();
+  }, [bootstrap]);
+
+  useEffect(() => {
+    const es = new EventSource(
+      `${process.env.REACT_APP_API_BASE_URL}events`,
+      { withCredentials: true }
+    );
+
+    es.addEventListener("income_changed", () => getIncomes());
+    es.addEventListener("expense_changed", () => getExpenses());
+    es.addEventListener("transfer_changed", () => getTransfers());
+
+    return () => es.close();
+  }, [getIncomes, getExpenses, getTransfers]);
 
   const displayData = () => {
+    // Gate: no active cycle → block the app until the user creates one.
+    if (cyclesLoaded && !activeCycle) {
+      return <FirstCycleGate />;
+    }
     switch (active) {
       case 1:
         return <Dashboard setActive={setActive} />;
@@ -37,13 +70,15 @@ function Shell() {
         return <Expenses />;
       case 4:
         return <Transfers />;
+      case 5:
+        return <ExpensePattern />;
       default:
         return <Dashboard setActive={setActive} />;
     }
   };
 
   const onReload = () => {
-    refreshAll();
+    bootstrap();
   };
 
   return (
@@ -71,10 +106,11 @@ function Shell() {
             <div className="right">
               <button
                 type="button"
-                className="icon-btn"
+                className={`icon-btn${loading ? " spinning" : ""}`}
                 onClick={onReload}
                 title="Reload data"
                 aria-label="Reload data"
+                disabled={loading}
               >
                 {refresh}
               </button>
@@ -84,13 +120,28 @@ function Shell() {
             <main>{displayData()}</main>
           </ErrorBoundary>
         </div>
+        {/* Global quick-add FAB — mobile/tablet only (hidden ≥900px via CSS).
+            Suppressed on the first-cycle gate, where quick-add has no cycle to
+            write into. */}
+        {!(cyclesLoaded && !activeCycle) && (
+          <GlobalFAB drawerOpen={drawerOpen} />
+        )}
       </MainLayout>
     </AppStyled>
   );
 }
 
+const PING_URL = `${process.env.REACT_APP_API_BASE_URL}`.replace(/\/api\/v1\/?$/, "/ping");
+const PING_INTERVAL_MS = 14 * 60 * 1000;
+
 function App() {
   const { isLoggedIn } = useAuth();
+
+  useEffect(() => {
+    fetch(PING_URL).catch(() => {});
+    const id = setInterval(() => fetch(PING_URL).catch(() => {}), PING_INTERVAL_MS);
+    return () => clearInterval(id);
+  }, []);
 
   return (
     <Routes>
@@ -124,6 +175,12 @@ const AppStyled = styled.div`
     display: flex;
     flex-direction: column;
     position: relative;
+    overflow-y: auto;
+
+    @media (max-width: 899px) {
+      overflow-y: visible;
+      overflow-x: clip;
+    }
   }
 
   main {
@@ -198,6 +255,14 @@ const AppStyled = styled.div`
   .topbar .icon-btn:hover {
     color: var(--fg);
     background: rgba(255, 255, 255, 0.06);
+  }
+  .topbar .icon-btn.spinning {
+    animation: spin 0.8s linear infinite;
+    opacity: 0.5;
+    cursor: default;
+  }
+  @keyframes spin {
+    to { transform: rotate(360deg); }
   }
 
   @media (min-width: 900px) {

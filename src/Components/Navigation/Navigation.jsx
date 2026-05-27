@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
@@ -8,32 +8,41 @@ import { useGlobalContext } from "../../context/globalContext";
 import { useAuth } from "../../context/AuthContext";
 import { formatRupee } from "../../utils/currency";
 
-const STRIPPED_EXPORT_FIELDS = ["email", "__v", "createdAt", "updatedAt"];
+const MONTH_OPTIONS = [1, 3, 6, 9, 12, 18, 24, 36];
 
-function exportToCSV(rows, filename) {
-  if (!rows.length) {
-    alert("Nothing to export yet.");
-    return;
-  }
-  const headers = [...new Set(rows.flatMap((r) => Object.keys(r)))];
-  const escape = (v) => {
-    if (v === null || v === undefined) return "";
-    const s = String(v);
-    return /[",\n\r]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
-  };
-  const csv = [
-    headers.join(","),
-    ...rows.map((r) => headers.map((h) => escape(r[h])).join(",")),
-  ].join("\n");
-  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
+function ExportModal({ onClose, onConfirm }) {
+  const [months, setMonths] = useState(3);
+  return (
+    <ExportModalStyled>
+      <div className="modal-backdrop" onClick={onClose} />
+      <div className="modal-box">
+        <h3 className="modal-title">Export to Excel</h3>
+        <p className="modal-sub">Download a spreadsheet with one sheet per cycle.</p>
+        <label className="modal-field">
+          <span className="modal-label">How many months?</span>
+          <select
+            value={months === 0 ? "all" : months}
+            onChange={(e) =>
+              setMonths(e.target.value === "all" ? 0 : Number(e.target.value))
+            }
+          >
+            {MONTH_OPTIONS.map((m) => (
+              <option key={m} value={m}>{m} month{m === 1 ? "" : "s"}</option>
+            ))}
+            <option value="all">All cycles</option>
+          </select>
+        </label>
+        <div className="modal-actions">
+          <button type="button" className="btn-cancel" onClick={onClose}>
+            Cancel
+          </button>
+          <button type="button" className="btn-download" onClick={() => onConfirm(months)}>
+            {fileexport} Download
+          </button>
+        </div>
+      </div>
+    </ExportModalStyled>
+  );
 }
 
 function Brand() {
@@ -101,20 +110,20 @@ function NavFooter({ onSignOut, onExport }) {
   );
 }
 
+
 function Navigation({ active, setActive, drawerOpen, closeDrawer }) {
   const { logout } = useAuth();
   const navigate = useNavigate();
   const {
     totalBalance,
     setError,
-    incomes,
-    expenses,
-    transfers,
     getIncomes,
     getExpenses,
     getTransfers,
+    exportCycles,
   } = useGlobalContext();
 
+  const [showExport, setShowExport] = useState(false);
   const username = localStorage.getItem("username");
   const emailid = localStorage.getItem("email");
 
@@ -133,14 +142,9 @@ function Navigation({ active, setActive, drawerOpen, closeDrawer }) {
     navigate("/login");
   };
 
-  const handleExport = () => {
-    const all = [...incomes, ...expenses, ...transfers];
-    const data = all.map((row) => {
-      const copy = { ...row };
-      STRIPPED_EXPORT_FIELDS.forEach((f) => delete copy[f]);
-      return copy;
-    });
-    exportToCSV(data, `${username} Data ${Date()}.csv`);
+  const handleExportConfirm = (months) => {
+    exportCycles(months);
+    setShowExport(false);
   };
 
   const savings = totalBalance();
@@ -155,7 +159,7 @@ function Navigation({ active, setActive, drawerOpen, closeDrawer }) {
           <NavList active={active} setActive={setActive} setError={setError} />
         </div>
         <div className="spacer" />
-        <NavFooter onSignOut={handleLogout} onExport={handleExport} />
+        <NavFooter onSignOut={handleLogout} onExport={() => setShowExport(true)} />
       </Sidebar>
 
       <DrawerBackdrop className={drawerOpen ? "open" : ""} onClick={closeDrawer} />
@@ -180,8 +184,15 @@ function Navigation({ active, setActive, drawerOpen, closeDrawer }) {
           />
         </div>
         <div className="spacer" />
-        <NavFooter onSignOut={handleLogout} onExport={handleExport} />
+        <NavFooter onSignOut={handleLogout} onExport={() => setShowExport(true)} />
       </Drawer>
+
+      {showExport && (
+        <ExportModal
+          onClose={() => setShowExport(false)}
+          onConfirm={handleExportConfirm}
+        />
+      )}
     </>
   );
 }
@@ -369,9 +380,6 @@ const navStyles = `
 `;
 
 const Sidebar = styled.aside`
-  position: sticky;
-  top: 0;
-  align-self: start;
   height: 100vh;
   padding: var(--s-5) var(--s-4);
   background: var(--bg-app);
@@ -437,6 +445,115 @@ const Drawer = styled.nav`
 
   @media (min-width: 900px) {
     display: none;
+  }
+`;
+
+const ExportModalStyled = styled.div`
+  .modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(11, 13, 16, 0.7);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    z-index: 200;
+  }
+
+  .modal-box {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 201;
+    background: var(--bg-surface);
+    border: 1px solid var(--line-strong);
+    border-radius: var(--r-lg);
+    padding: var(--s-5);
+    width: min(340px, calc(100vw - 32px));
+    box-shadow: var(--shadow-pop);
+  }
+
+  .modal-title {
+    font-size: 16px;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    margin: 0 0 var(--s-1);
+    color: var(--fg);
+  }
+
+  .modal-sub {
+    font-size: 13px;
+    color: var(--fg-muted);
+    margin: 0 0 var(--s-4);
+  }
+
+  .modal-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: var(--s-5);
+  }
+
+  .modal-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--fg-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  select {
+    width: 100%;
+    height: 38px;
+    padding: 0 var(--s-3);
+    background: var(--bg-inset);
+    color: var(--fg);
+    border: 1px solid var(--line-strong);
+    border-radius: var(--r-sm);
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .modal-actions {
+    display: flex;
+    gap: var(--s-2);
+    justify-content: flex-end;
+  }
+
+  .btn-cancel {
+    height: 36px;
+    padding: 0 14px;
+    border-radius: var(--r-sm);
+    border: 1px solid var(--line);
+    background: transparent;
+    color: var(--fg-muted);
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+
+    &:hover { color: var(--fg); background: var(--bg-inset); }
+  }
+
+  .btn-download {
+    height: 36px;
+    padding: 0 16px;
+    border-radius: var(--r-sm);
+    border: none;
+    background: var(--fg);
+    color: #0b0d10;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+
+    i { font-size: 13px; }
+
+    &:hover { opacity: 0.9; }
   }
 `;
 
