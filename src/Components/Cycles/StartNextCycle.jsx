@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import styled from "styled-components";
 import moment from "moment";
@@ -7,6 +6,7 @@ import { useGlobalContext } from "../../context/globalContext";
 import Button from "../Button/Button";
 import Field from "../Form/Field";
 import FormStyled from "../Form/FormStyled";
+import DateInputWithPicker from "../Form/DateInputWithPicker";
 import { formatRupee } from "../../utils/currency";
 
 function StartNextCycle({ onClose }) {
@@ -93,10 +93,8 @@ function StartNextCycle({ onClose }) {
               closing balance so you can carry it over.
             </p>
             <Field label="End date of current cycle" required>
-              <DatePicker
-                placeholderText="DD / MM / YYYY"
+              <DateInputWithPicker
                 selected={endDate}
-                dateFormat="dd/MM/yyyy"
                 onChange={(d) => {
                   setEndDate(d);
                   setErr("");
@@ -134,10 +132,8 @@ function StartNextCycle({ onClose }) {
             </Field>
             <div className="field-row-2">
               <Field label="Start date" required>
-                <DatePicker
-                  placeholderText="DD / MM / YYYY"
+                <DateInputWithPicker
                   selected={startDate}
-                  dateFormat="dd/MM/yyyy"
                   onChange={(d) => {
                     setStartDate(d);
                     setErr("");
@@ -145,11 +141,8 @@ function StartNextCycle({ onClose }) {
                 />
               </Field>
               <Field label="End date">
-                <DatePicker
-                  placeholderText="DD / MM / YYYY"
+                <DateInputWithPicker
                   selected={newEndDate}
-                  dateFormat="dd/MM/yyyy"
-                  isClearable
                   onChange={(d) => setNewEndDate(d)}
                 />
               </Field>

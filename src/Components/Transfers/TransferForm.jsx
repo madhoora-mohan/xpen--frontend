@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import styled from "styled-components";
 import { useGlobalContext } from "../../context/globalContext";
@@ -9,6 +8,7 @@ import { TRANSFER, getCategory } from "../../config/categories";
 import CategorySelect from "../CategorySelect/CategorySelect";
 import FormStyled from "../Form/FormStyled";
 import Field from "../Form/Field";
+import DateInputWithPicker from "../Form/DateInputWithPicker";
 
 function TransferForm() {
   const emailid = localStorage.getItem("email");
@@ -78,11 +78,8 @@ function TransferForm() {
           />
         </Field>
         <Field label="Date" required>
-          <DatePicker
-            id="date"
-            placeholderText="DD / MM / YYYY"
+          <DateInputWithPicker
             selected={date}
-            dateFormat="dd/MM/yyyy"
             onChange={(d) => {
               setInputState({ ...inputState, date: d });
               setError("");
