@@ -9,6 +9,12 @@ import { BrowserRouter } from "react-router-dom";
 
 axios.defaults.withCredentials = true;
 
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("/sw.js").catch(() => {});
+  });
+}
+
 axios.interceptors.response.use(
   (response) => response,
   (error) => {
