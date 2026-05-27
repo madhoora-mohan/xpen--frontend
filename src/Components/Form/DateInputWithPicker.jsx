@@ -1,10 +1,24 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import DatePicker from "react-datepicker";
 import styled from "styled-components";
 
 const DateInputWithPicker = ({ selected, onChange, placeholder = "DD / MM / YYYY" }) => {
   const [isOpen, setIsOpen] = useState(false);
   const inputRef = useRef(null);
+  const wrapperRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (wrapperRef.current && !wrapperRef.current.contains(e.target)) {
+        setIsOpen(false);
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+      return () => document.removeEventListener("mousedown", handleClickOutside);
+    }
+  }, [isOpen]);
 
   const handleDateChange = (date) => {
     onChange(date);
@@ -37,7 +51,7 @@ const DateInputWithPicker = ({ selected, onChange, placeholder = "DD / MM / YYYY
     : "";
 
   return (
-    <Wrapper>
+    <Wrapper ref={wrapperRef}>
       <InputWrapper>
         <input
           ref={inputRef}
@@ -168,6 +182,7 @@ const PickerContainer = styled.div`
   .react-datepicker__day--selected {
     background: var(--accent-income);
     color: #0b0d10;
+    font-weight: 700;
 
     &:hover {
       background: var(--accent-income);
@@ -176,19 +191,7 @@ const PickerContainer = styled.div`
 
   .react-datepicker__day--today {
     font-weight: 700;
-    color: var(--accent-income);
-  }
-
-  @media (max-width: 480px) {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    top: auto;
-    border-radius: var(--r-lg) var(--r-lg) 0 0;
-    border-bottom: none;
-    max-width: 100%;
-    margin: 0;
+    color: var(--fg);
   }
 `;
 
