@@ -32,3 +32,4 @@ yarn-error.log*
 
 # Personal docs
 /docs
+*.jks
