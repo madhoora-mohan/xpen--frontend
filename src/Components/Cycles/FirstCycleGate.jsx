@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import styled from "styled-components";
 import moment from "moment";
@@ -7,6 +6,7 @@ import { useGlobalContext } from "../../context/globalContext";
 import Button from "../Button/Button";
 import Field from "../Form/Field";
 import FormStyled from "../Form/FormStyled";
+import DateInputWithPicker from "../Form/DateInputWithPicker";
 import { plus } from "../../utils/Icons";
 
 function FirstCycleGate() {
@@ -65,10 +65,8 @@ function FirstCycleGate() {
           </Field>
           <div className="field-row-2">
             <Field label="Start date" required>
-              <DatePicker
-                placeholderText="DD / MM / YYYY"
+              <DateInputWithPicker
                 selected={startDate}
-                dateFormat="dd/MM/yyyy"
                 onChange={(d) => {
                   setStartDate(d);
                   setErr("");
@@ -76,11 +74,8 @@ function FirstCycleGate() {
               />
             </Field>
             <Field label="End date">
-              <DatePicker
-                placeholderText="DD / MM / YYYY"
+              <DateInputWithPicker
                 selected={endDate}
-                dateFormat="dd/MM/yyyy"
-                isClearable
                 onChange={(d) => {
                   setEndDate(d);
                   setErr("");

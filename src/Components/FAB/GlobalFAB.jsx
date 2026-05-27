@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
-import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import styled from "styled-components";
 import { useGlobalContext } from "../../context/globalContext";
 import CategorySelect from "../CategorySelect/CategorySelect";
 import StartNextCycle from "../Cycles/StartNextCycle";
+import DateInputWithPicker from "../Form/DateInputWithPicker";
 import { EXPENSE, INCOME, TRANSFER, getCategory } from "../../config/categories";
 import { expenses as expensesIcon, transfers as transfersIcon, trend as incomeIcon, calender } from "../../utils/Icons";
 
@@ -63,10 +63,8 @@ function FabExpenseForm({ onDone }) {
         </div>
         <div>
           <span className="fl">Date *</span>
-          <DatePicker
-            placeholderText="DD / MM / YYYY"
+          <DateInputWithPicker
             selected={state.date}
-            dateFormat="dd/MM/yyyy"
             onChange={(d) => { setState({ ...state, date: d }); setErr(""); }}
           />
         </div>
@@ -130,10 +128,8 @@ function FabIncomeForm({ onDone }) {
         </div>
         <div>
           <span className="fl">Date *</span>
-          <DatePicker
-            placeholderText="DD / MM / YYYY"
+          <DateInputWithPicker
             selected={state.date}
-            dateFormat="dd/MM/yyyy"
             onChange={(d) => { setState({ ...state, date: d }); setErr(""); }}
           />
         </div>
@@ -209,10 +205,8 @@ function FabTransferForm({ onDone }) {
         </div>
         <div>
           <span className="fl">Date *</span>
-          <DatePicker
-            placeholderText="DD / MM / YYYY"
+          <DateInputWithPicker
             selected={state.date}
-            dateFormat="dd/MM/yyyy"
             onChange={(d) => { setState({ ...state, date: d }); setErr(""); }}
           />
         </div>
