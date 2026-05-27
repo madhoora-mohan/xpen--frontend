@@ -21,6 +21,10 @@ function IncomeItem({
   const cat = getCategory(type, category);
   const catColor = cat.color || "#888";
 
+  const d = new Date(date);
+  const badgeDay = String(d.getDate()).padStart(2, "0");
+  const badgeMon = d.toLocaleDateString("en-GB", { month: "short" }).toUpperCase();
+
   const sign =
     type === "income"
       ? "+"
@@ -47,8 +51,9 @@ function IncomeItem({
       $isExpanded={isExpanded}
       onClick={() => onExpand && onExpand(id)}
     >
-      <div className="tx-icon" style={{ background: catColor }}>
-        {cat.icon}
+      <div className="tx-date-badge">
+        <span className="badge-mon" style={{ color: catColor }}>{badgeMon}</span>
+        <span className="badge-day">{badgeDay}</span>
       </div>
       <div className="tx-body">
         <div className="tx-title">
@@ -57,11 +62,11 @@ function IncomeItem({
         </div>
         <div className="tx-meta">
           <span className="cat-name" style={{ color: catColor }}>
-            <span className="cat-swatch" style={{ background: catColor }} />
+            <span className="cat-icon-box" style={{ background: catColor }}>
+              {cat.icon}
+            </span>
             {cat.label}
           </span>
-          <span className="meta-divider" />
-          <span className="meta-date">{dateFormat(date)}</span>
         </div>
       </div>
       <div className={`tx-amount ${amountTone}`}>
@@ -93,10 +98,10 @@ function IncomeItem({
 
 const ItemStyled = styled.div`
   display: grid;
-  grid-template-columns: 44px 1fr auto auto;
+  grid-template-columns: 52px 1fr auto auto;
   align-items: center;
   gap: var(--s-3);
-  padding: var(--s-3) var(--s-4);
+  padding: 6px var(--s-4);
   background: ${({ $color }) =>
     `linear-gradient(90deg, ${$color}33 0%, ${$color}14 60%, ${$color}08 100%), var(--bg-surface)`};
   border: 1px solid ${({ $color }) => `${$color}55`};
@@ -113,17 +118,34 @@ const ItemStyled = styled.div`
     opacity: 1;
   }
 
-  .tx-icon {
-    width: 44px;
-    height: 44px;
+  .tx-date-badge {
+    width: 52px;
+    height: 52px;
+    background: var(--bg-deep);
+    border: 1px solid ${({ $color }) => `${$color}66`};
     border-radius: var(--r-sm);
-    display: grid;
-    place-items: center;
-    color: #0b0d10;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     flex-shrink: 0;
     align-self: center;
+  }
 
-    i { font-size: 20px; }
+  .badge-mon {
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    line-height: 1;
+  }
+
+  .badge-day {
+    font-size: 18px;
+    font-weight: 900;
+    color: var(--fg);
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+    margin-top: 2px;
   }
 
   .tx-body {
@@ -162,15 +184,6 @@ const ItemStyled = styled.div`
     overflow: hidden;
   }
 
-  .meta-divider {
-    width: 3px;
-    height: 3px;
-    border-radius: 50%;
-    background: currentColor;
-    opacity: 0.5;
-    flex-shrink: 0;
-  }
-
   .cat-name {
     display: inline-flex;
     align-items: center;
@@ -183,15 +196,16 @@ const ItemStyled = styled.div`
     flex-shrink: 0;
   }
 
-  .cat-swatch {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-  }
-
-  .meta-date {
-    white-space: nowrap;
+  .cat-icon-box {
+    width: 16px;
+    height: 16px;
+    border-radius: 4px;
+    display: grid;
+    place-items: center;
+    color: #1a1a1a;
     flex-shrink: 0;
+
+    i { font-size: 10px; }
   }
 
   .tx-amount {
@@ -224,7 +238,7 @@ const ItemStyled = styled.div`
     i { font-size: 14px; }
 
     &:hover {
-      color: var(--accent-expense);
+      color: var(--color-delete);
       background: rgba(232, 60, 50, 0.1);
     }
   }
@@ -273,17 +287,20 @@ const ItemStyled = styled.div`
       }
     `}
 
-  @media (max-width: 720px) {
-    padding: var(--s-2) var(--s-3);
+  @media (max-width: 899px) {
+    grid-template-columns: 44px 1fr auto auto;
+    padding: 5px var(--s-3);
     gap: var(--s-2);
 
     .tx-delete { opacity: 1; }
 
-    .tx-icon {
-      width: 36px;
-      height: 36px;
-      i { font-size: 17px; }
+    .tx-date-badge {
+      width: 44px;
+      height: 44px;
     }
+
+    .badge-mon { font-size: 9px; }
+    .badge-day { font-size: 16px; }
 
     .tx-title  { font-size: 13px; }
     .tx-amount { font-size: 13px; }

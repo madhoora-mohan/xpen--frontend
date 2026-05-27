@@ -87,7 +87,7 @@ const variants = {
   `,
   danger: css`
     background: transparent;
-    color: var(--accent-expense);
+    color: var(--color-delete);
     border-color: rgba(232, 60, 50, 0.3);
     &:hover:not(:disabled) {
       background: rgba(232, 60, 50, 0.1);

@@ -3,9 +3,14 @@ import styled from "styled-components";
 
 function CategorySelect({ options, value, onChange, placeholder = "Select Category" }) {
   const [open, setOpen] = useState(false);
+  const [menuPos, setMenuPos] = useState({ top: 0, left: 0, width: 0 });
   const wrapRef = useRef(null);
+  const triggerRef = useRef(null);
+  const menuRef = useRef(null);
 
+  // Close on outside click
   useEffect(() => {
+    if (!open) return;
     const onDoc = (e) => {
       if (wrapRef.current && !wrapRef.current.contains(e.target)) {
         setOpen(false);
@@ -13,25 +18,43 @@ function CategorySelect({ options, value, onChange, placeholder = "Select Catego
     };
     document.addEventListener("mousedown", onDoc);
     return () => document.removeEventListener("mousedown", onDoc);
-  }, []);
+  }, [open]);
+
+  // Close on page scroll (so the fixed menu doesn't drift), but ignore
+  // scroll events that originate inside the menu itself.
+  useEffect(() => {
+    if (!open) return;
+    const onScroll = (e) => {
+      if (menuRef.current && menuRef.current.contains(e.target)) return;
+      setOpen(false);
+    };
+    window.addEventListener("scroll", onScroll, true);
+    return () => window.removeEventListener("scroll", onScroll, true);
+  }, [open]);
+
+  const handleToggle = () => {
+    if (!open && triggerRef.current) {
+      const rect = triggerRef.current.getBoundingClientRect();
+      setMenuPos({ top: rect.bottom + 4, left: rect.left, width: rect.width });
+    }
+    setOpen((v) => !v);
+  };
 
   const selected = options.find((o) => o.id === value);
 
   return (
     <Wrap ref={wrapRef}>
       <button
+        ref={triggerRef}
         type="button"
         className={selected ? "trigger" : "trigger placeholder"}
-        onClick={() => setOpen((v) => !v)}
+        onClick={handleToggle}
         aria-haspopup="listbox"
         aria-expanded={open}
       >
         {selected ? (
           <>
-            <span
-              className="trigger-swatch"
-              style={{ background: selected.color }}
-            >
+            <span className="trigger-swatch" style={{ background: selected.color }}>
               <span className="trigger-icon">{selected.icon}</span>
             </span>
             <span className="trigger-label">{selected.label}</span>
@@ -41,26 +64,41 @@ function CategorySelect({ options, value, onChange, placeholder = "Select Catego
         )}
         <span className="caret" aria-hidden="true" />
       </button>
-      <ul className={`menu${open ? " menu--open" : ""}`} role="listbox" aria-hidden={!open}>
-        {options.map((opt) => (
-          <li
-            key={opt.id}
-            role="option"
-            aria-selected={opt.id === value}
-            className={opt.id === value ? "option selected" : "option"}
-            onClick={(e) => {
-              e.stopPropagation();
-              onChange(opt.id);
-              setOpen(false);
-            }}
-          >
-            <span className="opt-swatch" style={{ background: opt.color }}>
-              <span className="opt-icon">{opt.icon}</span>
-            </span>
-            <span className="opt-label">{opt.label}</span>
-          </li>
-        ))}
-      </ul>
+
+      {open && (
+        <ul
+          ref={menuRef}
+          className="menu menu--open"
+          role="listbox"
+          style={{
+            position: "fixed",
+            top: menuPos.top,
+            left: menuPos.left,
+            width: menuPos.width,
+            zIndex: 9999,
+          }}
+        >
+          {options.map((opt) => (
+            <li
+              key={opt.id}
+              role="option"
+              aria-selected={opt.id === value}
+              className={opt.id === value ? "option selected" : "option"}
+              onMouseDown={(e) => {
+                // onMouseDown so the selection fires before the outside-click handler
+                e.preventDefault();
+                onChange(opt.id);
+                setOpen(false);
+              }}
+            >
+              <span className="opt-swatch" style={{ background: opt.color }}>
+                <span className="opt-icon">{opt.icon}</span>
+              </span>
+              <span className="opt-label">{opt.label}</span>
+            </li>
+          ))}
+        </ul>
+      )}
     </Wrap>
   );
 }
@@ -138,11 +176,6 @@ const Wrap = styled.div`
   }
 
   .menu {
-    position: absolute;
-    top: calc(100% + 4px);
-    left: 0;
-    right: 0;
-    z-index: 30;
     background: var(--bg-inset);
     border: 1px solid var(--line-strong);
     border-radius: var(--r-md);
@@ -152,16 +185,6 @@ const Wrap = styled.div`
     padding: 4px;
     list-style: none;
     margin: 0;
-    opacity: 0;
-    transform: translateY(-6px) scale(0.98);
-    pointer-events: none;
-    transition: opacity 160ms ease, transform 160ms ease;
-
-    &.menu--open {
-      opacity: 1;
-      transform: translateY(0) scale(1);
-      pointer-events: auto;
-    }
 
     &::-webkit-scrollbar {
       width: 6px;

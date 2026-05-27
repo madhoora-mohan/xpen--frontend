@@ -31,7 +31,7 @@ const FieldWrap = styled.div`
   }
 
   .field-required {
-    color: var(--accent-expense);
+    color: var(--color-delete);
     margin-left: 2px;
   }
 

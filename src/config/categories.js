@@ -57,10 +57,21 @@ export const TRANSFER = [
   { id: "type_conversion", label: "Type Conversion", color: "#999999", icon: swap, defaultDirection: "out" },
 ];
 
+// Server-generated income categories that aren't user-selectable but can
+// appear in cycle data (e.g. the carry-over income created on opening a cycle).
+export const SPECIAL_INCOME = {
+  carry_over_bank_balance: {
+    id: "carry_over_bank_balance",
+    label: "Carry-over",
+    color: "#9FA8DA",
+    icon: money,
+  },
+};
+
 const indexBy = (list) => Object.fromEntries(list.map((c) => [c.id, c]));
 
 const BY_TYPE = {
-  income: indexBy(INCOME),
+  income: { ...indexBy(INCOME), ...SPECIAL_INCOME },
   expense: indexBy(EXPENSE),
   transfer: indexBy(TRANSFER),
 };

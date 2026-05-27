@@ -12,9 +12,13 @@ export const GlobalProvider = ({ children }) => {
   const [incomes, setIncomes] = useState([]);
   const [expenses, setExpenses] = useState([]);
   const [transfers, setTransfers] = useState([]);
+  const [cycles, setCycles] = useState([]);
+  const [activeCycle, setActiveCycle] = useState(null);
+  const [cyclesLoaded, setCyclesLoaded] = useState(false);
   const [error, setError] = useState(null);
   const [loadingCount, setLoadingCount] = useState(0);
   const loading = loadingCount > 0;
+  const [refreshKey, setRefreshKey] = useState(0);
 
   const addIncome = async (income) => {
     await axios
@@ -143,6 +147,65 @@ export const GlobalProvider = ({ children }) => {
 
   const totalBalance = () => totalIncome() - totalExpenses();
 
+  // ── Cycles ────────────────────────────────────────────────────────────────
+
+  const getCycles = useCallback(async () => {
+    const res = await axios.get(`${BASE_URL}cycles`);
+    setCycles(res.data);
+    const active = res.data.find((c) => c.isActive) || null;
+    setActiveCycle(active);
+    setCyclesLoaded(true);
+    return { cycles: res.data, active };
+  }, []);
+
+  // Boot: resolve cycle state first, only load transactions if a cycle is active.
+  // Avoids the backend's 409 NO_ACTIVE_CYCLE on every transaction endpoint.
+  const bootstrap = useCallback(async () => {
+    setRefreshKey((k) => k + 1);
+    setLoadingCount((c) => c + 1);
+    try {
+      const { active } = await getCycles();
+      if (active) {
+        await Promise.all([getIncomes(), getExpenses(), getTransfers()]);
+      }
+    } catch (e) {
+      setError(e.response?.data?.message ?? DEFAULT_ERROR);
+    } finally {
+      setLoadingCount((c) => c - 1);
+    }
+  }, [getCycles, getIncomes, getExpenses, getTransfers]);
+
+  // Open a cycle (first one or, after closing, the next). Throws on failure so
+  // the caller can sequence close→open and surface errors.
+  const openCycle = async (payload) => {
+    const res = await axios.post(`${BASE_URL}cycles/open`, payload);
+    return res.data;
+  };
+
+  // Close the active cycle. Returns { cycle, netCash } — netCash feeds carry-over.
+  const closeCycle = async (endDate) => {
+    const res = await axios.post(`${BASE_URL}cycles/close`, { endDate });
+    return res.data;
+  };
+
+  const compareCycles = useCallback(async (ids) => {
+    if (!ids.length) return [];
+    const res = await axios.get(`${BASE_URL}cycles/compare`, {
+      params: { ids: ids.join(",") },
+    });
+    return res.data;
+  }, []);
+
+  const getCycleTransactions = useCallback(async (id) => {
+    const res = await axios.get(`${BASE_URL}cycles/${id}/transactions`);
+    return res.data; // { incomes, expenses, transfers }
+  }, []);
+
+  const exportCycles = (n) => {
+    const url = n ? `${BASE_URL}cycles/export?n=${n}` : `${BASE_URL}cycles/export`;
+    window.open(url, "_blank");
+  };
+
   const refreshAll = useCallback(() => {
     getIncomes();
     getExpenses();
@@ -186,6 +249,17 @@ export const GlobalProvider = ({ children }) => {
         setError,
         loading,
         refreshAll,
+        cycles,
+        activeCycle,
+        cyclesLoaded,
+        getCycles,
+        bootstrap,
+        openCycle,
+        closeCycle,
+        compareCycles,
+        getCycleTransactions,
+        exportCycles,
+        refreshKey,
       }}
     >
       {children}

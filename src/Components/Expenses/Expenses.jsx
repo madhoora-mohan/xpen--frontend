@@ -5,6 +5,7 @@ import { InnerLayout } from "../../styles/Layouts";
 import { formatRupee } from "../../utils/currency";
 import IncomeItem from "../IncomeItem/IncomeItem";
 import ExpenseForm from "./ExpenseForm";
+import MonthlyInsight from "../Insight/MonthlyInsight";
 import Spinner from "../Spinner/Spinner";
 import EmptyState from "../EmptyState/EmptyState";
 import { expenses as expensesIcon } from "../../utils/Icons";
@@ -18,6 +19,7 @@ function Expenses() {
   const [moreOpen, setMoreOpen] = useState(false);
   const [moreAlign, setMoreAlign] = useState("left");
   const [expandedId, setExpandedId] = useState(null);
+  const [isFormOpen, setIsFormOpen] = useState(false);
   const moreRef = useRef(null);
 
   const handleMoreToggle = () => {
@@ -73,7 +75,6 @@ function Expenses() {
       <ExpenseStyled>
         <InnerLayout>
           <h2 className="page-title">Expenses</h2>
-          <p className="page-sub">Log what you spent and where it went</p>
           <Spinner />
         </InnerLayout>
       </ExpenseStyled>
@@ -83,8 +84,8 @@ function Expenses() {
     <ExpenseStyled>
       <InnerLayout>
         <h2 className="page-title">Expenses</h2>
-        <p className="page-sub">Log what you spent and where it went</p>
 
+        <div className="mobile-head">
         <div className="total-banner expense">
           <div className="label">Total expense</div>
           <div className="value">{formatRupee(totalExpenses())}</div>
@@ -92,12 +93,44 @@ function Expenses() {
 
         <div className="row-spacer" />
 
+        <button
+          className="accordion-trigger"
+          aria-expanded={isFormOpen}
+          onClick={() => setIsFormOpen((o) => !o)}
+        >
+          <i className="fa-solid fa-plus" style={{ fontSize: 13 }} />
+          <span>Add expense</span>
+          <i
+            className="fa-solid fa-chevron-down"
+            style={{
+              marginLeft: "auto",
+              fontSize: 11,
+              color: "var(--fg-muted)",
+              transition: "transform 200ms ease",
+              transform: isFormOpen ? "rotate(180deg)" : "none",
+            }}
+          />
+        </button>
+        </div>{/* end mobile-head */}
+
         <div className="form-page-grid">
-          <div className="card">
-            <h3 className="card-h3">Add expense</h3>
-            <ExpenseForm />
+          <div className="form-col">
+            <div
+              className="accordion-panel"
+              style={{ gridTemplateRows: isFormOpen ? "1fr" : "0fr" }}
+            >
+              <div className="accordion-panel-inner">
+                <div className="card" style={{ marginTop: 8 }}>
+                  <h3 className="card-h3">Add expense</h3>
+                  <ExpenseForm />
+                </div>
+              </div>
+            </div>
+            <div className="insight-slot">
+              <MonthlyInsight items={expenses} type="expense" />
+            </div>
           </div>
-          <div>
+          <div className="list-col">
             <div className="toolbar">
               <div className="search-wrap">
                 <i className="fa-solid fa-magnifying-glass ico" />
@@ -176,15 +209,17 @@ function Expenses() {
             </div>
 
             {list.length === 0 ? (
-              <EmptyState
-                icon={expensesIcon}
-                title="No expenses found"
-                sub={
-                  expenses.length === 0
-                    ? "Add your first expense to start tracking"
-                    : "No matches for your filters"
-                }
-              />
+              <div className="empty-slot">
+                <EmptyState
+                  icon={expensesIcon}
+                  title="No expenses found"
+                  sub={
+                    expenses.length === 0
+                      ? "Add your first expense to start tracking"
+                      : "No matches for your filters"
+                  }
+                />
+              </div>
             ) : (
               <div className="scroll-list">
                 {list.map((item) => {
@@ -221,12 +256,7 @@ const ExpenseStyled = styled.div`
     font-size: 26px;
     font-weight: 800;
     letter-spacing: -0.02em;
-    margin: 0 0 var(--s-2);
-  }
-  .page-sub {
-    color: var(--fg-muted);
-    font-size: 14px;
-    margin: 0 0 var(--s-5);
+    margin: 0 0 var(--s-4);
   }
 
   .total-banner {
@@ -264,10 +294,85 @@ const ExpenseStyled = styled.div`
     display: grid;
     grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
     gap: var(--s-5);
+    align-items: stretch;
 
     @media (max-width: 980px) {
       grid-template-columns: 1fr;
     }
+  }
+
+  .form-col {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .list-col {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+
+  .empty-slot {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  /* Insight panel: desktop-only, sits below the form */
+  .insight-slot {
+    display: flex;
+    flex-direction: column;
+  }
+  @media (max-width: 980px) {
+    .insight-slot {
+      display: none;
+    }
+  }
+
+  /* Mobile accordion form */
+  .accordion-trigger {
+    display: none;
+    width: 100%;
+    height: 40px;
+    border-radius: 10px;
+    background: transparent;
+    border: 1px dashed var(--line-strong);
+    color: var(--fg);
+    align-items: center;
+    gap: 8px;
+    padding: 0 14px;
+    font-family: inherit;
+    font-weight: 700;
+    font-size: 13px;
+    cursor: pointer;
+    margin-bottom: 0;
+    transition: background 150ms ease;
+  }
+  .accordion-trigger[aria-expanded="true"] {
+    background: var(--bg-inset-2);
+  }
+  @media (max-width: 899px) {
+    .accordion-trigger {
+      display: flex;
+    }
+  }
+
+  .accordion-panel {
+    display: grid;
+    transition: grid-template-rows 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  @media (min-width: 900px) {
+    .accordion-panel {
+      grid-template-rows: 1fr !important;
+    }
+  }
+  .accordion-panel-inner {
+    overflow: hidden;
+    min-height: 0;
   }
 
   .card {
@@ -414,13 +519,11 @@ const ExpenseStyled = styled.div`
   }
 
   .scroll-list {
-    max-height: min(600px, 55vh);
+    flex: 1;
+    min-height: 0;
+    max-height: none;
     overflow-y: auto;
     padding-right: 4px;
-
-    @media (max-width: 899px) {
-      max-height: 40vh;
-    }
 
     &::-webkit-scrollbar {
       width: 6px;
@@ -429,6 +532,68 @@ const ExpenseStyled = styled.div`
       background: var(--bg-inset-2);
       border-radius: 3px;
     }
+  }
+
+  /* Desktop: page fills the viewport so the list scrolls internally and the
+     insight panel fills the space below the form. */
+  @media (min-width: 981px) {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    min-height: 0;
+
+    ${InnerLayout} {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      min-height: 0;
+    }
+
+    .form-page-grid {
+      flex: 1;
+      min-height: 0;
+      overflow: hidden;
+    }
+  }
+
+  /* Mobile: banner+trigger pinned at top, form+list scroll below */
+  @media (max-width: 899px) {
+    height: calc(100vh - var(--topbar-h));
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+
+    ${InnerLayout} {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      min-height: 0;
+      padding-bottom: 0;
+    }
+
+    .page-title { display: none; }
+    .row-spacer { height: var(--s-2); }
+
+    .mobile-head { flex-shrink: 0; }
+
+    .form-page-grid {
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      padding-bottom: calc(var(--s-10) + var(--s-6));
+    }
+
+    .form-col { display: contents; }
+
+    .scroll-list {
+      overflow-y: visible;
+      max-height: none;
+      flex: none;
+    }
+
+    .empty-slot { flex: none; }
   }
 
   @media (max-width: 720px) {
