@@ -5,39 +5,43 @@ import styled from "styled-components";
 
 const DROPDOWN_WIDTH = 300;
 
+const pad = (n) => String(n).padStart(2, "0");
+const toDisplay = (d) => `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${String(d.getFullYear()).slice(-2)}`;
+
 const DateInputWithPicker = ({ selected, onChange, placeholder = "DD/MM/YY" }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [dropdownPos, setDropdownPos] = useState({ top: 0, left: 0 });
+  const [inputText, setInputText] = useState(selected ? toDisplay(selected) : "");
   const inputRef = useRef(null);
   const wrapperRef = useRef(null);
 
+  // Sync from parent only when not actively typing
   useEffect(() => {
-    const handleClickOutside = (e) => {
-      if (wrapperRef.current && !wrapperRef.current.contains(e.target)) {
-        setIsOpen(false);
-      }
-    };
-    if (isOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
-      return () => document.removeEventListener("mousedown", handleClickOutside);
+    if (document.activeElement !== inputRef.current) {
+      setInputText(selected ? toDisplay(selected) : "");
     }
-  }, [isOpen]);
+  }, [selected]);
 
   const handleDateChange = (date) => {
     onChange(date);
+    setInputText(toDisplay(date));
     setIsOpen(false);
   };
 
   const handleInputChange = (e) => {
-    const val = e.target.value.trim();
-    if (!val) { onChange(null); return; }
-    const parts = val.split("/");
+    const val = e.target.value;
+    setInputText(val);
+    const parts = val.trim().split("/");
     if (parts.length !== 3) return;
     const [day, month, rawYear] = parts.map((p) => parseInt(p, 10));
     if (isNaN(day) || isNaN(month) || isNaN(rawYear)) return;
     const year = rawYear < 100 ? 2000 + rawYear : rawYear;
     const date = new Date(year, month - 1, day);
     if (date.getDate() === day && date.getMonth() === month - 1) onChange(date);
+  };
+
+  const handleBlur = () => {
+    setInputText(selected ? toDisplay(selected) : "");
   };
 
   const handleCalendarBtnClick = () => {
@@ -51,11 +55,6 @@ const DateInputWithPicker = ({ selected, onChange, placeholder = "DD/MM/YY" }) =
     setIsOpen((v) => !v);
   };
 
-  // Display as DD/MM/YY but the Date object always stores full year
-  const displayValue = selected
-    ? `${String(selected.getDate()).padStart(2, "0")}/${String(selected.getMonth() + 1).padStart(2, "0")}/${String(selected.getFullYear()).slice(-2)}`
-    : "";
-
   return (
     <Wrapper ref={wrapperRef}>
       <InputWrapper>
@@ -63,8 +62,9 @@ const DateInputWithPicker = ({ selected, onChange, placeholder = "DD/MM/YY" }) =
           ref={inputRef}
           type="text"
           inputMode="decimal"
-          value={displayValue}
+          value={inputText}
           onChange={handleInputChange}
+          onBlur={handleBlur}
           placeholder={placeholder}
           autoComplete="off"
         />
@@ -74,14 +74,20 @@ const DateInputWithPicker = ({ selected, onChange, placeholder = "DD/MM/YY" }) =
       </InputWrapper>
 
       {isOpen && ReactDOM.createPortal(
-        <PickerContainer style={{ top: dropdownPos.top, left: dropdownPos.left }}>
-          <DatePicker
-            selected={selected}
-            onChange={handleDateChange}
-            dateFormat="dd/MM/yyyy"
-            inline
-          />
-        </PickerContainer>,
+        <>
+          <Backdrop onMouseDown={() => setIsOpen(false)} />
+          <PickerContainer
+            style={{ top: dropdownPos.top, left: dropdownPos.left }}
+            onMouseDown={(e) => e.stopPropagation()}
+          >
+            <DatePicker
+              selected={selected}
+              onChange={handleDateChange}
+              dateFormat="dd/MM/yyyy"
+              inline
+            />
+          </PickerContainer>
+        </>,
         document.body
       )}
     </Wrapper>
@@ -131,6 +137,12 @@ const CalendarBtn = styled.button`
   &:active {
     background: rgba(255, 255, 255, 0.08);
   }
+`;
+
+const Backdrop = styled.div`
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
 `;
 
 const PickerContainer = styled.div`
