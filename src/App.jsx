@@ -131,8 +131,17 @@ function Shell() {
   );
 }
 
+const PING_URL = `${process.env.REACT_APP_API_BASE_URL}`.replace(/\/api\/v1\/?$/, "/ping");
+const PING_INTERVAL_MS = 14 * 60 * 1000;
+
 function App() {
   const { isLoggedIn } = useAuth();
+
+  useEffect(() => {
+    fetch(PING_URL).catch(() => {});
+    const id = setInterval(() => fetch(PING_URL).catch(() => {}), PING_INTERVAL_MS);
+    return () => clearInterval(id);
+  }, []);
 
   return (
     <Routes>
