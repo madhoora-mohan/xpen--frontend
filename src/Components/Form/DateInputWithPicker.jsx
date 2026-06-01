@@ -4,7 +4,7 @@ import DatePicker from "react-datepicker";
 import styled from "styled-components";
 
 const DROPDOWN_WIDTH = 300;
-const CALENDAR_HEIGHT = 320; // conservative estimate for above/below logic
+const CALENDAR_HEIGHT = 320;
 
 const pad = (n) => String(n).padStart(2, "0");
 const toDisplay = (d) => `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${String(d.getFullYear()).slice(-2)}`;
@@ -38,8 +38,7 @@ const DateInputWithPicker = ({ selected, onChange, placeholder = "DD/MM/YY", inp
     if (/^\d{8}$/.test(trimmed)) {
       parts = [trimmed.slice(0, 2), trimmed.slice(2, 4), trimmed.slice(4, 8)];
     } else {
-      // split on /, -, space, or _
-      parts = trimmed.split(/[\/\-\s_]/);
+      parts = trimmed.split(/[-\s_/]/);
     }
 
     if (parts.length !== 3) return;
@@ -61,7 +60,6 @@ const DateInputWithPicker = ({ selected, onChange, placeholder = "DD/MM/YY", inp
       let left = rect.left + rect.width / 2 - DROPDOWN_WIDTH / 2;
       left = Math.max(12, Math.min(left, window.innerWidth - DROPDOWN_WIDTH - 12));
 
-      // Open above the input if there isn't enough room below
       const spaceBelow = window.innerHeight - rect.bottom;
       const top = spaceBelow >= CALENDAR_HEIGHT + 8
         ? rect.bottom + 4
