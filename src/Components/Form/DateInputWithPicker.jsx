@@ -4,6 +4,7 @@ import DatePicker from "react-datepicker";
 import styled from "styled-components";
 
 const DROPDOWN_WIDTH = 300;
+const CALENDAR_HEIGHT = 320; // conservative estimate for above/below logic
 
 const pad = (n) => String(n).padStart(2, "0");
 const toDisplay = (d) => `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${String(d.getFullYear()).slice(-2)}`;
@@ -15,7 +16,6 @@ const DateInputWithPicker = ({ selected, onChange, placeholder = "DD/MM/YY", inp
   const inputRef = useRef(null);
   const wrapperRef = useRef(null);
 
-  // Sync from parent only when not actively typing
   useEffect(() => {
     if (document.activeElement !== inputRef.current) {
       setInputText(selected ? toDisplay(selected) : "");
@@ -31,7 +31,17 @@ const DateInputWithPicker = ({ selected, onChange, placeholder = "DD/MM/YY", inp
   const handleInputChange = (e) => {
     const val = e.target.value;
     setInputText(val);
-    const parts = val.trim().split("/");
+    const trimmed = val.trim();
+
+    let parts;
+    // 8-digit no-separator: ddmmyyyy
+    if (/^\d{8}$/.test(trimmed)) {
+      parts = [trimmed.slice(0, 2), trimmed.slice(2, 4), trimmed.slice(4, 8)];
+    } else {
+      // split on /, -, space, or _
+      parts = trimmed.split(/[\/\-\s_]/);
+    }
+
     if (parts.length !== 3) return;
     const [day, month, rawYear] = parts.map((p) => parseInt(p, 10));
     if (isNaN(day) || isNaN(month) || isNaN(rawYear)) return;
@@ -50,7 +60,14 @@ const DateInputWithPicker = ({ selected, onChange, placeholder = "DD/MM/YY", inp
       const rect = wrapperRef.current.getBoundingClientRect();
       let left = rect.left + rect.width / 2 - DROPDOWN_WIDTH / 2;
       left = Math.max(12, Math.min(left, window.innerWidth - DROPDOWN_WIDTH - 12));
-      setDropdownPos({ top: rect.bottom + window.scrollY + 4, left });
+
+      // Open above the input if there isn't enough room below
+      const spaceBelow = window.innerHeight - rect.bottom;
+      const top = spaceBelow >= CALENDAR_HEIGHT + 8
+        ? rect.bottom + 4
+        : Math.max(8, rect.top - CALENDAR_HEIGHT - 4);
+
+      setDropdownPos({ top, left });
     }
     setIsOpen((v) => !v);
   };
@@ -61,7 +78,7 @@ const DateInputWithPicker = ({ selected, onChange, placeholder = "DD/MM/YY", inp
         <DateInput
           ref={inputRef}
           type="text"
-          inputMode="decimal"
+          inputMode="numeric"
           value={inputText}
           onChange={handleInputChange}
           onBlur={handleBlur}
@@ -147,7 +164,7 @@ const Backdrop = styled.div`
 `;
 
 const PickerContainer = styled.div`
-  position: absolute;
+  position: fixed;
   z-index: 9999;
   width: ${DROPDOWN_WIDTH}px;
   background: var(--bg-surface);
