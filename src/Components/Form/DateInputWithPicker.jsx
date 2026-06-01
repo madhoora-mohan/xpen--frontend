@@ -8,7 +8,7 @@ const DROPDOWN_WIDTH = 300;
 const pad = (n) => String(n).padStart(2, "0");
 const toDisplay = (d) => `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${String(d.getFullYear()).slice(-2)}`;
 
-const DateInputWithPicker = ({ selected, onChange, placeholder = "DD/MM/YY" }) => {
+const DateInputWithPicker = ({ selected, onChange, placeholder = "DD/MM/YY", inputClassName = "" }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [dropdownPos, setDropdownPos] = useState({ top: 0, left: 0 });
   const [inputText, setInputText] = useState(selected ? toDisplay(selected) : "");
@@ -67,6 +67,7 @@ const DateInputWithPicker = ({ selected, onChange, placeholder = "DD/MM/YY" }) =
           onBlur={handleBlur}
           placeholder={placeholder}
           autoComplete="off"
+          className={inputClassName}
         />
         <CalendarBtn type="button" onClick={handleCalendarBtnClick} aria-label="Open calendar">
           <i className="fa-solid fa-calendar-days" />

@@ -64,6 +64,7 @@ function FabExpenseForm({ onDone }) {
         <div>
           <span className="fl">Date *</span>
           <DateInputWithPicker
+            inputClassName="input"
             selected={state.date}
             onChange={(d) => { setState({ ...state, date: d }); setErr(""); }}
           />
@@ -129,6 +130,7 @@ function FabIncomeForm({ onDone }) {
         <div>
           <span className="fl">Date *</span>
           <DateInputWithPicker
+            inputClassName="input"
             selected={state.date}
             onChange={(d) => { setState({ ...state, date: d }); setErr(""); }}
           />
@@ -206,6 +208,7 @@ function FabTransferForm({ onDone }) {
         <div>
           <span className="fl">Date *</span>
           <DateInputWithPicker
+            inputClassName="input"
             selected={state.date}
             onChange={(d) => { setState({ ...state, date: d }); setErr(""); }}
           />
