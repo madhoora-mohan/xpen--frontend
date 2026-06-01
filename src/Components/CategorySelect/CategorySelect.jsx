@@ -39,7 +39,14 @@ function CategorySelect({ options, value, onChange, placeholder = "Select Catego
   const handleToggle = () => {
     if (!open && triggerRef.current) {
       const rect = triggerRef.current.getBoundingClientRect();
-      setMenuPos({ top: rect.bottom + 4, left: rect.left, width: rect.width });
+      const openAbove = window.innerHeight - rect.bottom < 292;
+      setMenuPos({
+        top: rect.bottom + 4,
+        bottom: window.innerHeight - rect.top + 4,
+        left: rect.left,
+        width: rect.width,
+        openAbove,
+      });
     }
     setOpen((v) => !v);
   };
@@ -75,7 +82,9 @@ function CategorySelect({ options, value, onChange, placeholder = "Select Catego
           role="listbox"
           style={{
             position: "fixed",
-            top: menuPos.top,
+            ...(menuPos.openAbove
+              ? { bottom: menuPos.bottom, top: "auto" }
+              : { top: menuPos.top }),
             left: menuPos.left,
             width: menuPos.width,
             zIndex: 9999,

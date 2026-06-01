@@ -11,7 +11,7 @@ import { formatRupee } from "../../utils/currency";
 function Dashboard({ setActive }) {
   const {
     totalExpenses,
-    totalBalance,
+    totalSavings,
     outstandingLent,
     netCash,
     expenses,
@@ -19,7 +19,7 @@ function Dashboard({ setActive }) {
   } = useGlobalContext();
 
   const expense = totalExpenses();
-  const savings = totalBalance();
+  const savings = totalSavings();
   if (loading)
     return (
       <DashboardStyled>
@@ -55,7 +55,7 @@ function Dashboard({ setActive }) {
               <span className="dot" /> Savings
             </div>
             <div className="stat-value">{formatRupee(savings)}</div>
-            <div className="stat-foot">Income − Expense</div>
+            <div className="stat-foot">Net + invested</div>
           </div>
           <div className="stat" data-tone="lending">
             <div className="stat-label" style={{ color: "var(--accent-lending)" }}>

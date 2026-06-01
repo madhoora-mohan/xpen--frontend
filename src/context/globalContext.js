@@ -147,6 +147,8 @@ export const GlobalProvider = ({ children }) => {
 
   const totalBalance = () => totalIncome() - totalExpenses();
 
+  const totalSavings = () => totalIncome() - totalExpenses() + sumTransferCat("investments");
+
   // ── Cycles ────────────────────────────────────────────────────────────────
 
   const getCycles = useCallback(async () => {
@@ -240,6 +242,7 @@ export const GlobalProvider = ({ children }) => {
         incCat,
         totalExpenses,
         totalBalance,
+        totalSavings,
         transactionHistory,
         transfers,
         addTransfer,
