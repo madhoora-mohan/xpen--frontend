@@ -193,6 +193,8 @@ const DashboardStyled = styled.div`
       font-size: 12px;
       font-weight: 600;
       color: var(--fg-muted);
+      white-space: nowrap;
+      overflow: hidden;
     }
     .dot {
       width: 6px;
