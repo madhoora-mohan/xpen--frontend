@@ -147,7 +147,7 @@ export const GlobalProvider = ({ children }) => {
 
   const totalBalance = () => totalIncome() - totalExpenses();
 
-  const totalSavings = () => totalIncome() - totalExpenses() + sumTransferCat("investments");
+  const totalSavings = () => netCash() + totalInvested();
 
   // ── Cycles ────────────────────────────────────────────────────────────────
 
