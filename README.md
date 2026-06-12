@@ -97,9 +97,6 @@ src/
   styles/
     GlobalStyle.js         Global CSS reset + base styles
     Layouts.js             Shared styled-components layout primitives
-docs/
-  FUTURE_TODOS.md          Deferred feature notes
-  JWT_AUTH_PLAN.md         Auth design notes
 public/
   manifest.json            PWA manifest (name, icons, theme color)
   sw.js                    Service worker for PWA install support

@@ -11,7 +11,7 @@ import { formatRupee } from "../../utils/currency";
 function Dashboard({ setActive }) {
   const {
     totalExpenses,
-    totalBalance,
+    totalSavings,
     outstandingLent,
     netCash,
     expenses,
@@ -19,7 +19,7 @@ function Dashboard({ setActive }) {
   } = useGlobalContext();
 
   const expense = totalExpenses();
-  const savings = totalBalance();
+  const savings = totalSavings();
   if (loading)
     return (
       <DashboardStyled>
@@ -50,12 +50,12 @@ function Dashboard({ setActive }) {
             <div className="stat-value">{formatRupee(expense)}</div>
             <div className="stat-foot">{expenses.length} entries</div>
           </div>
-          <div className="stat" data-tone="savings">
-            <div className="stat-label">
-              <span className="dot" /> Savings
+          <div className="stat" data-tone="balance">
+            <div className="stat-label" style={{ color: "var(--accent-balance)" }}>
+              <span className="dot" /> Bank balance
             </div>
-            <div className="stat-value">{formatRupee(savings)}</div>
-            <div className="stat-foot">Income − Expense</div>
+            <div className="stat-value">{formatRupee(netCash())}</div>
+            <div className="stat-foot">Liquid cash</div>
           </div>
           <div className="stat" data-tone="lending">
             <div className="stat-label" style={{ color: "var(--accent-lending)" }}>
@@ -64,12 +64,12 @@ function Dashboard({ setActive }) {
             <div className="stat-value">{formatRupee(outstandingLent())}</div>
             <div className="stat-foot">Pending returns</div>
           </div>
-          <div className="stat" data-tone="balance">
-            <div className="stat-label" style={{ color: "var(--accent-balance)" }}>
-              <span className="dot" /> Bank balance
+          <div className="stat" data-tone="savings">
+            <div className="stat-label">
+              <span className="dot" /> Savings
             </div>
-            <div className="stat-value">{formatRupee(netCash())}</div>
-            <div className="stat-foot">Liquid cash</div>
+            <div className="stat-value">{formatRupee(savings)}</div>
+            <div className="stat-foot">Net + invested</div>
           </div>
           <DashboardCycleWidgets />
         </div>
@@ -193,6 +193,8 @@ const DashboardStyled = styled.div`
       font-size: 12px;
       font-weight: 600;
       color: var(--fg-muted);
+      white-space: nowrap;
+      overflow: hidden;
     }
     .dot {
       width: 6px;
@@ -202,10 +204,12 @@ const DashboardStyled = styled.div`
       opacity: 0.7;
     }
     .stat-value {
-      font-size: 22px;
+      font-size: clamp(15px, 4vw, 22px);
       font-weight: 800;
       letter-spacing: -0.02em;
       font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+      overflow: hidden;
       color: var(--fg);
     }
     .stat-foot {

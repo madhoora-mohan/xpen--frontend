@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import ReactDOM from "react-dom";
 import styled from "styled-components";
 
 function CategorySelect({ options, value, onChange, placeholder = "Select Category" }) {
@@ -8,11 +9,14 @@ function CategorySelect({ options, value, onChange, placeholder = "Select Catego
   const triggerRef = useRef(null);
   const menuRef = useRef(null);
 
-  // Close on outside click
+  // Close on outside click — must also guard the portaled menu node
   useEffect(() => {
     if (!open) return;
     const onDoc = (e) => {
-      if (wrapRef.current && !wrapRef.current.contains(e.target)) {
+      if (
+        wrapRef.current && !wrapRef.current.contains(e.target) &&
+        menuRef.current && !menuRef.current.contains(e.target)
+      ) {
         setOpen(false);
       }
     };
@@ -35,7 +39,14 @@ function CategorySelect({ options, value, onChange, placeholder = "Select Catego
   const handleToggle = () => {
     if (!open && triggerRef.current) {
       const rect = triggerRef.current.getBoundingClientRect();
-      setMenuPos({ top: rect.bottom + 4, left: rect.left, width: rect.width });
+      const openAbove = window.innerHeight - rect.bottom < 292;
+      setMenuPos({
+        top: rect.bottom + 4,
+        bottom: window.innerHeight - rect.top + 4,
+        left: rect.left,
+        width: rect.width,
+        openAbove,
+      });
     }
     setOpen((v) => !v);
   };
@@ -65,27 +76,27 @@ function CategorySelect({ options, value, onChange, placeholder = "Select Catego
         <span className="caret" aria-hidden="true" />
       </button>
 
-      {open && (
-        <ul
+      {open && ReactDOM.createPortal(
+        <MenuList
           ref={menuRef}
-          className="menu menu--open"
           role="listbox"
           style={{
             position: "fixed",
-            top: menuPos.top,
+            ...(menuPos.openAbove
+              ? { bottom: menuPos.bottom, top: "auto" }
+              : { top: menuPos.top }),
             left: menuPos.left,
             width: menuPos.width,
             zIndex: 9999,
           }}
         >
           {options.map((opt) => (
-            <li
+            <OptionItem
               key={opt.id}
               role="option"
               aria-selected={opt.id === value}
-              className={opt.id === value ? "option selected" : "option"}
+              className={opt.id === value ? "selected" : ""}
               onMouseDown={(e) => {
-                // onMouseDown so the selection fires before the outside-click handler
                 e.preventDefault();
                 onChange(opt.id);
                 setOpen(false);
@@ -95,9 +106,10 @@ function CategorySelect({ options, value, onChange, placeholder = "Select Catego
                 <span className="opt-icon">{opt.icon}</span>
               </span>
               <span className="opt-label">{opt.label}</span>
-            </li>
+            </OptionItem>
           ))}
-        </ul>
+        </MenuList>,
+        document.body
       )}
     </Wrap>
   );
@@ -150,8 +162,7 @@ const Wrap = styled.div`
     flex-shrink: 0;
   }
 
-  .trigger-icon i,
-  .opt-icon i {
+  .trigger-icon i {
     font-size: 12px;
   }
 
@@ -174,43 +185,48 @@ const Wrap = styled.div`
     opacity: 0.6;
     pointer-events: none;
   }
+`;
 
-  .menu {
-    background: var(--bg-inset);
-    border: 1px solid var(--line-strong);
-    border-radius: var(--r-md);
-    box-shadow: var(--shadow-pop);
-    max-height: 280px;
-    overflow-y: auto;
-    padding: 4px;
-    list-style: none;
-    margin: 0;
+const MenuList = styled.ul`
+  background: var(--bg-inset);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-md);
+  box-shadow: var(--shadow-pop);
+  max-height: 280px;
+  overflow-y: auto;
+  padding: 4px;
+  list-style: none;
+  margin: 0;
 
-    &::-webkit-scrollbar {
-      width: 6px;
-    }
-    &::-webkit-scrollbar-thumb {
-      background-color: var(--bg-inset-2);
-      border-radius: 3px;
-    }
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: var(--bg-inset-2);
+    border-radius: 3px;
   }
 
-  .option {
-    display: flex;
-    align-items: center;
-    gap: var(--s-3);
-    padding: 8px 10px;
-    border-radius: var(--r-xs);
-    cursor: pointer;
-    font-size: 14px;
-    color: var(--fg);
+  .opt-icon i {
+    font-size: 12px;
+  }
+`;
 
-    &:hover {
-      background: var(--bg-inset-2);
-    }
-    &.selected {
-      background: var(--bg-inset-2);
-    }
+const OptionItem = styled.li`
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  padding: 8px 10px;
+  border-radius: var(--r-xs);
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--fg);
+
+  &:hover {
+    background: var(--bg-inset-2);
+  }
+
+  &.selected {
+    background: var(--bg-inset-2);
   }
 
   .opt-swatch {
