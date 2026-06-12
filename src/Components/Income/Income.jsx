@@ -18,7 +18,12 @@ function Income() {
   const handleExpand = (id) => setExpandedId((prev) => (prev === id ? null : id));
 
   const list = useMemo(
-    () => incomes.slice().sort((a, b) => new Date(b.date) - new Date(a.date)),
+    () =>
+      incomes.slice().sort((a, b) => {
+        const dateDiff = new Date(b.date) - new Date(a.date);
+        if (dateDiff !== 0) return dateDiff;
+        return new Date(b.createdAt) - new Date(a.createdAt);
+      }),
     [incomes]
   );
 

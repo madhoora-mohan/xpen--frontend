@@ -37,7 +37,11 @@ function Transfers() {
   const list = useMemo(() => {
     return transfers
       .slice()
-      .sort((a, b) => new Date(b.date) - new Date(a.date))
+      .sort((a, b) => {
+        const dateDiff = new Date(b.date) - new Date(a.date);
+        if (dateDiff !== 0) return dateDiff;
+        return new Date(b.createdAt) - new Date(a.createdAt);
+      })
       .filter((t) => {
         const dirMatch =
           filter === "all" ? true : t.direction === filter;
